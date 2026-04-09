@@ -2472,16 +2472,9 @@ class Site(Document, TagHelpers):
 		self._create_initial_site_plan_change(plan)
 
 	def update_subscription(self):
-		if self.status in ["Archived", "Broken", "Suspended"]:
-			self.disable_subscription()
-		else:
-			self.enable_subscription()
-
-		if self.has_value_changed("team"):
-			subscription = self.subscription
-			if subscription:
-				subscription.team = self.team
-				subscription.save(ignore_permissions=True)
+		# 3plug-control does not keep Press commercial subscriptions in sync.
+		# The control plane remains operational even when billing is externalized.
+		return
 
 	@frappe.whitelist()
 	def disable_monitoring(self, reason=None):

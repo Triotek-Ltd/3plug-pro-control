@@ -296,3 +296,15 @@ Reason:
 
 * this shifts plan changes toward operational control instead of checkout-style gating
 * keeping the subscription engine for a later pass reduces the risk of breaking unrelated lifecycle behavior
+
+### 2026-04-08
+
+Change:
+
+* neutralized site and server `update_subscription` sync paths so routine updates no longer maintain Press commercial subscription state
+* kept the simpler plan-change history helpers for now
+
+Reason:
+
+* these update-time subscription writes are commercial bookkeeping rather than core server or site operations
+* removing them reduces backend payment churn without forcing a deeper subscription-model rewrite in the same pass

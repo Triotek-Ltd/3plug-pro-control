@@ -2753,54 +2753,9 @@ class Server(BaseServer):
 		]
 
 	def update_subscription(self):
-		subscription = self.subscription
-		if subscription:
-			if sub := frappe.db.get_value(
-				"Subscription",
-				{
-					"document_type": self.doctype,
-					"document_name": self.name,
-					"team": self.team,
-					"plan_type": "Server Plan",
-					"plan": self.plan,
-				},
-			):
-				frappe.db.set_value("Subscription", sub, "enabled", 1)
-				subscription.disable()
-			else:
-				frappe.db.set_value("Subscription", subscription.name, {"team": self.team, "enabled": 1})
-		else:
-			try:
-				# create new subscription
-				if self.plan:
-					self.create_subscription(self.plan)
-			except Exception:
-				frappe.log_error("Server Subscription Creation Error")
-
-		add_on_storage_subscription = self.add_on_storage_subscription
-		if add_on_storage_subscription:
-			if existing_subscription := frappe.db.get_value(
-				"Subscription",
-				filters={
-					"document_type": self.doctype,
-					"document_name": self.name,
-					"team": self.team,
-					"plan_type": "Server Storage Plan",
-				},
-			):
-				frappe.db.set_value(
-					"Subscription",
-					existing_subscription,
-					{
-						"enabled": 1,
-						"additional_storage": add_on_storage_subscription.additional_storage,
-					},
-				)
-				add_on_storage_subscription.disable()
-			else:
-				frappe.db.set_value(
-					"Subscription", add_on_storage_subscription.name, {"team": self.team, "enabled": 1}
-				)
+		# 3plug-control does not keep Press commercial subscriptions in sync.
+		# Server operations remain infrastructure-side even when billing is externalized.
+		return
 
 	def create_secondary_server(self, plan_name: str) -> None:
 		"""Create a secondary server for this server"""
