@@ -12,3 +12,4 @@ Important references:
 * `planning/docs/PRESS_MODULE_CLASSIFICATION.md`
 * `planning/docs/FIRST_CLEANUP_PASS.md`
 * `planning/docs/CLEANUP_ACTIVITY_LOG.md`
+* `planning/docs/HOOK_CLASSIFICATION.md`

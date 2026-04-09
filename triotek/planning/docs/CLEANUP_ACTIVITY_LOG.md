@@ -70,3 +70,20 @@ Reason:
 Commit:
 
 * `8665952` `Guard deferred routes and settings surfaces`
+
+### 2026-04-08
+
+Change:
+
+* classified hook cleanup targets in `press/hooks.py`
+* disabled deferred billing, marketplace, Stripe, payout, and SaaS hook wiring by exact doctype key and exact scheduler target
+* kept the underlying imported modules in place
+
+Reason:
+
+* this is the first low-risk backend isolation pass
+* it reduces active deferred backend behavior without deleting code the imported Press base may still reference indirectly
+
+Commit:
+
+* pending

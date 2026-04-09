@@ -402,6 +402,68 @@ scheduler_events = {
 	},
 }
 
+DEFERRED_PERMISSION_DOCTYPES = {
+	"Subscription",
+	"Stripe Payment Method",
+	"Invoice",
+}
+
+DEFERRED_DOC_EVENTS = {
+	"Stripe Webhook Log",
+	"Address",
+	"Marketplace App Subscription",
+}
+
+DEFERRED_SCHEDULER_TARGETS = {
+	"press.press.doctype.marketplace_app.events.auto_review_for_missing_steps",
+	"press.experimental.doctype.referral_bonus.referral_bonus.credit_referral_bonuses",
+	"press.press.doctype.team.team.check_budget_alerts",
+	"press.press.doctype.invoice.invoice.finalize_unpaid_prepaid_credit_invoices",
+	"press.saas.doctype.saas_app_subscription.saas_app_subscription.suspend_prepaid_subscriptions",
+	"press.press.doctype.payout_order.payout_order.create_marketplace_payout_orders",
+	"press.saas.doctype.product_trial_request.product_trial_request.gather_daily_stats",
+	"press.saas.doctype.product_trial_request.product_trial_request.expire_long_pending_trial_requests",
+	"press.saas.doctype.product_trial.product_trial.sync_product_site_users",
+	"press.press.doctype.invoice.invoice.finalize_draft_invoices",
+	"press.press.doctype.invoice.invoice.finalize_razorpay_mandate_invoices",
+	"press.saas.doctype.product_trial_request.product_trial_request.gather_hourly_stats",
+	"press.press.audit.billing_audit",
+	"press.press.doctype.subscription.subscription.create_usage_records",
+	"press.saas.doctype.product_trial.product_trial.replenish_standby_sites",
+	"press.saas.doctype.site_access_token.site_access_token.cleanup_expired_access_tokens",
+	"press.press.doctype.site.site.create_subscription_for_trial_sites",
+	"press.press.doctype.site.saas_pool.create",
+	"press.press.audit.partner_billing_audit",
+	"press.saas.doctype.product_trial_request.product_trial_request.gather_weekly_stats",
+	"press.signup_e2e.run_signup_e2e",
+	"press.press.doctype.razorpay_payment_record.razorpay_payment_record.fetch_pending_payment_orders",
+}
+
+
+def _remove_deferred_v1_hooks():
+	for doctype in DEFERRED_PERMISSION_DOCTYPES:
+		permission_query_conditions.pop(doctype, None)
+		has_permission.pop(doctype, None)
+
+	for doctype in DEFERRED_DOC_EVENTS:
+		doc_events.pop(doctype, None)
+
+	for event_name, handlers in scheduler_events.items():
+		if isinstance(handlers, list):
+			scheduler_events[event_name] = [
+				handler for handler in handlers if handler not in DEFERRED_SCHEDULER_TARGETS
+			]
+			continue
+
+		if isinstance(handlers, dict):
+			for cron_key, cron_handlers in handlers.items():
+				handlers[cron_key] = [
+					handler for handler in cron_handlers if handler not in DEFERRED_SCHEDULER_TARGETS
+				]
+
+
+_remove_deferred_v1_hooks()
+
 deploy_hours = [1, 2, 3, 4, 5, 21, 22, 23]  # Purposefully avoiding 0
 
 fixtures = [
