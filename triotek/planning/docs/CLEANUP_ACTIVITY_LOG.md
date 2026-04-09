@@ -87,3 +87,19 @@ Reason:
 Commit:
 
 * `17afde6` `Disable deferred backend hook wiring`
+
+### 2026-04-08
+
+Change:
+
+* removed the marketplace object from the shared dashboard object registry
+* stopped generating marketplace list and detail routes from the shared object route builder
+
+Reason:
+
+* this is a low-risk dashboard isolation step
+* it reduces live marketplace route surface without deleting marketplace files or deeper imports yet
+
+Commit:
+
+* pending
