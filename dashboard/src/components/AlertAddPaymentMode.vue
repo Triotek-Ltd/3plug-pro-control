@@ -1,12 +1,13 @@
 <template>
 	<AlertBanner
 		:title="
-			title ?? 'Add a payment mode to start creating sites, benches, and more.'
+			title ??
+			'Billing self-service is deferred in 3plug v1. Complete required account details from Settings.'
 		"
 		:type="type ?? 'warning'"
 	>
-		<Button class="ml-auto" @click="addPaymentMode" variant="outline">
-			Add payment mode
+		<Button class="ml-auto" @click="openSettings" variant="outline">
+			Open Settings
 		</Button>
 	</AlertBanner>
 </template>
@@ -21,11 +22,11 @@ export default {
 	},
 	components: { AlertBanner },
 	methods: {
-		addPaymentMode() {
+		openSettings() {
 			this.$team.reload();
 
 			this.$router.push({
-				name: 'BillingOverview',
+				name: 'SettingsProfile',
 			});
 		},
 	},

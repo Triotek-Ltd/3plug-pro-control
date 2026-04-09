@@ -944,9 +944,9 @@
 		<p>Server feature isn't enabled for your account.</p>
 		<p>You need to have $200 worth of credits to enable this feature.</p>
 		<p>
-			Please add it from
-			<router-link class="underline" :to="{ name: 'BillingOverview' }"
-				>here</router-link
+			Please update it from
+			<router-link class="underline" :to="{ name: 'SettingsProfile' }"
+				>settings</router-link
 			>.
 		</p>
 		<p>

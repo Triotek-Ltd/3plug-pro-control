@@ -76,8 +76,8 @@
 				:title="teamEnabled ? 'Disable Account' : 'Enable Account'"
 				:subtitle="
 					teamEnabled
-						? 'Disable your account and stop billing'
-						: 'Enable your account and resume billing'
+						? 'Disable your account and pause managed access'
+						: 'Enable your account and restore managed access'
 				"
 			>
 				<template #actions>
@@ -145,7 +145,7 @@
 							Your active sites will be suspended immediately and will be
 							deleted after a week.
 						</li>
-						<li>Your account billing will be stopped</li>
+						<li>Managed access from this account will be paused</li>
 					</ul>
 					You can log in later to enable your account. Do you want to continue?
 				</div>
@@ -179,20 +179,13 @@
 					<ul>
 						<li>Your account will be enabled</li>
 						<li>Your suspended sites will become active</li>
-						<li>Your account billing will be resumed</li>
+						<li>Managed access from this account will be restored</li>
 					</ul>
 					Do you want to continue?
 				</div>
 				<ErrorMessage class="mt-2" :message="$resources.enableAccount.error" />
 			</template>
 		</Dialog>
-
-		<AddPrepaidCreditsDialog
-			:showMessage="showMessage"
-			v-if="showAddPrepaidCreditsDialog"
-			v-model="showAddPrepaidCreditsDialog"
-			@success="reloadAccount"
-		/>
 
 		<CommunicationInfoDialog
 			v-if="showCommunicationInfoDialog"
@@ -210,11 +203,9 @@
 import { toast } from 'vue-sonner';
 import { defineAsyncComponent, h } from 'vue';
 import FileUploader from '@/components/FileUploader.vue';
-import { confirmDialog, renderDialog } from '../../../utils/components';
+import { renderDialog } from '../../../utils/components';
 import TFADialog from './TFADialog.vue';
 import TFARecoveryCodesDialog from './TFARecoveryCodesDialog.vue';
-import router from '../../../router';
-import AddPrepaidCreditsDialog from '../../billing/AddPrepaidCreditsDialog.vue';
 import CommunicationInfoDialog from '../../CommunicationInfoDialog.vue';
 
 export default {
@@ -223,7 +214,6 @@ export default {
 		TFADialog,
 		TFARecoveryCodesDialog,
 		FileUploader,
-		AddPrepaidCreditsDialog,
 	},
 	data() {
 		return {
@@ -233,12 +223,8 @@ export default {
 			showProfileEditDialog: false,
 			showEnableAccountDialog: false,
 			showDisableAccountDialog: false,
-			showAddPrepaidCreditsDialog: false,
 			showCommunicationInfoDialog: false,
 			showActiveServersDialog: false,
-			showMessage: false,
-			draftInvoice: {},
-			unpaidInvoices: [] | {},
 		};
 	},
 	computed: {
@@ -294,20 +280,6 @@ export default {
 				this.showEnableAccountDialog = false;
 			},
 		},
-		upcomingInvoice: {
-			url: 'press.api.billing.upcoming_invoice',
-			auto: true,
-			onSuccess(data) {
-				this.draftInvoice = data.upcoming_invoice;
-			},
-		},
-		unPaidInvoices: {
-			url: 'press.api.billing.get_unpaid_invoices',
-			auto: true,
-			onSuccess(data) {
-				this.unpaidInvoices = data;
-			},
-		},
 		hasActiveServers() {
 			return {
 				url: 'press.api.account.has_active_servers',
@@ -335,66 +307,6 @@ export default {
 			toast.success('Your profile was updated successfully');
 		},
 		deactivateAccount(disableAccount2FACode) {
-			const currency = this.$team.doc.currency;
-			const minAmount = currency === 'INR' ? 410 : 5;
-			if (this.draftInvoice && this.draftInvoice.amount_due > minAmount) {
-				const finalizeInvoicesDialog = defineAsyncComponent(
-					() => import('../../billing/FinalizeInvoicesDialog.vue'),
-				);
-				renderDialog(h(finalizeInvoicesDialog));
-			} else if (this.unpaidInvoices) {
-				if (this.unpaidInvoices.length > 1) {
-					this.showDisableAccountDialog = false;
-					if (this.$team.doc.payment_mode === 'Prepaid Credits') {
-						this.showAddPrepaidCreditsDialog = true;
-					} else {
-						confirmDialog({
-							title: 'Multiple unpaid invoices',
-							message:
-								'You have multiple unpaid invoices. Please pay them from the invoices page',
-							primaryAction: {
-								label: 'Go to invoices',
-								variant: 'solid',
-								onClick: ({ hide }) => {
-									router.push({ name: 'BillingInvoices' });
-									hide();
-								},
-							},
-						});
-					}
-				} else {
-					let invoice = this.unpaidInvoices;
-					if (invoice.amount_due > minAmount) {
-						this.showDisableAccountDialog = false;
-						confirmDialog({
-							title: 'Clear Unpaid Invoice',
-							message: `You have an unpaid invoice of ${
-								invoice.currency === 'INR' ? '₹' : '$'
-							} ${
-								invoice.amount_due
-							}. Please clear it before disabling the account.`,
-							primaryAction: {
-								label: 'Settle it now',
-								variant: 'solid',
-								onClick: ({ hide }) => {
-									if (
-										invoice.stripe_invoice_url &&
-										this.$team.doc.payment_mode === 'Card'
-									) {
-										window.open(
-											`/api/method/press.api.client.run_doc_method?dt=Invoice&dn=${invoice.name}&method=stripe_payment_url`,
-										);
-									} else {
-										this.showAddPrepaidCreditsDialog = true;
-									}
-									hide();
-								},
-							},
-						});
-					}
-				}
-			}
-
 			// validate if any active servers
 			if (this.showActiveServersDialog) {
 				const activeServersDialog = defineAsyncComponent(

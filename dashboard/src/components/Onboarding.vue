@@ -100,7 +100,7 @@
 						Your trial is set to expire on
 						<span class="font-medium">
 							{{ $format.date(trialSite.trial_end_date, 'LL') }} </span
-						>. Set up billing now to ensure uninterrupted access to your site.
+						>. Complete your account setup in 3plug to ensure uninterrupted access to your site.
 					</p>
 				</div>
 			</div>
@@ -114,27 +114,27 @@
 					Create
 				</Button>
 			</div>
-			<!-- Step 3 - Complete Billing Setup -->
+			<!-- Step 3 - Complete Account Setup -->
 			<div
 				class="rounded-md"
 				:class="{
 					'pointer-events-none opacity-50': !$team.doc.onboarding.site_created,
 				}"
 			>
-				<div v-if="!isBillingSetupComplete">
+				<div v-if="!isAccountSetupComplete">
 					<div class="flex items-center space-x-2">
 						<TextInsideCircle>3</TextInsideCircle>
-						<span class="text-base font-medium"> Complete billing setup </span>
+						<span class="text-base font-medium"> Complete account setup </span>
 					</div>
 					<div class="pl-7 mt-2" v-if="$team.doc.onboarding.site_created">
 						<p class="text-p-base text-gray-800">
-							Add your billing details and payment method to activate your
-							subscription.You won't be charged until your trial ends on
+							Add your required account details from Settings to finish onboarding
+							for your managed environment. Your trial still ends on
 							<span class="font-medium">
 								{{ $format.date(trialSite.trial_end_date, 'LL') }}
 							</span>
 						</p>
-						<Button class="mt-3" route="/billing"> Complete setup </Button>
+						<Button class="mt-3" :route="{ name: 'SettingsProfile' }"> Open Settings </Button>
 					</div>
 				</div>
 				<div v-else>
@@ -142,7 +142,7 @@
 						<div class="flex items-center space-x-2">
 							<TextInsideCircle>3</TextInsideCircle>
 							<span class="text-base font-medium">
-								Billing setup complete
+								Account setup complete
 							</span>
 						</div>
 						<div
@@ -152,12 +152,7 @@
 						</div>
 					</div>
 					<div class="mt-1.5 pl-7 text-p-base text-gray-800">
-						<span v-if="$team.doc.payment_mode === 'Card'">
-							Automatic billing is enabled
-						</span>
-						<span v-else-if="$team.doc.payment_mode === 'Prepaid Credits'">
-							Account balance: {{ $format.userCurrency($team.doc.balance) }}
-						</span>
+						Required account details are now in place for 3plug onboarding.
 					</div>
 				</div>
 			</div>
@@ -333,8 +328,8 @@ export default {
 		isBillingDetailsSet() {
 			return Boolean(this.$team.doc.billing_details?.name);
 		},
-		isBillingSetupComplete() {
-			return this.isBillingDetailsSet && Boolean(this.$team.doc.payment_mode);
+		isAccountSetupComplete() {
+			return this.isBillingDetailsSet;
 		},
 		minimumAmount() {
 			return this.$team.doc.currency == 'INR' ? 100 : 5;

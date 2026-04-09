@@ -209,3 +209,15 @@ Reason:
 
 * this removes another layer of imported Press surface after confirming the live router no longer needs those files
 * it keeps the cleanup incremental by deleting only files that became orphaned after route reduction
+
+### 2026-04-08
+
+Change:
+
+* removed old invoice-settlement and prepaid-credit behavior from the profile settings flow
+* repointed remaining live billing prompts in alerts, onboarding, and server setup toward the kept settings path
+
+Reason:
+
+* this trims the last obvious user-facing billing-product behavior without deleting shared billing-detail forms that some kept flows still rely on
+* it aligns the visible dashboard language with the current 3plug v1 scope
