@@ -1,77 +1,95 @@
-# 3plug Control
+<div align="center" markdown="1">
 
-3plug Control is Triotek's Press-based control plane.
+<img src="https://frappe.io/files/cloud9c3ae6.png" alt="Press logo" width="80"/>
+<h1>Press</h1>
 
-The direction is not to rebuild Press behavior from scratch beside Press.
+**Full Service Cloud Hosting For The Frappe Stack - Powers Frappe Cloud**
 
-The direction is:
+[![codecov](https://codecov.io/gh/frappe/press/branch/master/graph/badge.svg?token=0puvH0jUx9)](https://codecov.io/gh/frappe/press)
+[![unittests](https://github.com/frappe/press/actions/workflows/main.yaml/badge.svg)](https://github.com/frappe/press/actions/workflows/main.yaml)
 
-* use Press as the base
-* adapt it into Triotek's 3plug product
-* narrow the first operating model to one managed server
-* keep one 3plug deployment per managed server for clearer security isolation
-* keep Bench-first lifecycle management as the first product scope
-* define the product clearly before copying or reshaping large parts of Press
+</div>
 
-## Base reference
+<div align="center">
+	<img width="889" alt="Managed press" src="https://github.com/user-attachments/assets/2675e828-d5ed-4527-a038-7742a5cfa3db" />
+</div>
+<br />
+<div align="center">
+	<a href="https://frappe.io/press">Website</a>
+	-
+	<a href="https://docs.frappe.io/cloud/">Documentation</a>
+</div>
 
-Local base reference:
+## Press
 
-* `../frappe-press`
+Press is a 100% open-source cloud hosting for the Frappe stack.
 
-Important reference areas:
+### Motivation
 
-* `../frappe-press/press`
-* `../frappe-press/dashboard`
-* `../frappe-press/press/agent.py`
-* `../frappe-press/press/press/doctype`
+We originally hosted our customer sites on an internal cloud platform called "Central," designed to automate creating and hosting sites when customers signed up on our website. Central was primarily built to host ERPNext, our flagship product. However, as our customers' needs evolved, they began requesting the ability to host custom applications, a feature that was not a priority in Central.
 
-## What 3plug v1 is
+Additionally, customers lacked full control over their servers—no SSH access, no ability to manage updates, and limited flexibility in interacting with their environment. This led us to launch Frappe Cloud, to build a self-serve cloud platform that would empower our customers with complete control over their hosting experience.
 
-The first real 3plug release should be a Press-style operator platform for one managed server.
+### Key Features
 
-It should let Triotek:
+- **Multitenancy Made Easy**: Press simplifies multi-tenancy by enabling multiple sites on a single platform, each with its app version, allowing independent updates and minimal downtime, even for large sites.
+- **Dashboard**: The dashboard provides a centralized interface to manage apps, servers, sites, billing, backups, and updates, offering real-time insights and streamlined control of complex operations.
 
-* register and inspect the managed server
-* register and inspect multiple benches on that server
-* create and inspect multiple sites on those benches
-* manage approved app sources and installable stacks
-* run actions through recorded jobs instead of shell-only foreground execution
+- **Permissions**: Granular access controls let team owners manage roles and resources efficiently, ensuring users have access only to relevant information and actions for their roles.
 
-## First product adaptation
+- **Simplified Management**: Press streamlines site management with automated backups, real-time monitoring, role-based access, and easy scaling, making it ideal for growing Frappe environments.
 
-Press is broader and more cloud-heavy.
+- **Billing**: Automated billing supports daily or monthly subscriptions, flexible payment methods, wallet credits, and ERP integration, simplifying customer invoicing and payments.
 
-3plug Control should start with:
+- **Marketplace**: The marketplace allows developers to list apps with flexible pricing models, ensures compatibility checks, and provides a streamlined system for sales and payouts.
 
-* one 3plug deployment managing one server
-* many benches on that server
-* many sites on those benches
-* Triotek-controlled app sources and stacks
+<details>
+  <summary>Screenshots</summary>
 
-## Workspace shape
+![Dashboard](https://github.com/user-attachments/assets/1904fa3e-39aa-4151-8276-d3cc622ed582)
+![Permissions](https://github.com/user-attachments/assets/60da6b5e-8f48-4483-99cf-67886ccc8bd6)
+![Bench Group Update](https://github.com/user-attachments/assets/2be6b0ee-084d-4949-8d13-218b5a218d3d)
+![Marketplace](https://github.com/user-attachments/assets/2f325737-7929-485d-a670-549f986fd07e)
 
-This repo now mirrors the broad Press split:
+</details>
 
-* `app/` for backend/Frappe-app adaptation notes and starting points
-* `dashboard/` for operator UI adaptation notes and starting points
-* `agent/` for runner/agent adaptation notes and starting points
-* `docs/` for the 3plug-specific Press adaptation plan
-* `src/threeplugpro_control/` for lightweight Python package scaffolding as implementation begins
+### Under the Hood
 
-## What comes next
+- [**Frappe Framework**](https://github.com/frappe/frappe): A full-stack web application framework written in Python and Javascript. The framework provides a robust foundation for building web applications, including a database abstraction layer, user authentication, and a REST API.
 
-1. lock the keep/defer map for Press doctypes and dashboard areas
-2. define the first 3plug doctypes from the Press model
-3. define the first dashboard pages from the Press dashboard model
-4. define the first agent/job flows for single-server Bench operations
-5. copy or port only the Press slices needed for that first scope
+- [**Frappe UI**](https://github.com/frappe/frappe-ui): A Vue-based UI library, to provide a modern user interface. The Frappe UI library provides a variety of components that can be used to build single-page applications on top of the Frappe Framework.
 
-See:
+- [**Agent**](https://github.com/frappe/agent): A flask app designed to work along with Press. It provides a CLI interface for Press to communicate with the sites and benches.
 
-* `docs/V1_PRODUCT.md`
-* `docs/SINGLE_SERVER_ADAPTATION.md`
-* `docs/COPY_FROM_PRESS_PLAN.md`
-* `docs/PRESS_STUDY.md`
-* `docs/PRESS_KEEP_DEFER_MAP.md`
-* `docs/BACKEND_IMPLEMENTATION_MAP.md`
+- [**Docker**](https://www.docker.com): An open-source platform that enables developers to build, package, and deploy applications in lightweight, portable containers.
+
+- [**Ansible**](https://www.ansible.com): An open-source IT automation tool that simplifies the management, configuration, and deployment of systems and applications.
+
+## Setup
+
+To self host or to setup Press locally follow the steps in the [Local Development Environment Setup Guide](https://docs.frappe.io/cloud/local-fc-setup).
+
+### Migrate to Frappe Cloud
+
+If you are planning to migrate your site to Frappe Cloud, please refer to [this YouTube video](https://www.youtube.com/watch?v=Xb9QHnUrIEk)
+
+### Pre-commit
+
+There's a [pre-commit](https://pre-commit.com/) hook included in the repo. You can set it up by running [setup-pre-commit.sh](https://github.com/frappe/press/blob/develop/setup-pre-commit.sh) script.
+
+## Learn and connect
+
+- [Telegram Public Group](https://t.me/frappecloud)
+- [Discuss Forum](https://discuss.frappe.io/c/frappe-cloud/77)
+- [Documentation](https://docs.frappe.io/cloud)
+
+<br/>
+<br/>
+<div align="center" style="padding-top: 0.75rem;">
+	<a href="https://frappe.io" target="_blank">
+		<picture>
+			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/Frappe-white.png">
+			<img src="https://frappe.io/files/Frappe-black.png" alt="Frappe Technologies" height="28"/>
+		</picture>
+	</a>
+</div>
