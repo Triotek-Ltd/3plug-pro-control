@@ -133,8 +133,6 @@ class Team(Document):
 		"child_team_members",
 		"country",
 		"currency",
-		"payment_mode",
-		"default_payment_method",
 		"skip_backups",
 		"is_saas_user",
 		"billing_name",
@@ -152,8 +150,6 @@ class Team(Document):
 		"razorpay_enabled",
 		"account_request",
 		"partner_status",
-		"receive_budget_alerts",
-		"monthly_alert_threshold",
 		"company_name",
 		"hybrid_servers_enabled",
 		"relaxed_permissions",
@@ -182,27 +178,9 @@ class Team(Document):
 		doc.can_request_access = has_role("Press Support Agent")
 		doc.valid_teams = get_valid_teams_for_user(frappe.session.user)
 		doc.onboarding = self.get_onboarding()
-		doc.billing_info = self.billing_info()
-		doc.billing_details = self.billing_details()
 		doc.trial_sites = self.get_trial_sites()
 		doc.pending_site_request = self.get_pending_saas_site_request()
-		doc.payment_method = frappe.db.get_value(
-			"Stripe Payment Method",
-			{"team": self.name, "name": self.default_payment_method},
-			[
-				"name",
-				"last_4",
-				"name_on_card",
-				"expiry_month",
-				"expiry_year",
-				"brand",
-				"stripe_mandate_id",
-			],
-			as_dict=True,
-		)
 		doc.communication_infos = self.get_communication_infos()
-		doc.receive_budget_alerts = self.receive_budget_alerts
-		doc.monthly_alert_threshold = self.monthly_alert_threshold
 		doc.is_binlog_indexer_enabled = not frappe.db.get_single_value(
 			"Press Settings", "disable_binlog_indexer_service", cache=True
 		)

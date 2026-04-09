@@ -571,7 +571,6 @@ def _get():
 		"partner_email": team_doc.partner_email or "",
 		"partner_billing_name": partner_billing_name,
 		"number_of_sites": number_of_sites,
-		"billing_info": team_doc.billing_info(),
 	}
 
 
@@ -1116,7 +1115,7 @@ def user_permissions():
 	result = {
 		"owner": is_owner,
 		"admin": is_admin,
-		"billing": is_admin or permissions["allow_billing"],
+		"billing": False,
 		"webhook": is_admin or permissions["allow_webhook_configuration"],
 		"apps": is_admin or permissions["allow_apps"],
 		"partner": is_admin or permissions["allow_partner"],

@@ -320,3 +320,16 @@ Reason:
 
 * the control plane should not treat billing setup as the condition for basic operational access
 * this moves `Team` behavior closer to 3plug's ops-first model while leaving the deeper billing engine for a later focused pass
+
+### 2026-04-08
+
+Change:
+
+* removed payment and budget payload fields from `Team.get_doc` so dashboard sessions no longer receive billing-specific team data
+* removed `billing_info` from the account bootstrap payload and forced the exposed `billing` permission flag to `false`
+* deleted orphaned dashboard components that only served card, invoice, and budget-alert payment flows
+
+Reason:
+
+* these payloads and components were no longer part of live 3plug-control flows after the earlier payment cleanup
+* trimming them now reduces hidden coupling before we move into the forensic layer
