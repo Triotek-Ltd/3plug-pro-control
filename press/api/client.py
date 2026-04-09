@@ -65,7 +65,6 @@ ALLOWED_DOCTYPES = [
 	"Marketplace App Version",
 	"Marketplace App Plan",
 	"App Release",
-	"Payout Order",
 	"App Patch",
 	"Product Trial",
 	"Press Notification",

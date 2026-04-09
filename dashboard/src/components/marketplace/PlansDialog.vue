@@ -21,7 +21,7 @@
 					></FormControl>
 				</div>
 				<div class="mb-8">
-					<h3 class="mb-4 text-lg font-semibold">Subscription Price</h3>
+					<h3 class="mb-4 text-lg font-semibold">Plan Price</h3>
 					<div class="grid grid-cols-2 gap-2">
 						<FormControl
 							label="Price INR"

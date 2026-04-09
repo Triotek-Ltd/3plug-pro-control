@@ -384,3 +384,16 @@ Reason:
 
 * these were some of the last operator-facing payment references still hanging around in the dashboard shell
 * reducing them now keeps the UI aligned with the infrastructure-only 3plug-control scope
+
+### 2026-04-09
+
+Change:
+
+* removed `Payout Order` from the client API allowlist
+* deleted the orphaned `PayoutTable.vue` component
+* changed marketplace plan copy from `Subscription Price` to `Plan Price`
+
+Reason:
+
+* these were lingering marketplace payout and payment-era terms after the broader cleanup
+* this makes the remaining operator-facing surface more consistent before we declare the payment cleanup substantially complete
