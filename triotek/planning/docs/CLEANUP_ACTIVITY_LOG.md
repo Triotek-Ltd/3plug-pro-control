@@ -245,3 +245,15 @@ Reason:
 
 * the product decision is to keep M-Pesa support
 * cleanup should continue to target generic deferred Press billing surfaces without removing the regional payment path we still want
+
+### 2026-04-08
+
+Change:
+
+* added a payment scope map to separate kept M-Pesa and account-detail code from deferred generic Press billing code
+* collapsed deferred checkout and subscription routes to the generic deferred billing page
+
+Reason:
+
+* payment cleanup now needs a clearer boundary than the earlier broad billing bucket
+* checkout and subscription are still generic deferred Press product flows and should not keep shaping 3plug v1

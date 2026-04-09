@@ -114,7 +114,7 @@ let router = createRouter({
 		{
 			path: '/checkout/:secretKey',
 			name: 'Checkout',
-			component: () => import('./pages/Checkout.vue'),
+			component: deferredBillingPage,
 			props: true,
 			meta: {
 				isLoginPage: true,
@@ -123,7 +123,7 @@ let router = createRouter({
 		{
 			path: '/subscription/:site?',
 			name: 'Subscription',
-			component: () => import('./pages/Subscription.vue'),
+			component: deferredBillingPage,
 			props: true,
 			meta: {
 				hideSidebar: true,
