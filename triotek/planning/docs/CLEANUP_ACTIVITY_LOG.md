@@ -221,3 +221,15 @@ Reason:
 
 * this trims the last obvious user-facing billing-product behavior without deleting shared billing-detail forms that some kept flows still rely on
 * it aligns the visible dashboard language with the current 3plug v1 scope
+
+### 2026-04-08
+
+Change:
+
+* deleted another orphaned batch of deferred billing support dialogs and M-Pesa helper components
+* kept the shared settings and plan-management billing forms that still have live imports
+
+Reason:
+
+* these files were no longer imported by reachable dashboard flows after the route and prompt cleanup passes
+* this reduces more Press-specific payment surface while preserving the smaller set still needed for kept account-detail flows
