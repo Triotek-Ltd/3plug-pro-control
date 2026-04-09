@@ -8,29 +8,36 @@ import { sentryVitePlugin } from '@sentry/vite-plugin';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const localVerifyBuild = process.env.LOCAL_VERIFY_BUILD === '1';
 const sentryConfigured =
 	Boolean(process.env.SENTRY_URL) &&
 	Boolean(process.env.SENTRY_ORG) &&
 	Boolean(process.env.SENTRY_PROJECT) &&
 	Boolean(process.env.SENTRY_AUTH_TOKEN) &&
+	!localVerifyBuild &&
 	process.env.DISABLE_SENTRY_PLUGIN !== '1';
 
 const plugins = [
 	frappeui({
-		frappeProxy: true,
+		frappeProxy: !localVerifyBuild,
 		lucideIcons: true,
-		jinjaBootData: true,
-		buildConfig: {
-			outDir: '../press/public/dashboard',
-			indexHtmlPath: '../press/www/dashboard.html',
-			emptyOutDir: true,
-			sourcemap: true,
-		},
+		jinjaBootData: !localVerifyBuild,
+		buildConfig: localVerifyBuild
+			? false
+			: {
+					outDir: '../press/public/dashboard',
+					indexHtmlPath: '../press/www/dashboard.html',
+					emptyOutDir: true,
+					sourcemap: true,
+			  },
 	}),
 	vue(),
 	vueJsx(),
-	pluginRewriteAll(),
 ];
+
+if (!localVerifyBuild) {
+	plugins.push(pluginRewriteAll());
+}
 
 if (sentryConfigured) {
 	plugins.push(
@@ -65,5 +72,8 @@ export default defineConfig({
 	},
 	build: {
 		chunkSizeWarningLimit: 2000,
+		outDir: localVerifyBuild ? 'dist-verify' : undefined,
+		emptyOutDir: localVerifyBuild ? true : undefined,
+		sourcemap: !localVerifyBuild,
 	},
 });
