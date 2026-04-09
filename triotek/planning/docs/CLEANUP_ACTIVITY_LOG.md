@@ -308,3 +308,15 @@ Reason:
 
 * these update-time subscription writes are commercial bookkeeping rather than core server or site operations
 * removing them reduces backend payment churn without forcing a deeper subscription-model rewrite in the same pass
+
+### 2026-04-08
+
+Change:
+
+* removed payment-based `Team` gating for site creation and paid-app eligibility
+* changed onboarding and login-route completion rules so they no longer depend on payment mode
+
+Reason:
+
+* the control plane should not treat billing setup as the condition for basic operational access
+* this moves `Team` behavior closer to 3plug's ops-first model while leaving the deeper billing engine for a later focused pass

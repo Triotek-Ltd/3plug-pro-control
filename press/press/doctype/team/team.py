@@ -1034,61 +1034,10 @@ class Team(Document):
 			why = "You cannot create a new site as your account is disabled"
 			return (False, why)
 
-		if self.free_account or self.parent_team or self.billing_team:
-			return allow
-
-		if not self.payment_mode:
-			why = "You cannot create a new site without setting a valid payment method."
-			return (False, why)
-
-		if self.payment_mode == "Prepaid Credits":
-			# if balance is greater than 0 or have atleast 2 paid invoices, then allow to create site
-			if (
-				self.get_balance() > 0
-				or frappe.db.exists(
-					"Invoice",
-					{
-						"team": self.name,
-						"type": "Prepaid Credits",
-						"status": "Paid",
-						"amount_paid": ("!=", 0),
-					},
-				)
-				or frappe.db.count(
-					"Invoice",
-					{
-						"team": self.name,
-						"status": "Paid",
-						"amount_paid": ("!=", 0),
-					},
-				)
-				> 2
-			):
-				return allow
-			why = "Cannot create site due to insufficient balance"
-
-		if self.payment_mode == "Card":
-			if self.default_payment_method:
-				return allow
-			why = "Cannot create site without adding a card"
-
-		if self.payment_mode == "UPI Autopay":
-			if frappe.db.exists(
-				"Razorpay Mandate",
-				{"team": self.name, "status": "Active", "is_default": 1},
-			):
-				return allow
-			why = "Cannot create site without an active UPI Autopay mandate"
-
-		return (False, why)
+		return allow
 
 	def can_install_paid_apps(self):
-		if self.free_account or self.billing_team or self.payment_mode:
-			return True
-
-		return bool(
-			frappe.db.exists("Invoice", {"team": self.name, "amount_paid": (">", 0), "status": "Paid"})
-		)
+		return True
 
 	def billing_info(self):
 		micro_debit_charge_field = (
@@ -1153,24 +1102,18 @@ class Team(Document):
 		return None
 
 	def is_payment_mode_set(self):
-		if self.payment_mode in ("Prepaid Credits", "Paid By Partner") or (
-			self.payment_mode == "Card" and self.default_payment_method and self.billing_address
-		):
-			return True
 		return False
 
 	def get_onboarding(self):
 		site_created = frappe.db.count("Site", {"team": self.name}) > 0
 		saas_site_request = self.get_pending_saas_site_request()
-		is_payment_mode_set = self.is_payment_mode_set()
-		if not is_payment_mode_set and self.parent_team:
-			parent_team = frappe.get_cached_doc("Team", self.parent_team)
-			is_payment_mode_set = parent_team.is_payment_mode_set()
+		has_profile_context = bool(self.country or self.currency or self.company_name)
 
 		complete = False
 		if (
 			self.skip_onboarding
-			or is_payment_mode_set
+			or site_created
+			or has_profile_context
 			or frappe.db.get_value("User", self.user, "user_type") == "System User"
 		):
 			complete = True
@@ -1183,12 +1126,12 @@ class Team(Document):
 				"is_saas_user": bool(self.via_erpnext or self.is_saas_user),
 				"saas_site_request": saas_site_request,
 				"complete": complete,
-				"is_payment_mode_set": is_payment_mode_set,
+				"is_payment_mode_set": False,
 			}
 		)
 
 	def get_route_on_login(self):
-		if self.payment_mode or self.skip_onboarding:
+		if self.skip_onboarding or frappe.db.count("Site", {"team": self.name}) > 0:
 			return "/sites"
 
 		if self.is_saas_user:
