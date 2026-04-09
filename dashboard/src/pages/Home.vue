@@ -9,7 +9,7 @@
 						label: 'Managed Server',
 						route: { name: 'Register Managed Server' },
 					},
-					{ label: 'Benches', route: { name: 'New Release Group' } },
+					{ label: 'Bench', route: { name: 'New Release Group' } },
 				]"
 			>
 				<Button variant="solid" label="Create new">

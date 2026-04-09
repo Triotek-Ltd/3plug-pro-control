@@ -121,24 +121,24 @@ export default {
 		],
 		primaryAction({ listResource: servers }) {
 			return {
-				label: 'New Server',
+				label: 'Register Managed Server',
 				variant: 'solid',
 				slots: {
 					prefix: icon('plus'),
 				},
 				onClick() {
-					router.push({ name: 'New Server' });
+					router.push({ name: 'Register Managed Server' });
 				},
 			};
 		},
 		banner({ listResource: servers }) {
 			if (!servers.data?.length) {
 				return {
-					title: 'Learn how to create a new dedicated server',
+					title: 'Register the first managed server for this 3plug deployment',
 					button: {
-						label: 'Read docs',
-						variant: 'outline',
-						link: 'https://docs.frappe.io/cloud/servers/new',
+						label: 'Register Managed Server',
+						variant: 'solid',
+						route: { name: 'Register Managed Server' },
 					},
 				};
 			}

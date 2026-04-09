@@ -93,7 +93,7 @@ const navigation = computed(() => {
 			spacer: true,
 			route: onboardingComplete ? '/servers' : '/enable-servers',
 			isActive:
-				['New Server'].includes(routeName) ||
+				['New Server', 'Register Managed Server'].includes(routeName) ||
 				routeName.startsWith('Server') ||
 				routeName === 'Enable Servers',
 			disabled: enforce2FA,

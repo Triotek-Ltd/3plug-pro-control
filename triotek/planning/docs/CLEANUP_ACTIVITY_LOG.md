@@ -487,3 +487,15 @@ Reason:
 
 * 3plug v1 needs an explicit one-server onboarding path, not just a cleaned dashboard shell around the old cloud-era `New Server` page
 * this makes the main product entry point match the actual deployment model we decided to build
+
+### 2026-04-09
+
+Change:
+
+* switched the main server list CTA and empty-state banner to `Register Managed Server`
+* updated sidebar server-route highlighting to include the new managed registration flow
+* tightened home quick-create wording from `Benches` to `Bench` so the operator actions read as concrete next steps
+
+Reason:
+
+* the product should keep steering operators into the single-server 3plug flow we chose, instead of drifting back toward the older generic Press server-creation path
