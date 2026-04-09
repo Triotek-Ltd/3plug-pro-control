@@ -1,9 +1,5 @@
 <template>
-	<AlertBanner :title="outstandingBalanceMessage" type="warning">
-		<Button class="ml-auto" route="/billing" variant="outline">
-			Pay Now
-		</Button>
-	</AlertBanner>
+	<AlertBanner :title="outstandingBalanceMessage" type="warning" />
 </template>
 <script>
 import AlertBanner from './AlertBanner.vue';
@@ -22,9 +18,9 @@ export default {
 	},
 	computed: {
 		outstandingBalanceMessage() {
-			return `Your account currently has an outstanding balance of ${this.$format.userCurrency(
+			return `A legacy billing balance alert from Press is still present for ${this.$format.userCurrency(
 				this.amount,
-			)}. Please settle the balance to avoid any site suspension.`;
+			)}. Billing self-service is deferred in 3plug v1.`;
 		},
 	},
 };

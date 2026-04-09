@@ -49,17 +49,6 @@
 		</ListItem>
 		<div>
 			<ListItem
-				title="Become Marketplace Developer"
-				subtitle="Become a marketplace app publisher"
-				v-if="!$team.doc.is_developer"
-			>
-				<template #actions>
-					<Button @click="confirmPublisherAccount">
-						<span>Become a Publisher</span>
-					</Button>
-				</template>
-			</ListItem>
-			<ListItem
 				:title="user.is_2fa_enabled ? 'Disable 2FA' : 'Enable 2FA'"
 				:subtitle="
 					user.is_2fa_enabled
@@ -416,38 +405,6 @@ export default {
 			}
 			this.$resources.disableAccount.submit({
 				totp_code: disableAccount2FACode,
-			});
-		},
-		confirmPublisherAccount() {
-			confirmDialog({
-				title: 'Become a marketplace app developer?',
-				message:
-					'You will be able to publish apps to our Marketplace upon confirmation.',
-				onSuccess: ({ hide }) => {
-					toast.promise(
-						this.$team.setValue.submit(
-							{
-								is_developer: 1,
-							},
-							{
-								onSuccess: () => {
-									hide();
-									this.$router.push({
-										name: 'Marketplace App List',
-									});
-								},
-								onError(e) {
-									console.error(e);
-								},
-							},
-						),
-						{
-							success: 'You can now publish apps to our Marketplace',
-							error: 'Failed to mark you as a developer',
-							loading: 'Making you a developer...',
-						},
-					);
-				},
 			});
 		},
 	},

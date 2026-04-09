@@ -103,3 +103,20 @@ Reason:
 Commit:
 
 * `b283fe3` `Reduce marketplace route generation`
+
+### 2026-04-08
+
+Change:
+
+* removed the marketplace-developer prompt from profile settings
+* neutralized referral and signup messaging in the profile area
+* stopped legacy billing alerts from linking users into deferred billing pages
+
+Reason:
+
+* this is another low-risk UI surface reduction pass
+* it removes operator-facing prompts that still pull users toward deferred Press product flows
+
+Commit:
+
+* pending

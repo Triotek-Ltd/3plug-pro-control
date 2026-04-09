@@ -1,12 +1,8 @@
 <template>
 	<AlertBanner
-		title="Your card has expired. Please update your payment details."
+		title="A legacy billing alert is still present from Press. Billing self-service is deferred in 3plug v1."
 		type="warning"
-	>
-		<Button class="ml-auto" route="/billing" variant="outline">
-			Update Card
-		</Button>
-	</AlertBanner>
+	/>
 </template>
 <script>
 import AlertBanner from './AlertBanner.vue';
