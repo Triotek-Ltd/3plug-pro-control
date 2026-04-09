@@ -8,22 +8,32 @@ import { sentryVitePlugin } from '@sentry/vite-plugin';
 import dotenv from 'dotenv';
 dotenv.config();
 
-export default defineConfig({
-	plugins: [
-		frappeui({
-			frappeProxy: true,
-			lucideIcons: true,
-			jinjaBootData: true,
-			buildConfig: {
-				outDir: '../press/public/dashboard',
-				indexHtmlPath: '../press/www/dashboard.html',
-				emptyOutDir: true,
-				sourcemap: true,
-			},
-		}),
-		vue(),
-		vueJsx(),
-		pluginRewriteAll(),
+const sentryConfigured =
+	Boolean(process.env.SENTRY_URL) &&
+	Boolean(process.env.SENTRY_ORG) &&
+	Boolean(process.env.SENTRY_PROJECT) &&
+	Boolean(process.env.SENTRY_AUTH_TOKEN) &&
+	process.env.DISABLE_SENTRY_PLUGIN !== '1';
+
+const plugins = [
+	frappeui({
+		frappeProxy: true,
+		lucideIcons: true,
+		jinjaBootData: true,
+		buildConfig: {
+			outDir: '../press/public/dashboard',
+			indexHtmlPath: '../press/www/dashboard.html',
+			emptyOutDir: true,
+			sourcemap: true,
+		},
+	}),
+	vue(),
+	vueJsx(),
+	pluginRewriteAll(),
+];
+
+if (sentryConfigured) {
+	plugins.push(
 		sentryVitePlugin({
 			url: process.env.SENTRY_URL,
 			org: process.env.SENTRY_ORG,
@@ -32,7 +42,11 @@ export default defineConfig({
 			authToken: process.env.SENTRY_AUTH_TOKEN,
 			errorHandler: (err) => console.warn(err),
 		}),
-	],
+	);
+}
+
+export default defineConfig({
+	plugins,
 	server: {
 		allowedHosts: true,
 	},
