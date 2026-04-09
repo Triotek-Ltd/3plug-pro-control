@@ -1,11 +1,11 @@
 <template>
 	<component
-		:is="column.link ? 'a' : 'div'"
-		:href="column.link ? column.link(value, row) : undefined"
-		:target="column.link ? '_blank' : undefined"
+		:is="resolvedLink ? 'a' : 'div'"
+		:href="resolvedLink || undefined"
+		:target="resolvedLink ? '_blank' : undefined"
 		class="flex items-center"
 		:class="{
-			'text-gray-900 outline-gray-400 hover:text-gray-700': column.link,
+			'text-gray-900 outline-gray-400 hover:text-gray-700': resolvedLink,
 			'justify-end': column.align === 'right',
 			'justify-center': column.align === 'center',
 		}"
@@ -107,6 +107,10 @@ export default {
 				return this.$format.date(this.value, 'lll');
 			}
 			return this.$format.date(this.value, 'll');
+		},
+		resolvedLink() {
+			if (!this.column.link) return null;
+			return this.column.link(this.value, this.row);
 		},
 		icon() {
 			return this.column.type === 'Icon' && this.column.Icon(this.value);

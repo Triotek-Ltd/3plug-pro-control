@@ -21,9 +21,19 @@
 					<p class="text-xs uppercase tracking-wide text-gray-500">
 						{{ item.label }}
 					</p>
-					<p class="mt-1 break-all text-sm text-gray-900">
+					<component
+						:is="item.link ? 'a' : 'p'"
+						:href="item.link ? item.link.route : undefined"
+						:target="item.link?.external ? '_blank' : undefined"
+						class="mt-1 break-all text-sm"
+						:class="
+							item.link
+								? 'text-blue-700 underline decoration-blue-300 underline-offset-2'
+								: 'text-gray-900'
+						"
+					>
 						{{ item.value || 'Not recorded' }}
-					</p>
+					</component>
 				</div>
 			</div>
 		</div>
@@ -35,9 +45,19 @@
 					<p class="text-xs uppercase tracking-wide text-gray-500">
 						{{ item.label }}
 					</p>
-					<p class="mt-1 break-all text-sm text-gray-900">
+					<component
+						:is="item.link ? 'a' : 'p'"
+						:href="item.link ? item.link.route : undefined"
+						:target="item.link?.external ? '_blank' : undefined"
+						class="mt-1 break-all text-sm"
+						:class="
+							item.link
+								? 'text-blue-700 underline decoration-blue-300 underline-offset-2'
+								: 'text-gray-900'
+						"
+					>
 						{{ item.value || 'Not recorded' }}
-					</p>
+					</component>
 				</div>
 			</div>
 		</div>
@@ -60,6 +80,13 @@
 
 <script setup>
 import { computed } from 'vue';
+import {
+	getDeskDocumentRoute,
+	getForensicDocumentRoute,
+	getForensicJobRoute,
+	getForensicPrimaryTargetLink,
+	getForensicSourceLink,
+} from '../../utils/forensics';
 
 const props = defineProps({
 	document: {
@@ -74,20 +101,79 @@ const primaryFacts = computed(() => [
 	{ label: 'Event Type', value: document.value.event_type },
 	{ label: 'Status', value: document.value.status },
 	{ label: 'Target Type', value: document.value.document_type },
-	{ label: 'Target Name', value: document.value.document_name },
+	{
+		label: 'Target Name',
+		value: document.value.document_name,
+		link: getForensicPrimaryTargetLink(document.value),
+	},
 	{ label: 'Source Type', value: document.value.source_doctype },
-	{ label: 'Source Name', value: document.value.source_name },
+	{
+		label: 'Source Name',
+		value: document.value.source_name,
+		link: getForensicSourceLink(document.value),
+	},
 	{ label: 'Actor', value: document.value.actor },
 	{ label: 'Recorded At', value: document.value.creation },
 ]);
 
 const contextFacts = computed(() => [
 	{ label: 'Team', value: document.value.team },
-	{ label: 'Site', value: document.value.site },
-	{ label: 'Bench', value: document.value.bench },
+	{
+		label: 'Site',
+		value: document.value.site,
+		link: document.value.site
+			? {
+					label: document.value.site,
+					route: getForensicDocumentRoute('Site', document.value.site),
+					external: false,
+			  }
+			: null,
+	},
+	{
+		label: 'Bench',
+		value: document.value.bench,
+		link: document.value.bench
+			? {
+					label: document.value.bench,
+					route: getForensicDocumentRoute('Bench', document.value.bench),
+					external: false,
+			  }
+			: null,
+	},
 	{ label: 'Server Type', value: document.value.server_type },
-	{ label: 'Server', value: document.value.server },
-	{ label: 'Job', value: document.value.job },
+	{
+		label: 'Server',
+		value: document.value.server,
+		link: (() => {
+			if (!document.value.server || !document.value.server_type) return null;
+			const route =
+				getForensicDocumentRoute(document.value.server_type, document.value.server) ||
+				getDeskDocumentRoute(document.value.server_type, document.value.server);
+			if (!route) return null;
+			return {
+				label: document.value.server,
+				route,
+				external: !getForensicDocumentRoute(
+					document.value.server_type,
+					document.value.server,
+				),
+			};
+		})(),
+	},
+	{
+		label: 'Job',
+		value: document.value.job,
+		link: (() => {
+			if (!document.value.job) return null;
+			const route = getForensicJobRoute(document.value);
+			if (!route) return null;
+			return {
+				label: document.value.job,
+				route,
+				external: false,
+			};
+		})(),
+	},
 	{ label: 'Owner', value: document.value.owner },
 	{ label: 'Modified By', value: document.value.modified_by },
 ]);

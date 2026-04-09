@@ -435,3 +435,16 @@ Reason:
 
 * the first two slices covered agent jobs and activity logs well, but higher-level failure summaries were still underrepresented
 * adding these sources makes investigations more useful for bench and server operations without introducing noisy low-level capture
+
+### 2026-04-09
+
+Change:
+
+* added direct navigation from forensic records back to related sites, benches, servers, and contextual job pages
+* updated the forensic detail view to surface linked primary targets, source records, and operational context
+* hardened shared list rendering so rows only become clickable when a valid link actually exists
+
+Reason:
+
+* investigations should move directly from evidence to the affected infrastructure record instead of forcing operators to search manually
+* this makes the forensic layer feel like an investigation hub rather than a passive event archive

@@ -1,6 +1,7 @@
 import { createResource } from 'frappe-ui';
 import { unparse } from 'papaparse';
 import { icon } from '../../utils/components';
+import { getForensicDocumentRoute, getForensicJobRoute } from '../../utils/forensics';
 
 function getSeverityTheme(value) {
 	return {
@@ -41,6 +42,9 @@ export function getForensicColumns() {
 				}
 				return row.document_type ? `${row.document_type} ${value}` : value;
 			},
+			link(value, row) {
+				return getForensicDocumentRoute(row.document_type, row.document_name);
+			},
 		},
 		{
 			label: 'Actor',
@@ -53,6 +57,14 @@ export function getForensicColumns() {
 			width: 0.8,
 			format(value) {
 				return value || '';
+			},
+		},
+		{
+			label: 'Job',
+			fieldname: 'job',
+			width: 0.8,
+			link(value, row) {
+				return getForensicJobRoute(row);
 			},
 		},
 		{
