@@ -9,3 +9,5 @@ Important references:
 * `planning/docs/PRESS_STUDY.md`
 * `planning/docs/PRESS_KEEP_DEFER_MAP.md`
 * `planning/docs/BACKEND_IMPLEMENTATION_MAP.md`
+* `planning/docs/PRESS_MODULE_CLASSIFICATION.md`
+* `planning/docs/FIRST_CLEANUP_PASS.md`
