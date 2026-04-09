@@ -185,3 +185,15 @@ Reason:
 
 * this reduces more imported Press surface without risking named-route breakage in existing code
 * it keeps the route tree stable while trimming deferred dashboard dependencies one layer deeper
+
+### 2026-04-08
+
+Change:
+
+* deleted the first batch of deferred billing and partner page/component files that are no longer imported by the live router
+* kept shared lower-level billing and partner support code in place for later passes
+
+Reason:
+
+* this is the first actual deferred dashboard file-removal pass after route isolation
+* limiting deletion to now-unreferenced route-endpoint files keeps the cleanup aggressive enough to matter but still controlled
