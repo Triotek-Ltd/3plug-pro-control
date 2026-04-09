@@ -1261,20 +1261,6 @@ export default {
 						throw new DashboardError('Please select a region');
 					} else if (!server.app_plan) {
 						throw new DashboardError('Please select an Unified Server Plan');
-					} else if (Object.keys(this.$team.doc.billing_details).length === 0) {
-						throw new DashboardError(
-							"You don't have billing details added. Please add billing details from settings to continue.",
-						);
-					} else if (
-						this.$team.doc.servers_enabled == 0 &&
-						((this.$team.doc.currency == 'USD' &&
-							this.$team.doc.balance < 200) ||
-							(this.$team.doc.currency == 'INR' &&
-								this.$team.doc.balance < 16000))
-					) {
-						throw new DashboardError(
-							'You need to have $200 worth of credits to create a server.',
-						);
 					}
 				},
 				onSuccess(server) {
@@ -1297,20 +1283,6 @@ export default {
 						throw new DashboardError('Please select an App Server Plan');
 					} else if (!server.db_plan) {
 						throw new DashboardError('Please select a Database Server Plan');
-					} else if (Object.keys(this.$team.doc.billing_details).length === 0) {
-						throw new DashboardError(
-							"You don't have billing details added. Please add billing details from settings to continue.",
-						);
-					} else if (
-						this.$team.doc.servers_enabled == 0 &&
-						((this.$team.doc.currency == 'USD' &&
-							this.$team.doc.balance < 200) ||
-							(this.$team.doc.currency == 'INR' &&
-								this.$team.doc.balance < 16000))
-					) {
-						throw new DashboardError(
-							'You need to have $200 worth of credits to create a server.',
-						);
 					}
 				},
 				onSuccess(server) {

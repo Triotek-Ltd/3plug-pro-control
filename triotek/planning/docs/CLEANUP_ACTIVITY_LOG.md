@@ -257,3 +257,30 @@ Reason:
 
 * payment cleanup now needs a clearer boundary than the earlier broad billing bucket
 * checkout and subscription are still generic deferred Press product flows and should not keep shaping 3plug v1
+
+### 2026-04-08
+
+Decision correction:
+
+* payments are no longer in scope for `3plug-control`, including M-Pesa
+* payment capability now belongs in the separate admin or business site instead
+* the old Press-derived payment model is now documented for handoff rather than kept live in the control plane
+
+Reason:
+
+* 3plug v1 is an infrastructure control plane, not the place where customer money movement should live
+* documenting the old flow first lets the admin site adopt the useful parts without keeping the control plane tied to Press billing
+
+### 2026-04-08
+
+Change:
+
+* added `PAYMENT_HANDOFF_TO_ADMIN_SITE.md` to document the current Press-derived payment architecture and what should move to the admin site
+* updated `PAYMENT_SCOPE_MAP.md` to reflect full payment removal from `3plug-control`
+* removed remaining live payment gating from home, install-app, list, onboarding, plan-change, and server-creation flows
+* deleted the now-orphaned payment dialogs, alerts, Stripe, Razorpay, prepaid-credit, and M-Pesa dashboard components
+
+Reason:
+
+* this completes the UI-level separation between infrastructure control and business billing
+* the control plane can now keep moving toward operations and forensic work without carrying payment-product assumptions

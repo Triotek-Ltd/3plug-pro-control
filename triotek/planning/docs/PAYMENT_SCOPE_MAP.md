@@ -2,88 +2,67 @@
 
 ## Purpose
 
-Separate the remaining payment-related dashboard code into:
+Define the payment boundary after the product decision that billing belongs in the admin or business site, not in `3plug-control`.
 
-* keep for 3plug v1
-* defer and remove with cleanup
+## Final Scope Decision
 
-This avoids mixing the kept M-Pesa path with the broader Press billing and subscription product surface.
+Remove the full Press-style payment layer from `3plug-control`.
 
-## Keep for 3plug v1
+This includes:
 
-### Account details and minimal payment setup
+* billing details flows
+* card setup
+* prepaid credits
+* Stripe
+* Razorpay
+* M-Pesa
+* checkout
+* subscriptions
+* unpaid invoice alerts
+* payment-mode gating
 
-Keep:
+## Keep in 3plug-Control
 
-* `components/UpdateBillingDetails.vue`
-* `components/UpdateBillingDetailsForm.vue`
-* `components/AlertAddressDetails.vue`
-* `components/AlertMandateInfo.vue`
-* `components/StripeCardDialog.vue`
-* `components/billing/BillingDetails.vue`
-* `components/billing/CardForm.vue`
-* `components/billing/NewAddressForm.vue`
+Keep only documentation of the old flow during cleanup:
 
-Reason:
-
-* these still support reachable account-detail and card-refresh flows
-* they are the smallest shared set still wired into live settings or plan-management surfaces
-
-### M-Pesa path
-
-Keep:
-
-* `components/billing/mpesa/BuyPrepaidCreditsMpesa.vue`
-* `components/billing/mpesa/AddMpesaCredentials.vue`
-* `components/billing/mpesa/AddPaymentGateway.vue`
-* `components/billing/mpesa/PartnerPaymentPayout.vue`
+* `triotek/planning/docs/PAYMENT_HANDOFF_TO_ADMIN_SITE.md`
+* `triotek/planning/docs/CLEANUP_ACTIVITY_LOG.md`
 
 Reason:
 
-* M-Pesa remains in 3plug scope
-* cleanup must not remove regional payment support we still want
+* the admin or business site still needs the domain knowledge
+* the control plane should not keep live payment code after the handoff decision
 
-### Temporary keep until plan-management decision is finalized
+## Move To Admin Or Business Site
 
-Keep for now:
+Move as business-side capabilities:
 
-* `components/ManageSitePlansDialog.vue`
-* `components/billing/PrepaidCreditsForm.vue`
-* `components/billing/BuyCreditsStripe.vue`
-* `components/billing/BuyCreditsRazorpay.vue`
-* `components/BuyPrepaidCreditsForm.vue`
-* `components/BuyPrepaidCreditsStripe.vue`
-* `components/BuyPrepaidCreditsRazorpay.vue`
-
-Reason:
-
-* these are still imported by live site-plan or onboarding flows
-* they should be revisited if 3plug v1 decides to remove generic payment-mode setup entirely
-
-## Defer and remove
-
-### Generic Press commercial flows
-
-Defer and remove:
-
-* `pages/Checkout.vue`
-* `pages/CheckoutApps.vue`
-* `pages/CheckoutPlans.vue`
-* `pages/CheckoutAddress.vue`
-* `pages/CheckoutPayment.vue`
-* `pages/Subscription.vue`
-* `components/StripeCard.vue`
+* customer billing
+* invoice collection
+* M-Pesa
+* card payments
+* vendor or marketplace payouts
+* any customer wallet or prepaid balance concept
 
 Reason:
 
-* these are generic Press checkout/subscription product flows
-* they are already deferred by route guard and should not stay as product-shaping code in 3plug v1
+* these are business flows, not infrastructure control-plane flows
 
-## Working rule
+## Remove From 3plug-Control
 
-Until the forensic layer starts:
+Remove:
 
-* keep account-detail support
-* keep M-Pesa
-* keep only the smallest payment pieces still required by live plan-management flows
-* continue deleting generic Press checkout and subscription surfaces
+* payment alerts on list pages
+* billing requirements during onboarding
+* payment-mode requirements for install, plan change, or server creation
+* remaining card, prepaid credit, Stripe, Razorpay, and M-Pesa dialogs and forms
+* remaining payment utility helpers that are only used by the removed UI
+
+## Working Rule
+
+During cleanup:
+
+* document the old payment behavior first
+* remove the live UI dependency second
+* delete orphaned files third
+* defer deeper backend deletion until references are fully mapped

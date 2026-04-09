@@ -8,11 +8,7 @@
 					{ label: 'Benches', route: { name: 'New Release Group' } },
 				]"
 			>
-				<Button
-					variant="solid"
-					label="Create new"
-					:disabled="!$team.doc?.payment_mode"
-				>
+				<Button variant="solid" label="Create new">
 					<template #suffix>
 						<lucide-chevron-down class="h-4 w-4 text-gray-300" />
 					</template>
