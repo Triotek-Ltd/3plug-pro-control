@@ -149,3 +149,15 @@ Reason:
 
 * environment attention should stay on actual current risks
 * 3plug needs strong traceability once cleanup is complete
+
+### 2026-04-08
+
+Change:
+
+* neutralized deferred billing and partner session-permission helpers in the dashboard session store
+* removed the now-unreferenced partner profile settings component
+
+Reason:
+
+* this trims more deferred runtime surface without forcing a deeper partner-module deletion pass yet
+* the partner settings card had already been detached from the live profile page, so removing the orphaned component was low risk

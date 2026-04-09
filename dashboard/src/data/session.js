@@ -67,24 +67,17 @@ export let session = reactive({
 		},
 	}),
 	isTeamAdmin: computed(() => session.userPermissions.data.admin),
-	hasBillingAccess: computed(() => session.userPermissions.data.billing),
+	// Triotek v1 defers billing and partner-program surfaces in the dashboard.
+	hasBillingAccess: computed(() => false),
 	hasWebhookConfigurationAccess: computed(
 		() => session.userPermissions.data.webhook,
 	),
 	hasAppsAccess: computed(() => session.userPermissions.data.apps),
-	hasPartnerAccess: computed(() => session.userPermissions.data.partner),
-	hasPartnerDashboardAccess: computed(
-		() => session.userPermissions.data.partner_dashboard,
-	),
-	hasPartnerLeadsAccess: computed(
-		() => session.userPermissions.data.partner_leads,
-	),
-	hasPartnerCustomerAccess: computed(
-		() => session.userPermissions.data.partner_customer,
-	),
-	hasPartnerContributionAccess: computed(
-		() => session.userPermissions.data.partner_contribution,
-	),
+	hasPartnerAccess: computed(() => false),
+	hasPartnerDashboardAccess: computed(() => false),
+	hasPartnerLeadsAccess: computed(() => false),
+	hasPartnerCustomerAccess: computed(() => false),
+	hasPartnerContributionAccess: computed(() => false),
 	hasSiteCreationAccess: computed(
 		() => session.userPermissions.data.site_creation,
 	),
