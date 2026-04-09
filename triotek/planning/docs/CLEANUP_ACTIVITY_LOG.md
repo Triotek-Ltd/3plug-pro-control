@@ -197,3 +197,15 @@ Reason:
 
 * this is the first actual deferred dashboard file-removal pass after route isolation
 * limiting deletion to now-unreferenced route-endpoint files keeps the cleanup aggressive enough to matter but still controlled
+
+### 2026-04-08
+
+Change:
+
+* collapsed the remaining deferred partner payout and lead-detail routes to the partner root notice
+* deleted the now-unused deferred billing pages and the first orphaned billing and partner lead-detail components
+
+Reason:
+
+* this removes another layer of imported Press surface after confirming the live router no longer needs those files
+* it keeps the cleanup incremental by deleting only files that became orphaned after route reduction

@@ -174,33 +174,32 @@ let router = createRouter({
 		{
 			name: 'PartnerNewPayout',
 			path: '/payment-payout/New',
-			component: () => import('./pages/PartnerNewPayout.vue'),
+			component: deferredPartnerPage,
 		},
 		{
 			name: 'PartnerLeadDetails',
 			path: '/partner-lead/:leadId',
-			component: () => import('./pages/PartnerLeadDetails.vue'),
+			component: deferredPartnerPage,
 			children: [
 				{
 					name: 'LeadOverview',
 					path: '',
-					component: () =>
-						import('./components/partners/PartnerLeadOverview.vue'),
+					component: deferredPartnerPage,
 				},
 				{
 					name: 'LeadDealDetails',
 					path: 'deal-info',
-					component: () => import('./components/partners/LeadDealDetails.vue'),
+					component: deferredPartnerPage,
 				},
 				{
 					name: 'LeadFollowUp',
 					path: 'follow-up',
-					component: () => import('./components/partners/LeadFollowup.vue'),
+					component: deferredPartnerPage,
 				},
 				{
 					name: 'LeadActivities',
 					path: 'activities',
-					component: () => import('./components/partners/LeadActivities.vue'),
+					component: deferredPartnerPage,
 				},
 			],
 		},
