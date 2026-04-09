@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Node / dashboard
+node_modules/
+dist/
+coverage/
+.vite/
+
+# Frappe / Bench local artifacts
+sites/
+logs/
+run/
+assets/
+private/
+public/files/
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
