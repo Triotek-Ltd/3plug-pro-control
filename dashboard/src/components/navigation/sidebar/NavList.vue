@@ -151,15 +151,6 @@ const navigation = computed(() => {
 			disabled: enforce2FA,
 		},
 		{
-			name: 'Billing',
-			icon: WalletCards,
-			route: '/billing',
-			isActive: routeName.startsWith('Billing'),
-			// Triotek v1 defers billing and payment flows.
-			condition: false && ($team.doc?.is_desk_user || $session.hasBillingAccess),
-			disabled: enforce2FA,
-		},
-		{
 			name: 'Access Requests',
 			icon: Key,
 			route: '/access-requests',

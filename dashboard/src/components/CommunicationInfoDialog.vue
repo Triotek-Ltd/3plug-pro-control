@@ -265,7 +265,6 @@ export default {
 			}
 			return [
 				'General',
-				'Billing',
 				'Incident',
 				'Server Activity',
 				'Site Activity',

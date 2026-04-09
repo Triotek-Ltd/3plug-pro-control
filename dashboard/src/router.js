@@ -15,14 +15,6 @@ const DEFERRED_ROUTE_NAMES = new Set([
 	'PartnerNewPayout',
 	'PartnerLeadDetails',
 	'Billing',
-	'BillingOverview',
-	'BillingForecast',
-	'BillingInvoices',
-	'BillingBalances',
-	'BillingPaymentMethods',
-	'BillingMarketplacePayouts',
-	'BillingMpesaInvoices',
-	'BillingUPIAutopay',
 	'SettingsPartnerAdmin',
 	'PartnerList',
 	'CertificateList',
@@ -114,7 +106,7 @@ let router = createRouter({
 		{
 			path: '/checkout/:secretKey',
 			name: 'Checkout',
-			component: deferredBillingPage,
+			redirect: { name: 'Billing' },
 			props: true,
 			meta: {
 				isLoginPage: true,
@@ -123,7 +115,7 @@ let router = createRouter({
 		{
 			path: '/subscription/:site?',
 			name: 'Subscription',
-			component: deferredBillingPage,
+			redirect: { name: 'Billing' },
 			props: true,
 			meta: {
 				hideSidebar: true,
@@ -207,48 +199,6 @@ let router = createRouter({
 			name: 'Billing',
 			path: '/billing',
 			component: deferredBillingPage,
-			children: [
-				{
-					name: 'BillingOverview',
-					path: '',
-					component: deferredBillingPage,
-				},
-				{
-					name: 'BillingForecast',
-					path: 'forecast',
-					component: deferredBillingPage,
-				},
-				{
-					name: 'BillingInvoices',
-					path: 'invoices',
-					component: deferredBillingPage,
-				},
-				{
-					name: 'BillingBalances',
-					path: 'balances',
-					component: deferredBillingPage,
-				},
-				{
-					name: 'BillingPaymentMethods',
-					path: 'payment-methods',
-					component: deferredBillingPage,
-				},
-				{
-					name: 'BillingMarketplacePayouts',
-					path: 'payouts',
-					component: deferredBillingPage,
-				},
-				{
-					name: 'BillingMpesaInvoices',
-					path: 'mpesa-invoices',
-					component: deferredBillingPage,
-				},
-				{
-					name: 'BillingUPIAutopay',
-					path: 'upi-autopay',
-					component: deferredBillingPage,
-				},
-			],
 		},
 		{
 			path: '/settings',

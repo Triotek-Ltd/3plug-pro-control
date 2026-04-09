@@ -371,3 +371,16 @@ Reason:
 
 * these were still exposing payment-era objects and messages after the earlier cleanup passes
 * trimming the visible client surface makes the control-plane boundary much more consistent
+
+### 2026-04-09
+
+Change:
+
+* collapsed the extra billing route tree in the dashboard so checkout and subscription paths now redirect to the generic deferred billing page
+* removed the hidden billing nav item and stripped the leftover `Billing` communication type
+* removed the marketplace app `Subscriptions` tab that still depended on the `Subscription` doctype
+
+Reason:
+
+* these were some of the last operator-facing payment references still hanging around in the dashboard shell
+* reducing them now keeps the UI aligned with the infrastructure-only 3plug-control scope

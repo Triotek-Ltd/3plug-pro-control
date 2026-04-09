@@ -379,65 +379,6 @@ export default {
 					},
 				},
 			},
-			{
-				label: 'Subscriptions',
-				icon: icon('users'),
-				route: 'subscription',
-				type: 'list',
-				list: {
-					doctype: 'Subscription',
-					filters: (app) => {
-						return {
-							document_type: 'Marketplace App',
-							document_name: app.name,
-						};
-					},
-					fields: ['site', 'enabled', 'team'],
-					filterControls() {
-						return [
-							{
-								type: 'select',
-								label: 'Status',
-								class: !isMobile() ? 'w-24' : '',
-								fieldname: 'enabled',
-								options: ['', 'Active', 'Disabled'],
-							},
-						];
-					},
-					columns: [
-						{
-							label: 'Site',
-							fieldname: 'site',
-							width: 0.6,
-						},
-						{
-							label: 'Status',
-							type: 'Badge',
-							fieldname: 'enabled',
-							width: 0.3,
-							format: (value) => {
-								return value ? 'Active' : 'Disabled';
-							},
-						},
-						{
-							label: 'Price',
-							fieldname: 'price',
-							width: 0.3,
-							format: (value) => {
-								return userCurrency(value);
-							},
-						},
-						{
-							label: 'Active For',
-							fieldname: 'active_for',
-							width: 0.3,
-							format: (value) => {
-								return value + (value == 1 ? ' day' : ' days');
-							},
-						},
-					],
-				},
-			},
 		],
 		actions({ documentResource: app }) {
 			return [
