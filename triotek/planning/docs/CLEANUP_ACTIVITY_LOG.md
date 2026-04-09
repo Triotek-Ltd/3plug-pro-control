@@ -333,3 +333,15 @@ Reason:
 
 * these payloads and components were no longer part of live 3plug-control flows after the earlier payment cleanup
 * trimming them now reduces hidden coupling before we move into the forensic layer
+
+### 2026-04-08
+
+Change:
+
+* disabled billing-scoped API actions at the role-guard layer, with `validate_gst` left available for address validation
+* changed the remaining account and SaaS billing entry points to throw a handoff message that points payment work to the admin business site
+
+Reason:
+
+* this closes the public control-plane payment entry surface without forcing a risky invoice-doctype rewrite in the same pass
+* it keeps the cleanup careful while making the product boundary much clearer

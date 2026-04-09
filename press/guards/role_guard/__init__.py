@@ -29,6 +29,10 @@ def api(scope: Literal["billing", "partner"]):
 	def wrapper(fn):
 		@functools.wraps(fn)
 		def inner(*args, **kwargs):
+			if scope == "billing" and fn.__name__ != "validate_gst":
+				frappe.throw(
+					_("Payments and billing now live in the admin business site, not in 3plug Control.")
+				)
 			if (not roles_enabled()) or (skip_roles()) or utils_user.is_system_manager():
 				return fn(*args, **kwargs)
 			key = api_key(scope)

@@ -850,31 +850,12 @@ def leave_team(team):
 
 @frappe.whitelist()
 def get_billing_information(timezone=None):
-	from press.utils.country_timezone import get_country_from_timezone
-
-	team = get_current_team(True)
-
-	billing_details = frappe._dict()
-	if team.billing_address:
-		billing_details = frappe.get_doc("Address", team.billing_address).as_dict()
-		billing_details.billing_name = team.billing_name
-
-	if not billing_details.country and timezone:
-		billing_details.country = get_country_from_timezone(timezone)
-
-	return billing_details
+	frappe.throw("Payments and billing now live in the admin business site, not in 3plug Control.")
 
 
 @frappe.whitelist()
 def update_billing_information(billing_details):
-	billing_details = frappe._dict(billing_details)
-	team = get_current_team(get_doc=True)
-	validate_pincode(billing_details)
-	if (team.country != billing_details.country) and (
-		team.country == "India" or billing_details.country == "India"
-	):
-		frappe.throw("Cannot change country after registration")
-	team.update_billing_details(billing_details)
+	frappe.throw("Payments and billing now live in the admin business site, not in 3plug Control.")
 
 
 def validate_pincode(billing_details):
