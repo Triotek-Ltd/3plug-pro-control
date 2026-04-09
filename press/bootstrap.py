@@ -43,7 +43,6 @@ def prepare():
 	settings = frappe.get_single("Press Settings")
 	setup_certbot(settings)
 	setup_root_domain(settings)
-	setup_stripe(settings)
 
 	setup_agent(settings)
 
@@ -104,14 +103,6 @@ def setup_root_domain(settings):
 
 	settings.domain = domain.name
 	settings.cluster = domain.default_cluster
-	settings.save()
-	settings.reload()
-
-
-def setup_stripe(settings):
-	settings.stripe_publishable_key = STRIPE_PUBLISHABLE_KEY
-	settings.stripe_secret_key = STRIPE_SECRET_KEY
-	settings.ngrok_auth_token = NGROK_AUTH_TOKEN
 	settings.save()
 	settings.reload()
 
