@@ -10,6 +10,9 @@ from frappe.model.document import Document
 
 if TYPE_CHECKING:
 	from press.press.doctype.agent_job.agent_job import AgentJob
+	from press.press.doctype.press_job.press_job import PressJob
+	from press.press.doctype.press_job_step.press_job_step import PressJobStep
+	from press.press.doctype.security_update_check.security_update_check import SecurityUpdateCheck
 	from press.press.doctype.server_activity.server_activity import ServerActivity
 	from press.press.doctype.site_activity.site_activity import SiteActivity
 
@@ -201,6 +204,126 @@ def capture_server_activity_insert(doc: "ServerActivity", _method=None):
 	)
 
 
+def capture_press_job_insert(doc: "PressJob", _method=None):
+	create_forensic_event(
+		event_type="Press Job Created",
+		severity=_severity_for_press_job_status(doc.status),
+		status=doc.status,
+		team=_resolve_team(doc),
+		document_type=_resolve_primary_document_type(doc),
+		document_name=_resolve_primary_document_name(doc),
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		server_type=doc.server_type,
+		server=doc.server,
+		actor=doc.owner,
+		summary=f"{doc.job_type} press job queued for { _describe_primary_target(doc) }".strip(),
+		payload={
+			"job_type": doc.job_type,
+			"status": doc.status,
+			"virtual_machine": doc.virtual_machine,
+			"callback_executed": doc.callback_executed,
+		},
+	)
+
+
+def capture_press_job_update(doc: "PressJob", _method=None):
+	previous = doc.get_doc_before_save()
+	if not previous:
+		return
+
+	changed_fields = {}
+	for fieldname in (
+		"status",
+		"start",
+		"end",
+		"duration",
+		"callback_executed",
+		"callback_failed",
+		"callback_retry_limit_reached",
+	):
+		before = previous.get(fieldname)
+		after = doc.get(fieldname)
+		if before != after:
+			changed_fields[fieldname] = {"before": before, "after": after}
+
+	if not changed_fields:
+		return
+
+	old_status = previous.get("status")
+	new_status = doc.get("status")
+	summary = f"{doc.job_type} press job updated"
+	if old_status != new_status:
+		summary = f"{doc.job_type}: {old_status or 'Unknown'} -> {new_status or 'Unknown'}"
+
+	create_forensic_event(
+		event_type="Press Job Updated",
+		severity=_severity_for_press_job_status(new_status),
+		status=new_status,
+		team=_resolve_team(doc),
+		document_type=_resolve_primary_document_type(doc),
+		document_name=_resolve_primary_document_name(doc),
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		server_type=doc.server_type,
+		server=doc.server,
+		actor=doc.modified_by,
+		summary=summary,
+		payload={"changes": changed_fields},
+	)
+
+
+def capture_press_job_step_update(doc: "PressJobStep", _method=None):
+	previous = doc.get_doc_before_save()
+	if not previous or previous.get("status") == doc.status:
+		return
+
+	job = frappe.get_cached_doc("Press Job", doc.job)
+	create_forensic_event(
+		event_type="Press Job Step Updated",
+		severity=_severity_for_press_job_step_status(doc.status),
+		status=doc.status,
+		team=_resolve_team(job),
+		document_type="Press Job",
+		document_name=doc.job,
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		server_type=job.server_type,
+		server=job.server,
+		actor=doc.modified_by,
+		summary=f"{doc.step_name}: {previous.get('status') or 'Unknown'} -> {doc.status or 'Unknown'}",
+		payload={
+			"step_name": doc.step_name,
+			"job_type": doc.job_type,
+			"attempts": doc.attempts,
+			"result": doc.result,
+			"traceback": doc.traceback,
+		},
+	)
+
+
+def capture_security_update_check_update(doc: "SecurityUpdateCheck", _method=None):
+	previous = doc.get_doc_before_save()
+	if not previous or previous.get("status") == doc.status:
+		return
+
+	create_forensic_event(
+		event_type="Security Update Check Updated",
+		severity=_severity_for_security_update_check_status(doc.status),
+		status=doc.status,
+		team=frappe.db.get_value(doc.server_type, doc.server, "team") if doc.server_type and doc.server else None,
+		document_type=doc.server_type or doc.doctype,
+		document_name=doc.server or doc.name,
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		server_type=doc.server_type,
+		server=doc.server,
+		actor=doc.modified_by,
+		summary=f"Security update check on {doc.server}: {previous.get('status') or 'Unknown'} -> {doc.status or 'Unknown'}",
+		payload={"play": doc.play},
+	)
+
+
 def _resolve_team(doc) -> str | None:
 	if getattr(doc, "site", None):
 		return frappe.db.get_value("Site", doc.site, "team")
@@ -267,3 +390,32 @@ def _severity_for_server_action(action: str | None) -> str:
 	if action in {"Terminated", "Incident"}:
 		return "Warning"
 	return "Info"
+
+
+def _severity_for_press_job_status(status: str | None) -> str:
+	return {
+		"Failure": "Error",
+		"Skipped": "Warning",
+		"Running": "Info",
+		"Pending": "Info",
+		"Success": "Info",
+	}.get(status or "", "Info")
+
+
+def _severity_for_press_job_step_status(status: str | None) -> str:
+	return {
+		"Failure": "Error",
+		"Skipped": "Warning",
+		"Running": "Info",
+		"Pending": "Info",
+		"Success": "Info",
+	}.get(status or "", "Info")
+
+
+def _severity_for_security_update_check_status(status: str | None) -> str:
+	return {
+		"Failure": "Critical",
+		"Running": "Info",
+		"Pending": "Info",
+		"Success": "Info",
+	}.get(status or "", "Info")

@@ -423,3 +423,15 @@ Reason:
 
 * the first slice captured evidence, but operators still needed a practical way to browse and export it
 * this makes forensic records usable in the normal 3plug workflow instead of leaving them as backend-only artifacts
+
+### 2026-04-09
+
+Change:
+
+* expanded forensic capture to include `Press Job`, `Press Job Step`, and `Security Update Check` lifecycle updates
+* extended the forensic dashboard filters so operators can isolate these higher-level orchestration and readiness events
+
+Reason:
+
+* the first two slices covered agent jobs and activity logs well, but higher-level failure summaries were still underrepresented
+* adding these sources makes investigations more useful for bench and server operations without introducing noisy low-level capture

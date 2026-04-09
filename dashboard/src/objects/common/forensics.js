@@ -80,6 +80,10 @@ export function getForensicFilterControls() {
 				'',
 				'Agent Job Created',
 				'Agent Job Updated',
+				'Press Job Created',
+				'Press Job Updated',
+				'Press Job Step Updated',
+				'Security Update Check Updated',
 				'Site Activity',
 				'Server Activity',
 			],
@@ -88,7 +92,15 @@ export function getForensicFilterControls() {
 			type: 'select',
 			label: 'Target',
 			fieldname: 'document_type',
-			options: ['', 'Site', 'Bench', 'Server', 'Database Server', 'Agent Job'],
+			options: [
+				'',
+				'Site',
+				'Bench',
+				'Server',
+				'Database Server',
+				'Agent Job',
+				'Press Job',
+			],
 		},
 	];
 }

@@ -162,6 +162,13 @@ doc_events = {
 		"after_insert": "press.press.doctype.forensic_event.forensic_event.capture_agent_job_insert",
 		"on_update": "press.press.doctype.forensic_event.forensic_event.capture_agent_job_update",
 	},
+	"Press Job": {
+		"after_insert": "press.press.doctype.forensic_event.forensic_event.capture_press_job_insert",
+		"on_update": "press.press.doctype.forensic_event.forensic_event.capture_press_job_update",
+	},
+	"Press Job Step": {
+		"on_update": "press.press.doctype.forensic_event.forensic_event.capture_press_job_step_update",
+	},
 	"Site": {
 		"before_insert": "press.press.doctype.team.team.validate_site_creation",
 		"after_insert": "press.press.doctype.press_role.press_role.create_user_resource",
@@ -180,6 +187,9 @@ doc_events = {
 	},
 	"Server Activity": {
 		"after_insert": "press.press.doctype.forensic_event.forensic_event.capture_server_activity_insert",
+	},
+	"Security Update Check": {
+		"on_update": "press.press.doctype.forensic_event.forensic_event.capture_security_update_check_update",
 	},
 }
 
