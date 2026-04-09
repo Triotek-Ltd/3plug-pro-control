@@ -72,7 +72,8 @@ const tabs = [
 		label: 'Partner Admin',
 		icon: LucideShield,
 		routeName: 'SettingsPartnerAdmin',
-		condition: () => Boolean($team.doc.is_desk_user),
+		// Triotek v1 defers partner-admin settings surfaces.
+		condition: () => false && Boolean($team.doc.is_desk_user),
 		childrenRoutes: [
 			'PartnerList',
 			'CertificateList',

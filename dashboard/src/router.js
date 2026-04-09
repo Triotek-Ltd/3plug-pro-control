@@ -3,6 +3,50 @@ import { getTeam } from './data/team';
 import generateRoutes from './objects/generateRoutes';
 import session from './data/session';
 
+const DEFERRED_ROUTE_NAMES = new Set([
+	'Signup',
+	'Setup Account',
+	'Checkout',
+	'Subscription',
+	'PartnerNewPayout',
+	'PartnerLeadDetails',
+	'Billing',
+	'BillingOverview',
+	'BillingForecast',
+	'BillingInvoices',
+	'BillingBalances',
+	'BillingPaymentMethods',
+	'BillingMarketplacePayouts',
+	'BillingMpesaInvoices',
+	'BillingUPIAutopay',
+	'SettingsPartnerAdmin',
+	'PartnerList',
+	'CertificateList',
+	'PartnerAdminLeads',
+	'PartnerAdminResources',
+	'PartnerAdminAudits',
+	'Partnership',
+	'PartnerOverview',
+	'PartnerWebsiteDetails',
+	'PartnerCustomers',
+	'PartnerLeads',
+	'PartnerCertificates',
+	'PartnerResources',
+	'PartnerContributions',
+	'PartnerAudits',
+	'PartnerNCList',
+	'PartnerNCSummary',
+	'LocalPaymentSetup',
+	'PartnerPayout',
+	'PartnerDashboard',
+	'Signup Create Site',
+	'SignupAppSelector',
+	'SignupSetup',
+	'SignupLoginToSite',
+	'CreateSiteForMarketplaceApp',
+	'ReplyMarketplaceApp',
+]);
+
 let router = createRouter({
 	history: createWebHistory('/dashboard/'),
 	routes: [
@@ -539,6 +583,12 @@ router.beforeEach(async (to, from, next) => {
 
 	let hasTeamPrivileges = !!window.default_team;
 	let goingToLoginPage = to.matched.some((record) => record.meta.isLoginPage);
+	let routeName = String(to.name || '');
+
+	if (DEFERRED_ROUTE_NAMES.has(routeName)) {
+		next({ name: 'Site List' });
+		return;
+	}
 
 	if (isLoggedIn && hasTeamPrivileges) {
 		await waitUntilTeamLoaded();

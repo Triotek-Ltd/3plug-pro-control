@@ -52,4 +52,21 @@ Reason:
 
 Commit:
 
+* `9e71a93` `Hide deferred sidebar surfaces and track cleanup`
+
+### 2026-04-08
+
+Change:
+
+* hid deferred partner-admin settings tab
+* removed the deferred partner profile card from settings profile view
+* added a first route guard that redirects deferred billing, partner, signup, checkout, subscription, and marketplace entry routes back to the main site list
+
+Reason:
+
+* this is the second low-risk UI isolation pass
+* it reduces direct access to out-of-scope Press flows while leaving the underlying files present for later cleanup
+
+Commit:
+
 * pending
