@@ -143,9 +143,11 @@ const navigation = computed(() => {
 			icon: App,
 			route: '/apps',
 			isActive: routeName.startsWith('Marketplace'),
+			// Triotek v1 defers marketplace-facing product surfaces.
 			condition:
-				$team.doc?.is_desk_user ||
-				(!!$team.doc.is_developer && $session.hasAppsAccess),
+				false &&
+				($team.doc?.is_desk_user ||
+					(!!$team.doc.is_developer && $session.hasAppsAccess)),
 			disabled: enforce2FA,
 		},
 		{
@@ -153,7 +155,8 @@ const navigation = computed(() => {
 			icon: WalletCards,
 			route: '/billing',
 			isActive: routeName.startsWith('Billing'),
-			condition: $team.doc?.is_desk_user || $session.hasBillingAccess,
+			// Triotek v1 defers billing and payment flows.
+			condition: false && ($team.doc?.is_desk_user || $session.hasBillingAccess),
 			disabled: enforce2FA,
 		},
 		{
@@ -168,7 +171,8 @@ const navigation = computed(() => {
 			icon: Globe,
 			route: '/partners',
 			isActive: routeName === 'Partnership',
-			condition: Boolean($team.doc.erpnext_partner),
+			// Triotek v1 defers partner-program surfaces.
+			condition: false && Boolean($team.doc.erpnext_partner),
 			disabled: enforce2FA,
 		},
 		{
