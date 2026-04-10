@@ -238,6 +238,11 @@ Fork these repositories into the GitHub account that should own later changes:
 * `Triotek-Ltd/triotek-bench`
 * `Triotek-Ltd/3plug-pro-control`
 
+Source URLs to fork:
+
+* `https://github.com/Triotek-Ltd/triotek-bench`
+* `https://github.com/Triotek-Ltd/3plug-pro-control`
+
 You can do that either from the GitHub web UI using the `Fork` button, or with GitHub CLI if `gh` is installed:
 
 ```bash
@@ -247,6 +252,15 @@ gh repo fork Triotek-Ltd/3plug-pro-control --clone=false --remote=false
 ```
 
 Replace `YOUR_GITHUB_USER` below with the GitHub account or org that owns those forks.
+
+After forking on the web, verify the SSH URLs you will actually use before Bench setup:
+
+```bash
+git ls-remote git@github.com:YOUR_GITHUB_USER/triotek-bench.git
+git ls-remote git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git
+```
+
+If both commands return refs instead of an access error, your fork URLs are ready and you can continue to Bench.
 
 ### 5. Prepare the bench host prerequisites
 

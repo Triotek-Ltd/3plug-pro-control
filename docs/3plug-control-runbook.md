@@ -170,6 +170,11 @@ Fork these repositories into the actual GitHub account you want to publish from:
 * `Triotek-Ltd/triotek-bench`
 * `Triotek-Ltd/3plug-pro-control`
 
+Source URLs to fork:
+
+* `https://github.com/Triotek-Ltd/triotek-bench`
+* `https://github.com/Triotek-Ltd/3plug-pro-control`
+
 You can fork them from the GitHub web UI with the `Fork` button, or with GitHub CLI if `gh` is installed:
 
 ```bash
@@ -179,6 +184,15 @@ gh repo fork Triotek-Ltd/3plug-pro-control --clone=false --remote=false
 ```
 
 For the commands below, replace `YOUR_GITHUB_USER` with that account or org name.
+
+Before moving on to Bench, verify the fork SSH URLs from the server:
+
+```bash
+git ls-remote git@github.com:YOUR_GITHUB_USER/triotek-bench.git
+git ls-remote git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git
+```
+
+If both commands return refs instead of an access error, the forks are ready and you can continue.
 
 ## Phase 4: Prepare the Frappe bench host
 
