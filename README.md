@@ -183,14 +183,36 @@ sudo su - frappe
 cd /opt/triotek
 ```
 
-Before cloning anything, configure git and SSH for the real working user:
+Before cloning anything, configure git and SSH for the real working user.
+
+As the `frappe` user:
 
 ```bash
-ssh-keygen -t ed25519 -C "your-email@example.com"
-cat ~/.ssh/id_ed25519.pub
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
 git config --global user.name "Your Name"
 git config --global user.email "your-email@example.com"
 git config --global init.defaultBranch main
+git config --global pull.rebase false
+git config --global core.editor nano
+
+ssh-keygen -t ed25519 -C "your-email@example.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
+```
+
+Then do these GitHub-side actions with the same account that should own later changes:
+
+1. Open `GitHub -> Settings -> SSH and GPG keys`
+2. Click `New SSH key`
+3. Paste the output of `cat ~/.ssh/id_ed25519.pub`
+4. Save it with a title such as `3plug-control-server`
+
+Then test SSH from the server:
+
+```bash
 ssh -T git@github.com
 ```
 
@@ -198,6 +220,16 @@ Fork these repositories into the GitHub account that should own later changes:
 
 * `Triotek-Ltd/triotek-bench`
 * `Triotek-Ltd/3plug-pro-control`
+
+You can do that either from the GitHub web UI using the `Fork` button, or with GitHub CLI if `gh` is installed:
+
+```bash
+gh auth login -h github.com -p ssh -w
+gh repo fork Triotek-Ltd/triotek-bench --clone=false --remote=false
+gh repo fork Triotek-Ltd/3plug-pro-control --clone=false --remote=false
+```
+
+Replace `YOUR_GITHUB_USER` below with the GitHub account or org that owns those forks.
 
 Then run the user-level Bench setup with the Triotek-controlled Bench source over SSH, not the community one:
 
@@ -227,6 +259,7 @@ git clone git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git control
 cd control
 npm install --legacy-peer-deps
 git remote add upstream git@github.com:Triotek-Ltd/3plug-pro-control.git
+git remote -v
 ```
 
 Then add the app into your Frappe bench:

@@ -131,24 +131,42 @@ Use SSH remotes, not HTTPS remotes, for the actual working copy.
 
 Also use your own forked repositories so the real git user on the server can publish changes under their own account.
 
+Create the SSH directory and configure git identity first:
+
+```bash
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
+git config --global user.name "Your Name"
+git config --global user.email "your-email@example.com"
+git config --global init.defaultBranch main
+git config --global pull.rebase false
+git config --global core.editor nano
+```
+
+Check it:
+
+```bash
+git config --global --list
+```
+
 Generate an SSH key if the `frappe` user does not already have one:
 
 ```bash
 ssh-keygen -t ed25519 -C "your-email@example.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
 cat ~/.ssh/id_ed25519.pub
 ```
 
-Add that public key to the GitHub account that owns your forks.
+Add that public key to the GitHub account that owns your forks:
 
-Then configure git identity for this working user:
+1. Open `GitHub -> Settings -> SSH and GPG keys`
+2. Click `New SSH key`
+3. Paste the output of `cat ~/.ssh/id_ed25519.pub`
+4. Save it with a title such as `3plug-control-server`
 
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your-email@example.com"
-git config --global init.defaultBranch main
-```
-
-Quick SSH check:
+Quick SSH check from the server:
 
 ```bash
 ssh -T git@github.com
@@ -158,6 +176,14 @@ Fork these repositories into the actual GitHub account you want to publish from:
 
 * `Triotek-Ltd/triotek-bench`
 * `Triotek-Ltd/3plug-pro-control`
+
+You can fork them from the GitHub web UI with the `Fork` button, or with GitHub CLI if `gh` is installed:
+
+```bash
+gh auth login -h github.com -p ssh -w
+gh repo fork Triotek-Ltd/triotek-bench --clone=false --remote=false
+gh repo fork Triotek-Ltd/3plug-pro-control --clone=false --remote=false
+```
 
 For the commands below, replace `YOUR_GITHUB_USER` with that account or org name.
 
@@ -209,6 +235,7 @@ Set the upstream remotes too, so later sync work is easier:
 ```bash
 cd /opt/triotek/control
 git remote add upstream git@github.com:Triotek-Ltd/3plug-pro-control.git
+git remote -v
 ```
 
 ### 12. Add the app into the bench
