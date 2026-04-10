@@ -183,7 +183,7 @@ sudo su - frappe
 cd /opt/triotek
 ```
 
-Then run the user-level Bench setup:
+Then run the user-level Bench setup with the Triotek-controlled Bench source, not the community one:
 
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
@@ -194,7 +194,7 @@ npm install -g yarn
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.bashrc
 uv python install 3.14 --default
-uv tool install frappe-bench
+uv tool install "git+https://github.com/Triotek-Ltd/triotek-bench.git"
 
 cd /opt
 mkdir -p frappe

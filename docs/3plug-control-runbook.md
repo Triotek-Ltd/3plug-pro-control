@@ -127,7 +127,9 @@ cd /opt/triotek
 
 ### 9. Install Bench as the frappe user
 
-Install Node, Yarn, uv, Python, and Bench as the `frappe` user:
+Install Node, Yarn, uv, Python, and the Triotek-controlled Bench as the `frappe` user.
+
+Do not use the community Bench package for this setup.
 
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
@@ -138,7 +140,7 @@ npm install -g yarn
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.bashrc
 uv python install 3.14 --default
-uv tool install frappe-bench
+uv tool install "git+https://github.com/Triotek-Ltd/triotek-bench.git"
 ```
 
 Confirm Bench is available:
