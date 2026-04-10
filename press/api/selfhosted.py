@@ -2,6 +2,7 @@ import time
 
 import frappe
 from dns.resolver import Resolver
+from frappe.query_builder.functions import Count
 from frappe.utils import cint
 from frappe.utils import strip
 
@@ -187,6 +188,30 @@ def _serialize_self_hosted_bench_state(self_hosted_server):
 		order_by="creation desc",
 		limit=8,
 	)
+	bench_names = []
+	if self_hosted_server.release_group:
+		bench_names = frappe.get_all(
+			"Bench",
+			{"group": self_hosted_server.release_group},
+			pluck="name",
+			limit=10,
+		)
+	site_docnames = [row.site for row in self_hosted_server.sites or [] if row.site]
+	recent_jobs = _get_recent_onboarding_jobs(
+		server=self_hosted_server.server,
+		bench_names=bench_names,
+		site_names=site_docnames,
+	)
+	job_scope_summary = _get_onboarding_job_scope_summary(
+		server=self_hosted_server.server,
+		bench_names=bench_names,
+		site_names=site_docnames,
+	)
+	operation_status = _get_onboarding_operation_status(
+		self_hosted_server=self_hosted_server,
+		recent_plays=recent_plays,
+		recent_jobs=recent_jobs,
+	)
 	return {
 		"self_hosted_server": self_hosted_server.name,
 		"server": self_hosted_server.server,
@@ -227,7 +252,141 @@ def _serialize_self_hosted_bench_state(self_hosted_server):
 			and self_hosted_server.bench_directory
 			and any(row.site for row in self_hosted_server.sites or [])
 		),
+		"job_scope_summary": job_scope_summary,
+		"recent_jobs": recent_jobs,
+		"operation_status": operation_status,
 		"recent_plays": recent_plays,
+	}
+
+
+def _get_recent_onboarding_jobs(server: str | None, bench_names: list[str], site_names: list[str]):
+	if not (server or bench_names or site_names):
+		return []
+
+	AgentJob = frappe.qb.DocType("Agent Job")
+	query = (
+		frappe.qb.from_(AgentJob)
+		.select(
+			AgentJob.name,
+			AgentJob.job_type,
+			AgentJob.status,
+			AgentJob.server,
+			AgentJob.bench,
+			AgentJob.site,
+			AgentJob.creation,
+			AgentJob.duration,
+			AgentJob.end,
+		)
+		.orderby(AgentJob.creation, order=frappe.qb.desc)
+		.limit(8)
+	)
+	filters = []
+	if server:
+		filters.append(AgentJob.server == server)
+	if bench_names:
+		filters.append(AgentJob.bench.isin(bench_names))
+	if site_names:
+		filters.append(AgentJob.site.isin(site_names))
+	for condition in filters[1:]:
+		filters[0] = filters[0] | condition
+	return query.where(filters[0]).run(as_dict=True)
+
+
+def _get_onboarding_job_scope_summary(server: str | None, bench_names: list[str], site_names: list[str]):
+	AgentJob = frappe.qb.DocType("Agent Job")
+	summary = {"server_jobs": 0, "bench_jobs": 0, "site_jobs": 0}
+	if server:
+		summary["server_jobs"] = (
+			frappe.qb.from_(AgentJob).select(Count("*")).where(AgentJob.server == server)
+		).run()[0][0]
+	if bench_names:
+		summary["bench_jobs"] = (
+			frappe.qb.from_(AgentJob).select(Count("*")).where(AgentJob.bench.isin(bench_names))
+		).run()[0][0]
+	if site_names:
+		summary["site_jobs"] = (
+			frappe.qb.from_(AgentJob).select(Count("*")).where(AgentJob.site.isin(site_names))
+		).run()[0][0]
+	return summary
+
+
+def _normalize_execution_status(value: str | None):
+	status = (value or "").lower()
+	if status in {"success", "completed"}:
+		return "Success"
+	if status in {"running", "pending"}:
+		return "Running"
+	if status in {"failure", "failed", "error"}:
+		return "Failed"
+	return "Idle"
+
+
+def _latest_matching_execution(rows: list[dict], patterns: tuple[str, ...], field: str):
+	for row in rows:
+		label = (row.get(field) or "").lower()
+		if any(pattern in label for pattern in patterns):
+			return row
+	return None
+
+
+def _get_onboarding_operation_status(self_hosted_server, recent_plays: list[dict], recent_jobs: list[dict]):
+	discovery_play = _latest_matching_execution(
+		recent_plays,
+		("get apps", "get sites", "current bench"),
+		"play",
+	)
+	restore_play = _latest_matching_execution(
+		recent_plays,
+		("restore", "site files"),
+		"play",
+	)
+	managed_bench_job = _latest_matching_execution(
+		recent_jobs,
+		("release group", "bench"),
+		"job_type",
+	)
+	managed_site_job = _latest_matching_execution(
+		recent_jobs,
+		("site",),
+		"job_type",
+	)
+	return {
+		"discovery": {
+			"label": "Bench Discovery",
+			"status": _normalize_execution_status(discovery_play.get("status") if discovery_play else None),
+			"detail": discovery_play.get("play") if discovery_play else "No discovery run recorded yet.",
+			"reference": discovery_play.get("name") if discovery_play else None,
+			"kind": "play",
+		},
+		"managed_bench": {
+			"label": "Managed Bench Creation",
+			"status": "Success"
+			if self_hosted_server.release_group
+			else _normalize_execution_status(managed_bench_job.get("status") if managed_bench_job else None),
+			"detail": self_hosted_server.release_group
+			if self_hosted_server.release_group
+			else managed_bench_job.get("job_type") if managed_bench_job else "Managed bench not created yet.",
+			"reference": managed_bench_job.get("name") if managed_bench_job else None,
+			"kind": "job",
+		},
+		"managed_sites": {
+			"label": "Managed Site Import",
+			"status": "Success"
+			if any(row.site for row in self_hosted_server.sites or [])
+			else _normalize_execution_status(managed_site_job.get("status") if managed_site_job else None),
+			"detail": managed_site_job.get("job_type")
+			if managed_site_job
+			else "Managed site import has not been recorded yet.",
+			"reference": managed_site_job.get("name") if managed_site_job else None,
+			"kind": "job",
+		},
+		"restore": {
+			"label": "Site File Restore",
+			"status": _normalize_execution_status(restore_play.get("status") if restore_play else None),
+			"detail": restore_play.get("play") if restore_play else "Site file restore has not started yet.",
+			"reference": restore_play.get("name") if restore_play else None,
+			"kind": "play",
+		},
 	}
 
 

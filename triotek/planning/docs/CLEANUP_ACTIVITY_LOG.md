@@ -535,3 +535,15 @@ Change:
 Reason:
 
 * the product is now close enough to real live-server testing that the home view needs to answer two operational questions directly: what step is next, and are server, bench, and site jobs actually being tracked
+
+### 2026-04-09
+
+Change:
+
+* added onboarding execution summaries to the self-hosted bench state payload so discovery, managed bench creation, managed site import, and file restore now expose explicit success, running, failed, or idle state
+* added recent onboarding jobs and per-scope job counts to the bench onboarding page so server, bench, and site execution can be reviewed inside the flow itself
+* verified the updated onboarding flow with Python syntax checks and the local `LOCAL_VERIFY_BUILD=1` dashboard build
+
+Reason:
+
+* the next real value is live-server testing, and that only becomes useful when the onboarding flow tells us which step actually ran, which one failed, and where to inspect the underlying play or job

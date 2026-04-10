@@ -246,6 +246,42 @@
 						</Button>
 					</div>
 				</section>
+
+				<section class="rounded-md border bg-white p-5">
+					<div class="flex items-center justify-between gap-4">
+						<div>
+							<h3 class="text-lg font-semibold text-gray-900">Execution Status</h3>
+							<p class="mt-1 text-sm text-gray-600">
+								Track the real run state behind discovery, managed bench creation,
+								site import, and restore before you move to live testing.
+							</p>
+						</div>
+						<Badge :label="`${recentJobs.length} jobs / ${state.recent_plays?.length || 0} plays`" />
+					</div>
+
+					<div class="mt-4 grid gap-3 md:grid-cols-2">
+						<div
+							v-for="step in operationSteps"
+							:key="step.key"
+							class="rounded-md border px-4 py-3"
+						>
+							<div class="flex items-center justify-between gap-3">
+								<div class="font-medium text-gray-900">{{ step.label }}</div>
+								<Badge :label="step.status" />
+							</div>
+							<div class="mt-1 text-sm text-gray-600">
+								{{ step.detail }}
+							</div>
+							<RouterLink
+								v-if="step.route"
+								:to="step.route"
+								class="mt-3 inline-flex text-sm font-medium text-gray-900 underline underline-offset-2"
+							>
+								Open {{ step.kind }}
+							</RouterLink>
+						</div>
+					</div>
+				</section>
 			</div>
 
 			<div class="space-y-5">
@@ -280,6 +316,34 @@
 							</dd>
 						</div>
 					</dl>
+				</section>
+
+				<section class="rounded-md border bg-white p-5">
+					<div class="flex items-center justify-between gap-4">
+						<h3 class="text-lg font-semibold text-gray-900">Recent Jobs</h3>
+						<Badge :label="`${recentJobs.length} visible`" />
+					</div>
+					<div v-if="recentJobs.length" class="mt-4 space-y-3">
+						<RouterLink
+							v-for="job in recentJobs"
+							:key="job.name"
+							:to="{ name: 'Server Job', params: { id: job.name } }"
+							class="block rounded-md border px-4 py-3 transition hover:border-gray-400"
+						>
+							<div class="flex items-center justify-between gap-3">
+								<div class="font-medium text-gray-900">{{ job.job_type }}</div>
+								<Badge :label="job.status || 'Unknown'" />
+							</div>
+							<div class="mt-1 text-xs text-gray-500">
+								{{ job.site || job.bench || job.server || 'No target recorded' }}
+								|
+								{{ formatTimestamp(job.creation) }}
+							</div>
+						</RouterLink>
+					</div>
+					<p v-else class="mt-4 text-sm text-gray-500">
+						No related jobs have been recorded yet.
+					</p>
 				</section>
 
 				<section class="rounded-md border bg-white p-5">
@@ -436,6 +500,9 @@ export default {
 		importedSiteCount() {
 			return (this.state.sites || []).filter((site) => site.site).length;
 		},
+		recentJobs() {
+			return this.state.recent_jobs || [];
+		},
 		onboardingStages() {
 			return [
 				{
@@ -461,6 +528,16 @@ export default {
 						: 'Create managed site records from the discovered bench sites.',
 				},
 			];
+		},
+		operationSteps() {
+			return Object.entries(this.state.operation_status || {}).map(([key, value]) => ({
+				key,
+				label: value.label,
+				status: value.status || 'Idle',
+				detail: value.detail,
+				kind: value.kind || 'record',
+				route: this.executionRoute(value),
+			}));
 		},
 		nextActionLabel() {
 			if (!this.state.existing_bench_present || !this.state.bench_directory) {
@@ -524,6 +601,16 @@ export default {
 		restoreSiteFiles() {
 			this.statusMessage = '';
 			this.$resources.restoreSiteFiles.submit();
+		},
+		executionRoute(item) {
+			if (!item?.reference) return null;
+			if (item.kind === 'play') {
+				return { name: 'Server Play', params: { id: item.reference } };
+			}
+			if (item.kind === 'job') {
+				return { name: 'Server Job', params: { id: item.reference } };
+			}
+			return null;
 		},
 		formatTimestamp(value) {
 			return value ? date(value, 'llll') : 'Unknown time';
