@@ -125,7 +125,43 @@ sudo su - frappe
 cd /opt/triotek
 ```
 
-### 9. Install Bench as the frappe user
+### 9. Set up git and SSH for the working user
+
+Use SSH remotes, not HTTPS remotes, for the actual working copy.
+
+Also use your own forked repositories so the real git user on the server can publish changes under their own account.
+
+Generate an SSH key if the `frappe` user does not already have one:
+
+```bash
+ssh-keygen -t ed25519 -C "your-email@example.com"
+cat ~/.ssh/id_ed25519.pub
+```
+
+Add that public key to the GitHub account that owns your forks.
+
+Then configure git identity for this working user:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your-email@example.com"
+git config --global init.defaultBranch main
+```
+
+Quick SSH check:
+
+```bash
+ssh -T git@github.com
+```
+
+Fork these repositories into the actual GitHub account you want to publish from:
+
+* `Triotek-Ltd/triotek-bench`
+* `Triotek-Ltd/3plug-pro-control`
+
+For the commands below, replace `YOUR_GITHUB_USER` with that account or org name.
+
+### 10. Install Bench as the frappe user
 
 Install Node, Yarn, uv, Python, and the Triotek-controlled Bench as the `frappe` user.
 
@@ -140,7 +176,7 @@ npm install -g yarn
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.bashrc
 uv python install 3.14 --default
-uv tool install "git+https://github.com/Triotek-Ltd/triotek-bench.git"
+uv tool install "git+ssh://git@github.com/YOUR_GITHUB_USER/triotek-bench.git"
 ```
 
 Confirm Bench is available:
@@ -159,23 +195,30 @@ bench init frappe-bench
 cd /opt/frappe/frappe-bench
 ```
 
-### 10. Clone the 3plug product
+### 11. Clone the 3plug product from your fork
 
 ```bash
 cd /opt/triotek
-git clone https://github.com/Triotek-Ltd/3plug-pro-control.git control
+git clone git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git control
 cd /opt/triotek/control
 npm install --legacy-peer-deps
 ```
 
-### 11. Add the app into the bench
+Set the upstream remotes too, so later sync work is easier:
+
+```bash
+cd /opt/triotek/control
+git remote add upstream git@github.com:Triotek-Ltd/3plug-pro-control.git
+```
+
+### 12. Add the app into the bench
 
 ```bash
 cd /opt/frappe-bench
 bench get-app /opt/triotek/control
 ```
 
-### 12. Create the real control-panel site
+### 13. Create the real control-panel site
 
 ```bash
 cd /opt/frappe-bench
@@ -187,7 +230,7 @@ That site is the actual 3plug control panel.
 
 ## Phase 4: Bring up the control panel
 
-### 13. Start it in foreground first
+### 14. Start it in foreground first
 
 ```bash
 cd /opt/frappe-bench
@@ -196,7 +239,7 @@ bench start
 
 This is the easiest first run because you can see immediate errors.
 
-### 14. Verify the site responds
+### 15. Verify the site responds
 
 Open the site locally or from the browser once reachable.
 
@@ -208,7 +251,7 @@ curl -I http://127.0.0.1
 
 ## Phase 5: Enable HTTPS
 
-### 15. Point DNS first
+### 16. Point DNS first
 
 Make sure `3plug.yourdomain.com` resolves to the server's public IP.
 
@@ -218,7 +261,7 @@ Check:
 dig +short 3plug.yourdomain.com
 ```
 
-### 16. Issue the certificate
+### 17. Issue the certificate
 
 ```bash
 sudo certbot --nginx -d 3plug.yourdomain.com
@@ -229,7 +272,7 @@ Now the browser should stop showing the dangerous-site warning.
 
 ## Phase 6: First login and product readiness
 
-### 17. Log in
+### 18. Log in
 
 Open:
 
@@ -243,7 +286,7 @@ Then:
 * confirm the dashboard loads
 * confirm the operator team exists and has self-hosted server access enabled
 
-### 18. Confirm the SSH key is available
+### 19. Confirm the SSH key is available
 
 The managed-server flow depends on the default SSH key being available.
 
@@ -251,7 +294,7 @@ Inside the product, open the `Register Managed Server` flow and confirm it shows
 
 ## Phase 7: Register the first managed server
 
-### 19. Use the same server as the first managed server
+### 20. Use the same server as the first managed server
 
 For the first MVP run, use the same Linux machine hosting the control panel.
 
@@ -270,7 +313,7 @@ Enter:
 
 For the first same-server test, if app and db are on the same machine, use the same IP values for both roles.
 
-### 20. Submit registration
+### 21. Submit registration
 
 After submit, confirm:
 
@@ -281,13 +324,13 @@ After submit, confirm:
 
 ## Phase 8: Onboard the bench
 
-### 21. Open bench onboarding
+### 22. Open bench onboarding
 
 From the managed server:
 
 * open `Bench Onboarding`
 
-### 22. Configure the real bench path
+### 23. Configure the real bench path
 
 If the bench already exists on the server, enable existing bench import and use the real path, for example:
 
@@ -295,7 +338,7 @@ If the bench already exists on the server, enable existing bench import and use 
 /home/frappe/frappe-bench
 ```
 
-### 23. Run the onboarding flow
+### 24. Run the onboarding flow
 
 In order:
 
@@ -305,7 +348,7 @@ In order:
 4. create managed sites
 5. restore site files if needed
 
-### 24. Watch the execution state
+### 25. Watch the execution state
 
 The current onboarding page should now show:
 

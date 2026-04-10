@@ -183,7 +183,23 @@ sudo su - frappe
 cd /opt/triotek
 ```
 
-Then run the user-level Bench setup with the Triotek-controlled Bench source, not the community one:
+Before cloning anything, configure git and SSH for the real working user:
+
+```bash
+ssh-keygen -t ed25519 -C "your-email@example.com"
+cat ~/.ssh/id_ed25519.pub
+git config --global user.name "Your Name"
+git config --global user.email "your-email@example.com"
+git config --global init.defaultBranch main
+ssh -T git@github.com
+```
+
+Fork these repositories into the GitHub account that should own later changes:
+
+* `Triotek-Ltd/triotek-bench`
+* `Triotek-Ltd/3plug-pro-control`
+
+Then run the user-level Bench setup with the Triotek-controlled Bench source over SSH, not the community one:
 
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
@@ -194,7 +210,7 @@ npm install -g yarn
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.bashrc
 uv python install 3.14 --default
-uv tool install "git+https://github.com/Triotek-Ltd/triotek-bench.git"
+uv tool install "git+ssh://git@github.com/YOUR_GITHUB_USER/triotek-bench.git"
 
 cd /opt
 mkdir -p frappe
@@ -207,9 +223,10 @@ Once Bench is available on the server:
 
 ```bash
 cd /opt/triotek
-git clone https://github.com/Triotek-Ltd/3plug-pro-control.git control
+git clone git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git control
 cd control
 npm install --legacy-peer-deps
+git remote add upstream git@github.com:Triotek-Ltd/3plug-pro-control.git
 ```
 
 Then add the app into your Frappe bench:
