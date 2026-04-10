@@ -398,14 +398,19 @@ and confirm the path you want is under `/home/frappe/.local/bin/uv`.
 
 ### 12d. Install Python for Bench
 
-This stack currently supports Python 3.10, 3.11, and 3.12. Do not use Python 3.14 for the first setup run because dependency builds such as `greenlet` can fail during `bench get-app`.
+Use Python 3.12 for the first setup run.
+
+Why:
+
+* Python 3.11 is too old for the Frappe code currently being pulled during `bench init`
+* Python 3.14 is too new for parts of the Press-derived stack and can fail on dependencies such as `greenlet`
 
 ```bash
-uv python install 3.11 --default
+uv python install 3.12 --default
 python3 --version
 ```
 
-If you already created a bench with Python 3.14 and `bench get-app /opt/triotek/control` failed with a `greenlet` build error, remove that failed bench and recreate it with Python 3.11 before continuing.
+If you already created a bench with Python 3.11 or Python 3.14 and installation failed, remove that failed bench and recreate it with Python 3.12 before continuing.
 
 ### 12e. Install Bench from the user-owned fork of Triotek Bench
 
@@ -433,10 +438,15 @@ sudo chown -R frappe:frappe /opt/triotek
 
 Then return to the `frappe` user and continue:
 
+Use an explicit Frappe source and branch for this stack instead of letting `bench init` choose its default. The project helper install path pins:
+
+* Frappe source: `https://github.com/balamurali27/frappe`
+* Frappe branch: `fc-ci`
+
 ```bash
 cd /opt/triotek
 pwd
-bench init frappe-bench
+bench init frappe-bench --frappe-path https://github.com/balamurali27/frappe --frappe-branch fc-ci
 ```
 
 After `bench init` finishes successfully, verify the new bench directory:
@@ -446,6 +456,8 @@ cd /opt/triotek/frappe-bench
 pwd
 bench --version
 ```
+
+If `bench init` was already run with the wrong Frappe source or branch and failed during Frappe install, remove the failed bench and rerun the command above with the explicit `--frappe-path` and `--frappe-branch`.
 
 ### 13. Clone the 3plug product from your fork
 
