@@ -56,81 +56,216 @@ See:
 * [Single-server adaptation](./triotek/planning/docs/SINGLE_SERVER_ADAPTATION.md)
 * [Cleanup and transition log](./triotek/planning/docs/CLEANUP_ACTIVITY_LOG.md)
 
-## Actual Linux server setup
+## Same-server control panel setup
 
-This is the updated setup path for testing on real Linux infrastructure.
+This is the actual deployment shape we are aiming for first:
 
-### 1. Prepare the 3plug control plane
+* one Linux server
+* one Frappe bench on that server
+* one 3plug control-panel site on that same server
+* that site is the real 3plug product you will use
 
-Before onboarding a target server, make sure the control plane itself is ready:
+So you are not installing a separate Press and then a separate 3plug.
 
-* this repo is deployed and reachable
-* the dashboard is accessible
-* your operator team has self-hosted server access enabled
-* a default SSH key exists in the control plane, because the managed-server flow copies and uses that key for verification
+You are using this repo as your Press-derived product and installing its `press` app into the bench that will host the real 3plug control panel.
 
-The current managed registration page uses:
+### 1. Prepare the Linux server
+
+Start by creating a clean working directory and updating the base system.
+
+```bash
+sudo mkdir -p /opt/triotek
+sudo chown -R $USER:$USER /opt/triotek
+cd /opt/triotek
+
+sudo apt update
+sudo apt -y upgrade
+sudo apt -y install git curl vim ufw fail2ban nginx certbot python3-certbot-nginx
+```
+
+If you prefer a separate app user:
+
+```bash
+sudo adduser frappe
+sudo usermod -aG sudo frappe
+```
+
+### 2. Do the first server cleanup and layout
+
+Use a clear directory layout before installing the control panel:
+
+```bash
+sudo mkdir -p /opt/triotek/control
+sudo mkdir -p /opt/triotek/logs
+sudo chown -R $USER:$USER /opt/triotek
+```
+
+If this server already has unrelated old test files or abandoned benches, move them out of the way before you begin so the first install is easy to reason about.
+
+### 3. Apply basic security hardening first
+
+Before exposing the control panel, do the basic hardening that reduces avoidable noise and brute-force risk.
+
+#### Firewall
+
+If the firewall is not already enabled, set it up:
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+sudo ufw status verbose
+```
+
+#### Fail2ban
+
+Enable brute-force protection:
+
+```bash
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+sudo systemctl status fail2ban
+```
+
+You can later tune `/etc/fail2ban/jail.local`, but enabling the service early already helps.
+
+#### SSH hygiene
+
+Recommended first-pass SSH hygiene:
+
+* use SSH keys, not password login, wherever possible
+* avoid direct root password SSH
+* confirm the SSH port you intend to use
+* keep the authorized keys clean and intentional
+
+If you want to harden SSH further, the Press base already contains hardening-oriented playbooks such as:
+
+* `press/playbooks/harden.yml`
+* `press/playbooks/fail2ban.yml`
+* `press/playbooks/ufw.yml`
+* `press/playbooks/roles/sshd_hardening/*`
+
+### 4. Set up the bench that will host 3plug itself
+
+This is the bench that will run the actual control panel.
+
+Follow the normal Frappe Bench host prerequisites first, then create the bench. The official Bench setup reference is:
+
+* https://docs.frappe.io/framework/user/en/tutorial/install-and-setup-bench
+
+Once Bench is available on the server:
+
+```bash
+cd /opt/triotek
+git clone https://github.com/Triotek-Ltd/3plug-pro-control.git control
+cd control
+npm install --legacy-peer-deps
+```
+
+Then add the app into your Frappe bench:
+
+```bash
+cd /opt/frappe-bench
+bench get-app /opt/triotek/control
+bench new-site 3plug.yourdomain.com
+bench --site 3plug.yourdomain.com install-app press
+```
+
+That site, `3plug.yourdomain.com`, is your actual 3plug control panel.
+
+### 5. Run the control panel locally first
+
+For the first boot:
+
+```bash
+cd /opt/frappe-bench
+bench start
+```
+
+If you are still validating the app, keep it in foreground/dev mode first so you can see what breaks quickly.
+
+### 6. Put HTTPS in front so the browser does not warn
+
+Use a real domain that points to the server first, then issue a certificate.
+
+Basic Nginx + Certbot path:
+
+```bash
+sudo certbot --nginx -d 3plug.yourdomain.com
+```
+
+After that, test renewal:
+
+```bash
+sudo certbot renew --dry-run
+```
+
+This is the simplest way to avoid the browser showing a dangerous-site warning.
+
+The Press base also has TLS-related machinery and certificate records, but for the first live control-panel setup, a straightforward valid public certificate is the right starting point.
+
+### 7. Log into the real 3plug control panel
+
+After the site is up:
+
+* open `https://3plug.yourdomain.com`
+* log in as the site administrator
+* make sure the operator team has self-hosted server access enabled
+* confirm a default SSH key exists, because the managed-server registration flow exposes and uses it
+
+The managed registration page pulls:
 
 * a self-hosted server plan from `press.api.selfhosted.options_for_new`
-* the default SSH public key from the same endpoint
+* the default SSH public key from that same endpoint
 
-### 2. Prepare the target Linux environment
+### 8. Register the server inside 3plug
 
-The current managed-server flow expects Linux hosts that 3plug can reach over SSH and verify with Ansible.
+If you are testing the same server that hosts the control panel, start with that same machine as the first managed server.
 
-Current baseline assumptions from the product:
+Use:
 
-* SSH access from 3plug to the target host or hosts
-* the default 3plug SSH key is installed for the verification user
-* private IP values supplied in the form must actually belong to the target machines
-* minimum baseline remains 4 GB RAM, 2 vCPU, and 40+ GB storage
-* Docker is part of the environment baseline and is not currently treated as a special blocker
+* `Servers`
+* `Register Managed Server`
 
-The current registration flow asks for:
+Current form inputs:
 
+* server title
 * application public IP
 * application private IP
 * database public IP
 * database private IP
 
-If your first live setup uses a single Linux box for both application and database duties, use the matching app and db IP values for that box. This is an inference from the current registration flow and should be the simplest first test.
-
-### 3. Register the managed server in 3plug
-
-Use the dashboard flow:
-
-* open `Servers`
-* choose `Register Managed Server`
-* enter the server title and IP details
-* copy the displayed SSH key if you still need to place it on the target host
-* submit the registration
+For the first same-server test, if the same Linux machine is serving both app and db roles, use the matching app and db IPs for that same box.
 
 What happens next:
 
 * 3plug creates the self-hosted server record
-* 3plug verifies both application and database endpoints
-* 3plug starts the managed server setup flow
-* the next operator visibility is on the server plays and jobs
+* 3plug verifies reachability and minimum specs
+* 3plug starts the setup flow
+* plays and jobs become visible from the server pages
 
 Relevant product files:
 
 * [RegisterManagedServer.vue](./dashboard/src/pages/RegisterManagedServer.vue)
 * [selfhosted.py](./press/api/selfhosted.py)
 
-### 4. Onboard the existing bench
+### 9. Onboard the existing bench
 
 After the server is registered:
 
 * open the managed server
 * open the `Bench Onboarding` tab
 * enable existing bench import if the bench already exists on the Linux server
-* save the real bench path
+* save the real bench path such as `/home/frappe/frappe-bench`
 * run bench discovery
 * create the managed bench
 * create managed sites
 * run file restore if needed
 
-The onboarding page now exposes:
+The onboarding page now shows:
 
 * stage-by-stage onboarding progress
 * recent jobs
@@ -142,9 +277,35 @@ Relevant product files:
 * [ServerBenchOnboarding.vue](./dashboard/src/components/server/ServerBenchOnboarding.vue)
 * [selfhosted.py](./press/api/selfhosted.py)
 
-### 5. Validate the first live test
+## Control panel workflow after setup
 
-For the first real server test, keep it narrow:
+This is the current practical guidebook flow for using 3plug after the control panel is live.
+
+### First-use workflow
+
+1. bring up the control-panel site
+2. confirm login works over HTTPS
+3. confirm firewall and fail2ban are active on the host
+4. confirm the default SSH key is available in the control panel
+5. register the first managed server
+6. onboard the existing bench
+7. import managed sites
+8. confirm plays, jobs, and forensic events are visible
+
+### Normal operator workflow
+
+After setup, 3plug is meant to be used like this:
+
+1. open the home control center and review server, bench, site, job, and forensic summaries
+2. open the managed server to inspect readiness and recent plays
+3. use bench onboarding when adopting or re-syncing the real bench state
+4. inspect benches and sites from the normal detail pages
+5. watch jobs when actions are running
+6. use forensic events and forensic signals when something fails repeatedly
+
+### First live test workflow
+
+For the first real test on a live server, keep it narrow:
 
 1. register one managed server
 2. discover one real bench
@@ -152,8 +313,9 @@ For the first real server test, keep it narrow:
 4. import one or more managed sites
 5. confirm jobs and plays are visible
 6. confirm forensic events and signals are being captured
+7. note every unclear status, broken assumption, or missing next action
 
-This is the quickest route to useful feedback.
+This is the fastest route to actionable feedback.
 
 ## Local verification
 
