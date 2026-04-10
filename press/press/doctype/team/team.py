@@ -217,6 +217,8 @@ class Team(Document):
 		bench_names = [bench.name for bench in benches]
 		site_names = [site.name for site in sites]
 		recent_jobs = self._get_recent_team_jobs(server_names, bench_names, site_names)
+		onboarding = self._get_onboarding_summary()
+		job_scope_summary = self._get_job_scope_summary(server_names, bench_names, site_names)
 		open_signals = fetch_forensic_incident_signals(
 			hours=72,
 			min_occurrences=2,
@@ -263,9 +265,97 @@ class Team(Document):
 			"servers": servers,
 			"benches": benches,
 			"sites": sites,
+			"onboarding": onboarding,
+			"job_scope_summary": job_scope_summary,
 			"recent_jobs": recent_jobs,
 			"recent_signals": recent_signals,
 		}
+
+	def _get_onboarding_summary(self):
+		self_hosted_server = frappe.db.get_value(
+			"Self Hosted Server",
+			{"team": self.name, "status": ["!=", "Archived"]},
+			"name",
+			order_by="modified desc",
+		)
+		if not self_hosted_server:
+			return {
+				"exists": False,
+				"stage": "No managed server",
+				"next_action": "Register managed server",
+				"description": "Start by registering the first managed server for this 3plug deployment.",
+			}
+
+		server = frappe.get_doc("Self Hosted Server", self_hosted_server)
+		imported_site_count = len([row for row in server.sites or [] if row.site])
+		if not server.existing_bench_present or not server.bench_directory:
+			stage = "Bench source pending"
+			next_action = "Configure bench source"
+			description = "Save the real bench path on the managed server so 3plug can inspect it."
+		elif not server.apps and not server.sites:
+			stage = "Discovery pending"
+			next_action = "Run bench discovery"
+			description = "Capture the actual apps and sites from the existing bench before importing them."
+		elif not server.release_group:
+			stage = "Managed bench pending"
+			next_action = "Create managed bench"
+			description = "Turn the discovered bench into a managed 3plug bench record."
+		elif not imported_site_count:
+			stage = "Managed sites pending"
+			next_action = "Create managed sites"
+			description = "Create site records so the server, bench, and site spine is complete."
+		elif server.bench_directory:
+			stage = "Site restore ready"
+			next_action = "Restore site files"
+			description = "Run file restoration so imported sites are ready for live operations."
+		else:
+			stage = "Operational"
+			next_action = "Review jobs and sites"
+			description = "The main managed import path is in place. Continue with normal operations."
+
+		return {
+			"exists": True,
+			"self_hosted_server": server.name,
+			"server": server.server,
+			"status": server.status,
+			"stage": stage,
+			"next_action": next_action,
+			"description": description,
+			"bench_directory": server.bench_directory,
+			"existing_bench_present": bool(server.existing_bench_present),
+			"release_group": server.release_group,
+			"app_count": len(server.apps or []),
+			"discovered_site_count": len(server.sites or []),
+			"managed_site_count": imported_site_count,
+		}
+
+	def _get_job_scope_summary(
+		self, server_names: list[str], bench_names: list[str], site_names: list[str]
+	):
+		if not (server_names or bench_names or site_names):
+			return {"server_jobs": 0, "bench_jobs": 0, "site_jobs": 0}
+
+		AgentJob = frappe.qb.DocType("Agent Job")
+		summary = {"server_jobs": 0, "bench_jobs": 0, "site_jobs": 0}
+		if server_names:
+			summary["server_jobs"] = (
+				frappe.qb.from_(AgentJob)
+				.select(Count("*"))
+				.where(AgentJob.server.isin(server_names))
+			).run()[0][0]
+		if bench_names:
+			summary["bench_jobs"] = (
+				frappe.qb.from_(AgentJob)
+				.select(Count("*"))
+				.where(AgentJob.bench.isin(bench_names))
+			).run()[0][0]
+		if site_names:
+			summary["site_jobs"] = (
+				frappe.qb.from_(AgentJob)
+				.select(Count("*"))
+				.where(AgentJob.site.isin(site_names))
+			).run()[0][0]
+		return summary
 
 	def _get_recent_team_jobs(self, server_names: list[str], bench_names: list[str], site_names: list[str]):
 		if not (server_names or bench_names or site_names):

@@ -43,6 +43,85 @@
 				<section class="rounded-xl border bg-white p-5">
 					<div class="flex items-center justify-between gap-4">
 						<div>
+							<h3 class="text-lg font-semibold text-gray-900">Onboarding Status</h3>
+							<p class="mt-1 text-sm text-gray-600">
+								The shortest path to MVP is the managed server to bench to site flow.
+							</p>
+						</div>
+						<Button
+							variant="ghost"
+							:route="
+								onboarding.exists
+									? { name: 'Server Detail Bench Onboarding', params: { name: onboarding.server } }
+									: { name: 'Register Managed Server' }
+							"
+						>
+							{{ onboarding.exists ? 'Open onboarding' : 'Register server' }}
+						</Button>
+					</div>
+					<div class="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+						<div class="rounded-lg border px-4 py-4">
+							<div class="flex items-center justify-between gap-3">
+								<div>
+									<p class="text-sm text-gray-500">Current stage</p>
+									<p class="mt-1 text-lg font-semibold text-gray-900">
+										{{ onboarding.stage || 'Not started' }}
+									</p>
+								</div>
+								<Badge :label="onboarding.status || 'Pending'" />
+							</div>
+							<p class="mt-3 text-sm text-gray-600">
+								{{ onboarding.description }}
+							</p>
+							<div class="mt-4 grid gap-3 sm:grid-cols-3">
+								<div class="rounded-lg bg-gray-50 px-3 py-3">
+									<p class="text-xs uppercase tracking-wide text-gray-500">
+										Discovered Apps
+									</p>
+									<p class="mt-2 text-xl font-semibold text-gray-900">
+										{{ onboarding.app_count || 0 }}
+									</p>
+								</div>
+								<div class="rounded-lg bg-gray-50 px-3 py-3">
+									<p class="text-xs uppercase tracking-wide text-gray-500">
+										Discovered Sites
+									</p>
+									<p class="mt-2 text-xl font-semibold text-gray-900">
+										{{ onboarding.discovered_site_count || 0 }}
+									</p>
+								</div>
+								<div class="rounded-lg bg-gray-50 px-3 py-3">
+									<p class="text-xs uppercase tracking-wide text-gray-500">
+										Managed Sites
+									</p>
+									<p class="mt-2 text-xl font-semibold text-gray-900">
+										{{ onboarding.managed_site_count || 0 }}
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="rounded-lg border px-4 py-4">
+							<p class="text-sm text-gray-500">Next action</p>
+							<p class="mt-2 text-lg font-semibold text-gray-900">
+								{{ onboarding.next_action || 'Review setup' }}
+							</p>
+							<p class="mt-3 text-sm text-gray-600">
+								{{
+									onboarding.server
+										? `Managed server: ${onboarding.server}`
+										: 'No managed server has been registered yet.'
+								}}
+							</p>
+							<p v-if="onboarding.bench_directory" class="mt-2 text-xs text-gray-500">
+								Bench path: {{ onboarding.bench_directory }}
+							</p>
+						</div>
+					</div>
+				</section>
+
+				<section class="rounded-xl border bg-white p-5">
+					<div class="flex items-center justify-between gap-4">
+						<div>
 							<h3 class="text-lg font-semibold text-gray-900">Managed Server</h3>
 							<p class="mt-1 text-sm text-gray-600">
 								The server side of the product should stay visible and simple.
@@ -154,6 +233,26 @@
 							<h3 class="text-lg font-semibold text-gray-900">Active Jobs</h3>
 							<p class="mt-1 text-sm text-gray-600">
 								Operator actions should always be visible as tracked jobs.
+							</p>
+						</div>
+					</div>
+					<div class="mt-4 grid gap-3 sm:grid-cols-3">
+						<div class="rounded-lg bg-gray-50 px-3 py-3">
+							<p class="text-xs uppercase tracking-wide text-gray-500">Server Jobs</p>
+							<p class="mt-2 text-xl font-semibold text-gray-900">
+								{{ jobScopeSummary.server_jobs || 0 }}
+							</p>
+						</div>
+						<div class="rounded-lg bg-gray-50 px-3 py-3">
+							<p class="text-xs uppercase tracking-wide text-gray-500">Bench Jobs</p>
+							<p class="mt-2 text-xl font-semibold text-gray-900">
+								{{ jobScopeSummary.bench_jobs || 0 }}
+							</p>
+						</div>
+						<div class="rounded-lg bg-gray-50 px-3 py-3">
+							<p class="text-xs uppercase tracking-wide text-gray-500">Site Jobs</p>
+							<p class="mt-2 text-xl font-semibold text-gray-900">
+								{{ jobScopeSummary.site_jobs || 0 }}
 							</p>
 						</div>
 					</div>
@@ -273,6 +372,12 @@ export default {
 		},
 		sites() {
 			return this.data.sites || [];
+		},
+		onboarding() {
+			return this.data.onboarding || {};
+		},
+		jobScopeSummary() {
+			return this.data.job_scope_summary || {};
 		},
 		recentJobs() {
 			return this.data.recent_jobs || [];

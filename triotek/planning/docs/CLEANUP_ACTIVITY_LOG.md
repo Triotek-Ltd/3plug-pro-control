@@ -523,3 +523,15 @@ Change:
 Reason:
 
 * the real product path is server -> bench -> site -> jobs/plays, so the bench onboarding surface needed to continue into site onboarding instead of stopping halfway
+
+### 2026-04-09
+
+Change:
+
+* added home-dashboard onboarding state so operators can see the current managed server -> bench -> site stage without opening the server tabs first
+* added home job-scope coverage totals for server jobs, bench jobs, and site jobs so the control center confirms the execution spine is being tracked across all three layers
+* verified the updated dashboard with the local `LOCAL_VERIFY_BUILD=1` build path after the home control-center changes
+
+Reason:
+
+* the product is now close enough to real live-server testing that the home view needs to answer two operational questions directly: what step is next, and are server, bench, and site jobs actually being tracked
