@@ -412,6 +412,23 @@ bench --version
 
 ### 12f. Create the Bench workspace under `/opt/triotek`
 
+Bench should run as the `frappe` user, not with `sudo`.
+
+First verify the workspace is owned by `frappe`:
+
+```bash
+cd /opt
+ls -ld /opt/triotek
+```
+
+If `/opt/triotek` is not owned by `frappe`, switch back to the original sudo-capable admin user and fix it:
+
+```bash
+sudo chown -R frappe:frappe /opt/triotek
+```
+
+Then return to the `frappe` user and continue:
+
 ```bash
 cd /opt/triotek
 pwd
