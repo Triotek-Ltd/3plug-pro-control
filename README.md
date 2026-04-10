@@ -168,12 +168,69 @@ Efficient base commands on Ubuntu / Debian:
 ```bash
 # run these package steps as the original sudo-capable admin user
 sudo apt update
-sudo apt install -y git redis-server libmariadb-dev mariadb-server mariadb-client pkg-config xvfb libfontconfig cron
+sudo apt install -y git redis-server libmariadb-dev mariadb-server mariadb-client pkg-config xvfb libfontconfig cron \
+  python3-dev python3-pip python3-venv software-properties-common build-essential
+sudo systemctl enable mariadb redis-server
+sudo systemctl start mariadb redis-server
+sudo systemctl status mariadb --no-pager
+sudo systemctl status redis-server --no-pager
+```
+
+Run MariaDB hardening before Bench:
+
+```bash
 sudo mariadb-secure-installation
+```
+
+Recommended answers for a fresh server:
+
+1. `Enter current password for root`: press `Enter`
+2. `Switch to unix_socket authentication`: `Y`
+3. `Change the root password`: `Y` only if you want a MariaDB password in addition to socket auth
+4. `Remove anonymous users`: `Y`
+5. `Disallow root login remotely`: `Y`
+6. `Remove test database and access to it`: `Y`
+7. `Reload privilege tables now`: `Y`
+
+Then verify MariaDB is actually healthy:
+
+```bash
+sudo mariadb -e "SELECT VERSION();"
+sudo mariadb -e "SHOW DATABASES;"
+```
+
+Set the server character set before creating the bench:
+
+```bash
+sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+
+Make sure this exists under `[mysqld]`:
+
+```ini
+[mysqld]
+character-set-client-handshake = FALSE
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+```
+
+Restart and verify:
+
+```bash
+sudo systemctl restart mariadb
+sudo mariadb -e "SHOW VARIABLES LIKE 'character_set_server';"
+sudo mariadb -e "SHOW VARIABLES LIKE 'collation_server';"
+sudo systemctl status mariadb --no-pager
+```
+
+Install wkhtmltopdf with patched Qt:
+
+```bash
 
 cd /tmp
 wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 sudo dpkg -i wkhtmltox_0.12.6.1-2.jammy_amd64.deb || sudo apt-get -f install -y
+wkhtmltopdf --version
 ```
 
 Then switch into the working user:
@@ -249,6 +306,7 @@ mkdir -p frappe
 cd /opt/frappe
 bench init frappe-bench
 cd /opt/frappe/frappe-bench
+bench --version
 ```
 
 Once Bench is available on the server:
@@ -265,7 +323,7 @@ git remote -v
 Then add the app into your Frappe bench:
 
 ```bash
-cd /opt/frappe-bench
+cd /opt/frappe/frappe-bench
 bench get-app /opt/triotek/control
 bench new-site 3plug.yourdomain.com
 bench --site 3plug.yourdomain.com install-app press
@@ -278,7 +336,7 @@ That site, `3plug.yourdomain.com`, is your actual 3plug control panel.
 For the first boot:
 
 ```bash
-cd /opt/frappe-bench
+cd /opt/frappe/frappe-bench
 bench start
 ```
 
