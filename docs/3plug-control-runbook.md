@@ -344,7 +344,7 @@ which wkhtmltopdf
 
 ### 12. Install Bench as the frappe user
 
-Install Node, Yarn, uv, Python, and the Triotek-controlled Bench as the `frappe` user.
+Install Node, Yarn, uv, Python, and the user-owned fork of the Triotek-controlled Bench as the `frappe` user.
 
 Do not use the community Bench package for this setup.
 
@@ -369,11 +369,9 @@ bench --version
 Create the bench itself:
 
 ```bash
-cd /opt
-mkdir -p frappe
-cd /opt/frappe
+cd /opt/triotek
 bench init frappe-bench
-cd /opt/frappe/frappe-bench
+cd /opt/triotek/frappe-bench
 bench --version
 ```
 
@@ -397,14 +395,14 @@ git remote -v
 ### 14. Add the app into the bench
 
 ```bash
-cd /opt/frappe/frappe-bench
+cd /opt/triotek/frappe-bench
 bench get-app /opt/triotek/control
 ```
 
 ### 15. Create the real control-panel site
 
 ```bash
-cd /opt/frappe/frappe-bench
+cd /opt/triotek/frappe-bench
 bench new-site 3plug.yourdomain.com
 bench --site 3plug.yourdomain.com install-app press
 ```
@@ -416,7 +414,7 @@ That site is the actual 3plug control panel.
 ### 16. Start it in foreground first
 
 ```bash
-cd /opt/frappe/frappe-bench
+cd /opt/triotek/frappe-bench
 bench start
 ```
 

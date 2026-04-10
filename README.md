@@ -417,7 +417,7 @@ which wkhtmltopdf
 
 This is the bench that will run the actual control panel.
 
-Then run the user-level Bench setup with the Triotek-controlled Bench source over SSH, not the community one:
+Then run the user-level Bench setup with the user-owned fork of the Triotek-controlled Bench source over SSH, not the community one:
 
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
@@ -430,11 +430,9 @@ source ~/.bashrc
 uv python install 3.14 --default
 uv tool install "git+ssh://git@github.com/YOUR_GITHUB_USER/triotek-bench.git"
 
-cd /opt
-mkdir -p frappe
-cd /opt/frappe
+cd /opt/triotek
 bench init frappe-bench
-cd /opt/frappe/frappe-bench
+cd /opt/triotek/frappe-bench
 bench --version
 ```
 
@@ -452,7 +450,7 @@ git remote -v
 Then add the app into your Frappe bench:
 
 ```bash
-cd /opt/frappe/frappe-bench
+cd /opt/triotek/frappe-bench
 bench get-app /opt/triotek/control
 bench new-site 3plug.yourdomain.com
 bench --site 3plug.yourdomain.com install-app press
@@ -465,7 +463,7 @@ That site, `3plug.yourdomain.com`, is your actual 3plug control panel.
 For the first boot:
 
 ```bash
-cd /opt/frappe/frappe-bench
+cd /opt/triotek/frappe-bench
 bench start
 ```
 
