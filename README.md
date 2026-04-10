@@ -88,14 +88,12 @@ sudo apt -y upgrade
 sudo apt -y install git curl vim ufw fail2ban nginx certbot python3-certbot-nginx
 ```
 
-Create the `frappe` user and switch into it before continuing:
+Create the `frappe` user, but stay on the current sudo-capable admin user until the system-level setup is done:
 
 ```bash
 sudo adduser frappe
 sudo usermod -aG sudo frappe
 sudo chown -R frappe:frappe /opt/triotek
-sudo su - frappe
-cd /opt/triotek
 ```
 
 ### 2. Do the first server cleanup and layout
@@ -119,9 +117,9 @@ Before exposing the control panel, do the basic hardening that reduces avoidable
 If the firewall is not already enabled, set it up:
 
 ```bash
+sudo ufw allow OpenSSH
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw allow OpenSSH
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw enable
@@ -168,6 +166,7 @@ Use the current official Bench setup path, then create the bench that will host 
 Efficient base commands on Ubuntu / Debian:
 
 ```bash
+# run these package steps as the original sudo-capable admin user
 sudo apt update
 sudo apt install -y git redis-server libmariadb-dev mariadb-server mariadb-client pkg-config xvfb libfontconfig cron
 sudo mariadb-secure-installation
@@ -175,7 +174,18 @@ sudo mariadb-secure-installation
 cd /tmp
 wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 sudo dpkg -i wkhtmltox_0.12.6.1-2.jammy_amd64.deb || sudo apt-get -f install -y
+```
 
+Then switch into the working user:
+
+```bash
+sudo su - frappe
+cd /opt/triotek
+```
+
+Then run the user-level Bench setup:
+
+```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 source ~/.bashrc
 nvm install 24

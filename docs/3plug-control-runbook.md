@@ -31,14 +31,12 @@ sudo chown -R $USER:$USER /opt/triotek
 cd /opt/triotek
 ```
 
-### 2. Create the frappe user and switch into it
+### 2. Create the frappe user, but stay on the sudo-capable admin user for system setup
 
 ```bash
 sudo adduser frappe
 sudo usermod -aG sudo frappe
 sudo chown -R frappe:frappe /opt/triotek
-sudo su - frappe
-cd /opt/triotek
 ```
 
 ### 3. Do first cleanup
@@ -57,10 +55,12 @@ If you find old test installs you do not want, move them aside first instead of 
 
 ### 4. Enable the firewall
 
+Run the SSH allow rule first so you do not lock yourself out.
+
 ```bash
+sudo ufw allow OpenSSH
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw allow OpenSSH
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw enable
@@ -93,14 +93,14 @@ sudo systemctl status ssh
 
 ## Phase 3: Prepare the Frappe bench host
 
-### 7. Install Bench using the normal Frappe path
+### 7. Install system packages for Bench as the sudo-capable admin user
 
 Use the current Bench setup path for Debian / Ubuntu. The official references are:
 
 * https://docs.frappe.io/framework/user/en/installation
 * https://docs.frappe.io/framework/user/en/tutorial/install-and-setup-bench
 
-Install the Bench prerequisites:
+Install the Bench prerequisites as the admin user:
 
 ```bash
 sudo apt update
@@ -115,6 +115,17 @@ cd /tmp
 wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 sudo dpkg -i wkhtmltox_0.12.6.1-2.jammy_amd64.deb || sudo apt-get -f install -y
 ```
+
+### 8. Switch into the frappe user for bench and app work
+
+After the admin-only package installation is done, switch into the working user:
+
+```bash
+sudo su - frappe
+cd /opt/triotek
+```
+
+### 9. Install Bench as the frappe user
 
 Install Node, Yarn, uv, Python, and Bench as the `frappe` user:
 
@@ -146,7 +157,7 @@ bench init frappe-bench
 cd /opt/frappe/frappe-bench
 ```
 
-### 8. Clone the 3plug product
+### 10. Clone the 3plug product
 
 ```bash
 cd /opt/triotek
@@ -155,14 +166,14 @@ cd /opt/triotek/control
 npm install --legacy-peer-deps
 ```
 
-### 9. Add the app into the bench
+### 11. Add the app into the bench
 
 ```bash
 cd /opt/frappe-bench
 bench get-app /opt/triotek/control
 ```
 
-### 10. Create the real control-panel site
+### 12. Create the real control-panel site
 
 ```bash
 cd /opt/frappe-bench
@@ -174,7 +185,7 @@ That site is the actual 3plug control panel.
 
 ## Phase 4: Bring up the control panel
 
-### 11. Start it in foreground first
+### 13. Start it in foreground first
 
 ```bash
 cd /opt/frappe-bench
@@ -183,7 +194,7 @@ bench start
 
 This is the easiest first run because you can see immediate errors.
 
-### 12. Verify the site responds
+### 14. Verify the site responds
 
 Open the site locally or from the browser once reachable.
 
@@ -195,7 +206,7 @@ curl -I http://127.0.0.1
 
 ## Phase 5: Enable HTTPS
 
-### 13. Point DNS first
+### 15. Point DNS first
 
 Make sure `3plug.yourdomain.com` resolves to the server's public IP.
 
@@ -205,7 +216,7 @@ Check:
 dig +short 3plug.yourdomain.com
 ```
 
-### 14. Issue the certificate
+### 16. Issue the certificate
 
 ```bash
 sudo certbot --nginx -d 3plug.yourdomain.com
@@ -216,7 +227,7 @@ Now the browser should stop showing the dangerous-site warning.
 
 ## Phase 6: First login and product readiness
 
-### 15. Log in
+### 17. Log in
 
 Open:
 
@@ -230,7 +241,7 @@ Then:
 * confirm the dashboard loads
 * confirm the operator team exists and has self-hosted server access enabled
 
-### 16. Confirm the SSH key is available
+### 18. Confirm the SSH key is available
 
 The managed-server flow depends on the default SSH key being available.
 
@@ -238,7 +249,7 @@ Inside the product, open the `Register Managed Server` flow and confirm it shows
 
 ## Phase 7: Register the first managed server
 
-### 17. Use the same server as the first managed server
+### 19. Use the same server as the first managed server
 
 For the first MVP run, use the same Linux machine hosting the control panel.
 
@@ -257,7 +268,7 @@ Enter:
 
 For the first same-server test, if app and db are on the same machine, use the same IP values for both roles.
 
-### 18. Submit registration
+### 20. Submit registration
 
 After submit, confirm:
 
@@ -268,13 +279,13 @@ After submit, confirm:
 
 ## Phase 8: Onboard the bench
 
-### 19. Open bench onboarding
+### 21. Open bench onboarding
 
 From the managed server:
 
 * open `Bench Onboarding`
 
-### 20. Configure the real bench path
+### 22. Configure the real bench path
 
 If the bench already exists on the server, enable existing bench import and use the real path, for example:
 
@@ -282,7 +293,7 @@ If the bench already exists on the server, enable existing bench import and use 
 /home/frappe/frappe-bench
 ```
 
-### 21. Run the onboarding flow
+### 23. Run the onboarding flow
 
 In order:
 
@@ -292,7 +303,7 @@ In order:
 4. create managed sites
 5. restore site files if needed
 
-### 22. Watch the execution state
+### 24. Watch the execution state
 
 The current onboarding page should now show:
 
