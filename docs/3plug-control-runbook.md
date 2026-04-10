@@ -77,19 +77,37 @@ sudo systemctl status fail2ban
 
 ### 6. Check SSH hygiene
 
-At minimum:
-
-* use SSH keys
-* avoid password SSH for privileged access
-* confirm the SSH port you intend to use
-* keep only intended keys in `authorized_keys`
-
-Quick checks:
+Do the first SSH hardening pass on the server itself:
 
 ```bash
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 sudo grep -E "^(Port|PermitRootLogin|PasswordAuthentication|PubkeyAuthentication)" /etc/ssh/sshd_config
-sudo systemctl status ssh
+sudo nano /etc/ssh/sshd_config
 ```
+
+Set or confirm these values:
+
+```text
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+```
+
+Important:
+
+* only set `PasswordAuthentication no` after you have confirmed key-based SSH works for your admin user
+* keep your current SSH session open while testing a second session
+* if you use a custom SSH port, set it here before restarting SSH
+
+Then reload and verify:
+
+```bash
+sudo systemctl restart ssh
+sudo systemctl status ssh --no-pager
+sudo grep -E "^(Port|PermitRootLogin|PasswordAuthentication|PubkeyAuthentication)" /etc/ssh/sshd_config
+```
+
+The GitHub SSH key for the `frappe` working user is created later in Phase 3 during git setup. This Phase 2 step is only for securing SSH access to the server itself.
 
 ## Phase 3: Prepare the Frappe bench host
 

@@ -140,12 +140,42 @@ You can later tune `/etc/fail2ban/jail.local`, but enabling the service early al
 
 #### SSH hygiene
 
-Recommended first-pass SSH hygiene:
+Do the first SSH hardening pass here on the server itself:
 
-* use SSH keys, not password login, wherever possible
-* avoid direct root password SSH
-* confirm the SSH port you intend to use
-* keep the authorized keys clean and intentional
+```bash
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+sudo grep -E "^(Port|PermitRootLogin|PasswordAuthentication|PubkeyAuthentication)" /etc/ssh/sshd_config
+```
+
+Edit the SSH server config:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Set or confirm these values:
+
+```text
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+```
+
+Important:
+
+* only set `PasswordAuthentication no` after you have confirmed key-based SSH works for your admin user
+* keep your current SSH session open while testing a second session
+* if you use a custom SSH port, set it here before restarting SSH
+
+Then reload and verify:
+
+```bash
+sudo systemctl restart ssh
+sudo systemctl status ssh --no-pager
+sudo grep -E "^(Port|PermitRootLogin|PasswordAuthentication|PubkeyAuthentication)" /etc/ssh/sshd_config
+```
+
+The GitHub SSH key for the `frappe` working user comes later in the git setup section. This hardening step is only for securing server access itself.
 
 If you want to harden SSH further, the Press base already contains hardening-oriented playbooks such as:
 
