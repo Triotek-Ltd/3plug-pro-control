@@ -78,9 +78,9 @@ If you want the step-by-step operator checklist version of this setup, use:
 
 Run the base host setup one command at a time.
 
-#### 1.1 Create the working root
+#### 1.1 Create `/opt/triotek`
 
-Create the base working directory.
+This creates the root folder that will hold the 3plug working files.
 
 ```bash
 sudo mkdir -p /opt/triotek
@@ -88,9 +88,9 @@ sudo mkdir -p /opt/triotek
 
 Check: `/opt/triotek` should now exist.
 
-#### 1.2 Hand ownership to your current admin user
+#### 1.2 Give your admin user access to `/opt/triotek`
 
-Give your current admin user access to the working directory.
+This makes the working directory writable by the sudo-capable user you are using right now.
 
 ```bash
 sudo chown -R $USER:$USER /opt/triotek
@@ -98,41 +98,97 @@ sudo chown -R $USER:$USER /opt/triotek
 
 Check: `ls -ld /opt/triotek` should show your current user as owner.
 
-#### 1.3 Move into the working directory
+#### 1.3 Move into `/opt/triotek`
 
-Move into the working directory.
+This puts your shell inside the working directory before you continue.
 
 ```bash
 cd /opt/triotek
 ```
 
-#### 1.4 Refresh package metadata
+#### 1.4 Refresh the apt package list
 
-Refresh apt metadata.
+This downloads the latest package metadata from your configured apt repositories.
 
 ```bash
 sudo apt update
 ```
 
-#### 1.5 Upgrade the base system
+#### 1.5 Upgrade installed packages
 
-Upgrade installed packages.
+This upgrades packages that are already installed on the server.
 
 ```bash
 sudo apt -y upgrade
 ```
 
-#### 1.6 Install the base packages
+#### 1.6 Install `git`
 
-Install the base packages used later in the setup.
+This installs Git so you can clone repos and work with forks.
 
 ```bash
-sudo apt -y install git curl vim ufw fail2ban nginx certbot python3-certbot-nginx
+sudo apt -y install git
 ```
 
-#### 1.7 Create the `frappe` working user
+#### 1.7 Install `curl`
 
-Create the `frappe` user. Stay on your current admin account for now.
+This installs `curl` for download-based install steps later in the guide.
+
+```bash
+sudo apt -y install curl
+```
+
+#### 1.8 Install `vim`
+
+This installs a terminal editor in case you prefer it over `nano`.
+
+```bash
+sudo apt -y install vim
+```
+
+#### 1.9 Install `ufw`
+
+This installs the firewall tool used in the hardening section.
+
+```bash
+sudo apt -y install ufw
+```
+
+#### 1.10 Install `fail2ban`
+
+This installs the brute-force protection service used later.
+
+```bash
+sudo apt -y install fail2ban
+```
+
+#### 1.11 Install `nginx`
+
+This installs Nginx for the control-panel web entrypoint and HTTPS setup.
+
+```bash
+sudo apt -y install nginx
+```
+
+#### 1.12 Install `certbot`
+
+This installs Certbot so you can request a public TLS certificate later.
+
+```bash
+sudo apt -y install certbot
+```
+
+#### 1.13 Install the Nginx Certbot plugin
+
+This installs the Certbot plugin that can edit Nginx for certificate setup.
+
+```bash
+sudo apt -y install python3-certbot-nginx
+```
+
+#### 1.14 Create the `frappe` user
+
+This creates the working user that will own the bench and app files. Stay on your current admin account for now.
 
 ```bash
 sudo adduser frappe
@@ -140,17 +196,17 @@ sudo adduser frappe
 
 Check: the command should create `/home/frappe`.
 
-#### 1.8 Allow `frappe` to use sudo
+#### 1.15 Add `frappe` to the sudo group
 
-Add `frappe` to the sudo group.
+This lets the `frappe` user run admin commands when needed.
 
 ```bash
 sudo usermod -aG sudo frappe
 ```
 
-#### 1.9 Hand the working root to `frappe`
+#### 1.16 Hand `/opt/triotek` to `frappe`
 
-Hand the working tree to `frappe`.
+This transfers ownership of the working tree to the user that will run Bench.
 
 ```bash
 sudo chown -R frappe:frappe /opt/triotek
@@ -162,25 +218,25 @@ Check: `ls -ld /opt/triotek` should show `frappe frappe`.
 
 Create the base layout before you install the control panel.
 
-#### 2.1 Create the control directory
+#### 2.1 Create `/opt/triotek/control`
 
-Create the product checkout directory.
+This creates the directory where the 3plug product repo will live.
 
 ```bash
 sudo mkdir -p /opt/triotek/control
 ```
 
-#### 2.2 Create the logs directory
+#### 2.2 Create `/opt/triotek/logs`
 
-Create the logs directory.
+This creates a dedicated place for logs and later diagnostics.
 
 ```bash
 sudo mkdir -p /opt/triotek/logs
 ```
 
-#### 2.3 Confirm the working tree ownership
+#### 2.3 Reapply ownership on `/opt/triotek`
 
-Recheck write access on the working tree.
+This makes sure your current setup user can still write inside the working tree after creating the new directories.
 
 ```bash
 sudo chown -R $USER:$USER /opt/triotek
@@ -196,7 +252,7 @@ Apply the basic hardening before you expose the control panel.
 
 If the firewall is not already enabled, set it up:
 
-##### 3.1 Allow SSH
+##### 3.1 Allow `OpenSSH`
 
 Allow SSH first so you do not lock yourself out.
 
@@ -204,7 +260,7 @@ Allow SSH first so you do not lock yourself out.
 sudo ufw allow OpenSSH
 ```
 
-##### 3.2 Deny unsolicited inbound traffic
+##### 3.2 Set inbound traffic to `deny`
 
 Set the default inbound policy.
 
@@ -212,7 +268,7 @@ Set the default inbound policy.
 sudo ufw default deny incoming
 ```
 
-##### 3.3 Allow outbound traffic
+##### 3.3 Set outbound traffic to `allow`
 
 Set the default outbound policy.
 
@@ -220,7 +276,7 @@ Set the default outbound policy.
 sudo ufw default allow outgoing
 ```
 
-##### 3.4 Open HTTP
+##### 3.4 Open port `80`
 
 Allow HTTP for the first web and certificate flow.
 
@@ -228,7 +284,7 @@ Allow HTTP for the first web and certificate flow.
 sudo ufw allow 80/tcp
 ```
 
-##### 3.5 Open HTTPS
+##### 3.5 Open port `443`
 
 Allow HTTPS.
 
@@ -236,7 +292,7 @@ Allow HTTPS.
 sudo ufw allow 443/tcp
 ```
 
-##### 3.6 Enable the firewall
+##### 3.6 Enable `ufw`
 
 Enable the firewall.
 
@@ -244,7 +300,7 @@ Enable the firewall.
 sudo ufw enable
 ```
 
-##### 3.7 Verify the firewall state
+##### 3.7 Check firewall status
 
 Check the final firewall rules.
 
@@ -258,19 +314,19 @@ Check: you should see SSH, `80/tcp`, and `443/tcp` allowed.
 
 Enable brute-force protection.
 
-##### 3.8 Enable the service at boot
+##### 3.8 Enable `fail2ban` at boot
 
 ```bash
 sudo systemctl enable fail2ban
 ```
 
-##### 3.9 Start the service now
+##### 3.9 Start `fail2ban`
 
 ```bash
 sudo systemctl start fail2ban
 ```
 
-##### 3.10 Verify the service state
+##### 3.10 Check `fail2ban` status
 
 ```bash
 sudo systemctl status fail2ban
@@ -284,19 +340,19 @@ You can later tune `/etc/fail2ban/jail.local`, but enabling the service early al
 
 Do the first SSH hardening pass on the server.
 
-##### 3.11 Back up the SSH daemon config
+##### 3.11 Back up `sshd_config`
 
 ```bash
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 ```
 
-##### 3.12 Review the current SSH settings
+##### 3.12 Review current SSH settings
 
 ```bash
 sudo grep -E "^(Port|PermitRootLogin|PasswordAuthentication|PubkeyAuthentication)" /etc/ssh/sshd_config
 ```
 
-##### 3.13 Edit the SSH daemon config
+##### 3.13 Edit `sshd_config`
 
 Open the file and apply the first SSH hardening pass.
 
@@ -318,13 +374,13 @@ Important:
 * keep your current SSH session open while testing a second session
 * if you use a custom SSH port, set it here before restarting SSH
 
-##### 3.14 Restart SSH
+##### 3.14 Restart the SSH service
 
 ```bash
 sudo systemctl restart ssh
 ```
 
-##### 3.15 Check SSH service health
+##### 3.15 Check SSH service status
 
 ```bash
 sudo systemctl status ssh --no-pager
@@ -332,7 +388,7 @@ sudo systemctl status ssh --no-pager
 
 Check: the service should be active before you close any SSH session.
 
-##### 3.16 Recheck the active config
+##### 3.16 Recheck the SSH config values
 
 Check that the expected SSH values are in place.
 
@@ -532,27 +588,143 @@ Use these Ubuntu or Debian host steps.
 sudo apt update
 ```
 
-##### 5a.2 Install the bench host dependencies
+##### 5a.2 Install `redis-server`
 
-Install the main Bench host packages as your admin user.
-
-```bash
-sudo apt install -y git redis-server libmariadb-dev mariadb-server mariadb-client pkg-config xvfb libfontconfig cron python3-dev python3-pip python3-venv software-properties-common build-essential
-```
-
-##### 5a.3 Enable MariaDB and Redis
+This installs Redis for queueing and background job support.
 
 ```bash
-sudo systemctl enable mariadb redis-server
+sudo apt install -y redis-server
 ```
 
-##### 5a.4 Start MariaDB and Redis
+##### 5a.3 Install `libmariadb-dev`
+
+This installs the MariaDB development headers used by Python dependencies.
 
 ```bash
-sudo systemctl start mariadb redis-server
+sudo apt install -y libmariadb-dev
 ```
 
-##### 5a.5 Check MariaDB status
+##### 5a.4 Install `mariadb-server`
+
+This installs the MariaDB database server.
+
+```bash
+sudo apt install -y mariadb-server
+```
+
+##### 5a.5 Install `mariadb-client`
+
+This installs the MariaDB client tools.
+
+```bash
+sudo apt install -y mariadb-client
+```
+
+##### 5a.6 Install `pkg-config`
+
+This installs `pkg-config`, which some builds use to find native libraries.
+
+```bash
+sudo apt install -y pkg-config
+```
+
+##### 5a.7 Install `xvfb`
+
+This installs the virtual framebuffer used by headless render steps.
+
+```bash
+sudo apt install -y xvfb
+```
+
+##### 5a.8 Install `libfontconfig`
+
+This installs font configuration libraries used by PDF tooling.
+
+```bash
+sudo apt install -y libfontconfig
+```
+
+##### 5a.9 Install `cron`
+
+This installs the cron service for scheduled tasks.
+
+```bash
+sudo apt install -y cron
+```
+
+##### 5a.10 Install `python3-dev`
+
+This installs Python headers needed by packages with native extensions.
+
+```bash
+sudo apt install -y python3-dev
+```
+
+##### 5a.11 Install `python3-pip`
+
+This installs `pip` for Python package management.
+
+```bash
+sudo apt install -y python3-pip
+```
+
+##### 5a.12 Install `python3-venv`
+
+This installs Python virtual environment support.
+
+```bash
+sudo apt install -y python3-venv
+```
+
+##### 5a.13 Install `software-properties-common`
+
+This installs helper tools used by repository and package setup workflows.
+
+```bash
+sudo apt install -y software-properties-common
+```
+
+##### 5a.14 Install `build-essential`
+
+This installs the base C and build toolchain.
+
+```bash
+sudo apt install -y build-essential
+```
+
+##### 5a.15 Enable `mariadb`
+
+This makes MariaDB start automatically on boot.
+
+```bash
+sudo systemctl enable mariadb
+```
+
+##### 5a.16 Enable `redis-server`
+
+This makes Redis start automatically on boot.
+
+```bash
+sudo systemctl enable redis-server
+```
+
+##### 5a.17 Start `mariadb`
+
+This starts the database server now.
+
+```bash
+sudo systemctl start mariadb
+```
+
+##### 5a.18 Start `redis-server`
+
+This starts Redis now.
+
+```bash
+sudo systemctl start redis-server
+```
+
+##### 5a.19 Check `mariadb` status
 
 ```bash
 sudo systemctl status mariadb --no-pager
@@ -560,7 +732,7 @@ sudo systemctl status mariadb --no-pager
 
 Check: MariaDB should be `active (running)`.
 
-##### 5a.6 Check Redis status
+##### 5a.20 Check `redis-server` status
 
 ```bash
 sudo systemctl status redis-server --no-pager
