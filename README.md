@@ -533,21 +533,41 @@ Source URLs to fork:
 * `https://github.com/Triotek-Ltd/triotek-bench`
 * `https://github.com/Triotek-Ltd/3plug-pro-control`
 
-You can do that either from the GitHub web UI using the `Fork` button, or with GitHub CLI if `gh` is installed.
+You can do that either from the GitHub web UI using the `Fork` button, or with GitHub CLI after you install and verify `gh`.
 
-#### 4.16 Authenticate GitHub CLI
+#### 4.16 Install `gh`
+
+This installs GitHub CLI so you can authenticate and create forks from the server.
+
+```bash
+sudo apt install -y gh
+```
+
+#### 4.17 Check the `gh` version
+
+This confirms that GitHub CLI is available before you try to log in.
+
+```bash
+gh --version
+```
+
+Check: the command should print a GitHub CLI version instead of `command not found`.
+
+#### 4.18 Authenticate GitHub CLI
+
+This signs GitHub CLI into the GitHub account that should own your forks.
 
 ```bash
 gh auth login -h github.com -p ssh -w
 ```
 
-#### 4.17 Fork `triotek-bench`
+#### 4.19 Fork `triotek-bench`
 
 ```bash
 gh repo fork Triotek-Ltd/triotek-bench --clone=false --remote=false
 ```
 
-#### 4.18 Fork `3plug-pro-control`
+#### 4.20 Fork `3plug-pro-control`
 
 ```bash
 gh repo fork Triotek-Ltd/3plug-pro-control --clone=false --remote=false
@@ -555,7 +575,7 @@ gh repo fork Triotek-Ltd/3plug-pro-control --clone=false --remote=false
 
 Replace `YOUR_GITHUB_USER` below with the GitHub account or org that owns those forks.
 
-#### 4.19 Verify fork access for `triotek-bench`
+#### 4.21 Verify fork access for `triotek-bench`
 
 After forking on the web, verify the SSH URLs you will actually use before Bench setup:
 
@@ -563,7 +583,7 @@ After forking on the web, verify the SSH URLs you will actually use before Bench
 git ls-remote git@github.com:YOUR_GITHUB_USER/triotek-bench.git
 ```
 
-#### 4.20 Verify fork access for `3plug-pro-control`
+#### 4.22 Verify fork access for `3plug-pro-control`
 
 ```bash
 git ls-remote git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git
