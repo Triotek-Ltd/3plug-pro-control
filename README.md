@@ -76,27 +76,31 @@ If you want the step-by-step operator checklist version of this setup, use:
 
 ### 1. Prepare the Linux server
 
-Start with a clean workspace and do the system prep as explicit subtasks.
+Run the base host setup one command at a time.
 
 #### 1.1 Create the working root
 
-Create the base directory that will hold the control-panel files:
+Create the base working directory.
 
 ```bash
 sudo mkdir -p /opt/triotek
 ```
 
+Check: `/opt/triotek` should now exist.
+
 #### 1.2 Hand ownership to your current admin user
 
-Make the working directory writable by the sudo-capable user you are using for setup:
+Give your current admin user access to the working directory.
 
 ```bash
 sudo chown -R $USER:$USER /opt/triotek
 ```
 
+Check: `ls -ld /opt/triotek` should show your current user as owner.
+
 #### 1.3 Move into the working directory
 
-Run the rest of the early setup from the working root:
+Move into the working directory.
 
 ```bash
 cd /opt/triotek
@@ -104,7 +108,7 @@ cd /opt/triotek
 
 #### 1.4 Refresh package metadata
 
-Update the apt package index first:
+Refresh apt metadata.
 
 ```bash
 sudo apt update
@@ -112,7 +116,7 @@ sudo apt update
 
 #### 1.5 Upgrade the base system
 
-Bring installed packages up to date before adding the control-panel dependencies:
+Upgrade installed packages.
 
 ```bash
 sudo apt -y upgrade
@@ -120,7 +124,7 @@ sudo apt -y upgrade
 
 #### 1.6 Install the base packages
 
-Install the core tools used throughout the rest of the setup:
+Install the base packages used later in the setup.
 
 ```bash
 sudo apt -y install git curl vim ufw fail2ban nginx certbot python3-certbot-nginx
@@ -128,15 +132,17 @@ sudo apt -y install git curl vim ufw fail2ban nginx certbot python3-certbot-ngin
 
 #### 1.7 Create the `frappe` working user
 
-Create the application user, but stay on the current sudo-capable admin user until the system-level setup is done:
+Create the `frappe` user. Stay on your current admin account for now.
 
 ```bash
 sudo adduser frappe
 ```
 
+Check: the command should create `/home/frappe`.
+
 #### 1.8 Allow `frappe` to use sudo
 
-Add the new user to the sudo group:
+Add `frappe` to the sudo group.
 
 ```bash
 sudo usermod -aG sudo frappe
@@ -144,19 +150,21 @@ sudo usermod -aG sudo frappe
 
 #### 1.9 Hand the working root to `frappe`
 
-Transfer ownership once the user exists:
+Hand the working tree to `frappe`.
 
 ```bash
 sudo chown -R frappe:frappe /opt/triotek
 ```
 
+Check: `ls -ld /opt/triotek` should show `frappe frappe`.
+
 ### 2. Do the first server cleanup and layout
 
-Use a clear directory layout before installing the control panel:
+Create the base layout before you install the control panel.
 
 #### 2.1 Create the control directory
 
-Create the directory that will hold the cloned product source:
+Create the product checkout directory.
 
 ```bash
 sudo mkdir -p /opt/triotek/control
@@ -164,7 +172,7 @@ sudo mkdir -p /opt/triotek/control
 
 #### 2.2 Create the logs directory
 
-Create a separate location for operational logs:
+Create the logs directory.
 
 ```bash
 sudo mkdir -p /opt/triotek/logs
@@ -172,7 +180,7 @@ sudo mkdir -p /opt/triotek/logs
 
 #### 2.3 Confirm the working tree ownership
 
-Make sure the current setup user can still work inside the tree:
+Recheck write access on the working tree.
 
 ```bash
 sudo chown -R $USER:$USER /opt/triotek
@@ -182,7 +190,7 @@ If this server already has unrelated old test files or abandoned benches, move t
 
 ### 3. Apply basic security hardening first
 
-Before exposing the control panel, do the basic hardening that reduces avoidable noise and brute-force risk.
+Apply the basic hardening before you expose the control panel.
 
 #### Firewall
 
@@ -190,7 +198,7 @@ If the firewall is not already enabled, set it up:
 
 ##### 3.1 Allow SSH
 
-Keep remote administration open before applying default-deny rules:
+Allow SSH first so you do not lock yourself out.
 
 ```bash
 sudo ufw allow OpenSSH
@@ -198,7 +206,7 @@ sudo ufw allow OpenSSH
 
 ##### 3.2 Deny unsolicited inbound traffic
 
-Apply the default inbound policy:
+Set the default inbound policy.
 
 ```bash
 sudo ufw default deny incoming
@@ -206,7 +214,7 @@ sudo ufw default deny incoming
 
 ##### 3.3 Allow outbound traffic
 
-Apply the default outbound policy:
+Set the default outbound policy.
 
 ```bash
 sudo ufw default allow outgoing
@@ -214,7 +222,7 @@ sudo ufw default allow outgoing
 
 ##### 3.4 Open HTTP
 
-Allow web traffic for the initial site and certificate flow:
+Allow HTTP for the first web and certificate flow.
 
 ```bash
 sudo ufw allow 80/tcp
@@ -222,7 +230,7 @@ sudo ufw allow 80/tcp
 
 ##### 3.5 Open HTTPS
 
-Allow secure browser access:
+Allow HTTPS.
 
 ```bash
 sudo ufw allow 443/tcp
@@ -230,7 +238,7 @@ sudo ufw allow 443/tcp
 
 ##### 3.6 Enable the firewall
 
-Turn the rules on:
+Enable the firewall.
 
 ```bash
 sudo ufw enable
@@ -238,15 +246,17 @@ sudo ufw enable
 
 ##### 3.7 Verify the firewall state
 
-Confirm the final ruleset:
+Check the final firewall rules.
 
 ```bash
 sudo ufw status verbose
 ```
 
+Check: you should see SSH, `80/tcp`, and `443/tcp` allowed.
+
 #### Fail2ban
 
-Enable brute-force protection:
+Enable brute-force protection.
 
 ##### 3.8 Enable the service at boot
 
@@ -266,11 +276,13 @@ sudo systemctl start fail2ban
 sudo systemctl status fail2ban
 ```
 
+Check: the service state should be `active (running)`.
+
 You can later tune `/etc/fail2ban/jail.local`, but enabling the service early already helps.
 
 #### SSH hygiene
 
-Do the first SSH hardening pass here on the server itself:
+Do the first SSH hardening pass on the server.
 
 ##### 3.11 Back up the SSH daemon config
 
@@ -286,7 +298,7 @@ sudo grep -E "^(Port|PermitRootLogin|PasswordAuthentication|PubkeyAuthentication
 
 ##### 3.13 Edit the SSH daemon config
 
-Open the file and make the first hardening pass:
+Open the file and apply the first SSH hardening pass.
 
 ```bash
 sudo nano /etc/ssh/sshd_config
@@ -318,9 +330,11 @@ sudo systemctl restart ssh
 sudo systemctl status ssh --no-pager
 ```
 
+Check: the service should be active before you close any SSH session.
+
 ##### 3.16 Recheck the active config
 
-Then verify the expected values are in place:
+Check that the expected SSH values are in place.
 
 ```bash
 sudo grep -E "^(Port|PermitRootLogin|PasswordAuthentication|PubkeyAuthentication)" /etc/ssh/sshd_config
@@ -340,11 +354,11 @@ For normal first setup, the commands above are enough. The Press playbooks can s
 
 ### 4. Prepare the working user for source control
 
-Before Bench setup, get the `frappe` working user ready for git, GitHub SSH, and forks.
+Prepare the `frappe` user for git, GitHub SSH, and forks.
 
 #### 4.1 Switch into the working user
 
-Start the rest of the source-control setup as `frappe`:
+Switch to `frappe`.
 
 ```bash
 sudo su - frappe
@@ -388,11 +402,13 @@ git config --global core.editor nano
 
 #### 4.8 Review the git config
 
-Confirm the working user has the expected git settings:
+Check the git config.
 
 ```bash
 git config --global --list
 ```
+
+Check: confirm your name, email, default branch, and editor are all present.
 
 #### 4.9 Create the SSH directory
 
@@ -408,7 +424,7 @@ chmod 700 ~/.ssh
 
 #### 4.11 Generate the GitHub SSH key
 
-Create the key pair for this working user:
+Create the SSH key pair.
 
 ```bash
 ssh-keygen -t ed25519 -C "your-email@example.com"
@@ -428,7 +444,7 @@ ssh-add ~/.ssh/id_ed25519
 
 #### 4.14 Print the public key
 
-Copy the public key so you can add it to GitHub:
+Print the public key so you can add it to GitHub.
 
 ```bash
 cat ~/.ssh/id_ed25519.pub
@@ -443,11 +459,13 @@ Then do these GitHub-side actions with the same account that should own later ch
 
 #### 4.15 Test GitHub SSH access
 
-Check that the server can authenticate to GitHub:
+Check GitHub SSH access.
 
 ```bash
 ssh -T git@github.com
 ```
+
+Check: GitHub should confirm authentication, even if shell access is denied.
 
 Fork these repositories into the GitHub account that should own later changes:
 
@@ -499,14 +517,14 @@ If both commands return refs instead of an access error, your fork URLs are read
 
 ### 5. Prepare the bench host prerequisites
 
-Before installing Bench itself, make sure the host prerequisites are ready.
+Install the host prerequisites before Bench.
 
 * https://docs.frappe.io/framework/user/en/tutorial/install-and-setup-bench
 * https://docs.frappe.io/framework/user/en/installation
 
 #### 5a. Install the base system packages
 
-Efficient base commands on Ubuntu / Debian:
+Use these Ubuntu or Debian host steps.
 
 ##### 5a.1 Refresh package metadata
 
@@ -516,11 +534,10 @@ sudo apt update
 
 ##### 5a.2 Install the bench host dependencies
 
-Run these package steps as the original sudo-capable admin user:
+Install the main Bench host packages as your admin user.
 
 ```bash
-sudo apt install -y git redis-server libmariadb-dev mariadb-server mariadb-client pkg-config xvfb libfontconfig cron \
-  python3-dev python3-pip python3-venv software-properties-common build-essential
+sudo apt install -y git redis-server libmariadb-dev mariadb-server mariadb-client pkg-config xvfb libfontconfig cron python3-dev python3-pip python3-venv software-properties-common build-essential
 ```
 
 ##### 5a.3 Enable MariaDB and Redis
@@ -541,6 +558,8 @@ sudo systemctl start mariadb redis-server
 sudo systemctl status mariadb --no-pager
 ```
 
+Check: MariaDB should be `active (running)`.
+
 ##### 5a.6 Check Redis status
 
 ```bash
@@ -549,7 +568,7 @@ sudo systemctl status redis-server --no-pager
 
 #### 5b. Harden and verify MariaDB
 
-Run MariaDB hardening before Bench:
+Harden MariaDB before Bench.
 
 ##### 5b.1 Run the secure-installation helper
 
@@ -575,15 +594,17 @@ sudo mariadb -e "SELECT VERSION();"
 
 ##### 5b.3 Confirm the server lists databases
 
-Then verify MariaDB is actually healthy:
+Check that MariaDB responds normally.
 
 ```bash
 sudo mariadb -e "SHOW DATABASES;"
 ```
 
+Check: the command should return the default system databases without errors.
+
 ##### 5b.4 Edit the MariaDB server config
 
-Set the server character set before creating the bench:
+Set the MariaDB character set before creating the bench.
 
 ```bash
 sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
@@ -622,9 +643,11 @@ sudo mariadb -e "SHOW VARIABLES LIKE 'collation_server';"
 sudo systemctl status mariadb --no-pager
 ```
 
+Check: MariaDB should still be `active (running)` after the config change.
+
 #### 5c. Install and verify wkhtmltopdf
 
-Install wkhtmltopdf with patched Qt:
+Install wkhtmltopdf with patched Qt.
 
 Use the package that matches your Ubuntu base when it exists:
 
@@ -632,7 +655,7 @@ Use the package that matches your Ubuntu base when it exists:
 * Ubuntu 22.04 (`jammy`): use `jammy`
 * Ubuntu 20.04 (`focal`): use `focal`
 
-Check your release first:
+Check the Ubuntu release first.
 
 ```bash
 lsb_release -a
@@ -676,11 +699,15 @@ sudo apt-get -f install -y
 wkhtmltopdf --version
 ```
 
+Check: the command should print a version string instead of `command not found`.
+
 ##### 5c.7 Confirm the binary path
 
 ```bash
 which wkhtmltopdf
 ```
+
+Check: the binary path should resolve successfully.
 
 For Ubuntu 20.04 (`focal`), use:
 
@@ -720,15 +747,19 @@ sudo apt-get -f install -y
 wkhtmltopdf --version
 ```
 
+Check: the command should print a version string instead of `command not found`.
+
 ##### 5c.14 Confirm the binary path
 
 ```bash
 which wkhtmltopdf
 ```
 
+Check: the binary path should resolve successfully.
+
 ### 6. Install the bench that will host 3plug itself
 
-This is the bench that will run the actual control panel.
+This bench will run the real control panel.
 
 #### 6a. Install Node.js with `nvm`
 
@@ -768,6 +799,8 @@ nvm alias default 24
 node -v
 ```
 
+Check: the version should report Node 24.
+
 #### 6b. Install Yarn
 
 ##### 6b.1 Install Yarn globally
@@ -781,6 +814,8 @@ npm install -g yarn
 ```bash
 yarn -v
 ```
+
+Check: the command should print a Yarn version.
 
 #### 6c. Install `uv` and refresh the shell path
 
@@ -802,6 +837,8 @@ source $HOME/.local/bin/env
 uv --version
 ```
 
+Check: the command should print a `uv` version.
+
 If `uv` is still shadowed by an older command in your shell, run:
 
 ```bash
@@ -812,7 +849,7 @@ and confirm the path you want is under `/home/frappe/.local/bin/uv`.
 
 #### 6d. Install Python for Bench
 
-Use Python 3.12 for the first setup run, and pin the Frappe source/branch during `bench init`.
+Use Python 3.12 and pin the Frappe source and branch during `bench init`.
 
 Why:
 
@@ -834,13 +871,13 @@ uv python install 3.12 --default
 python3 --version
 ```
 
+Check: the default Python should now be 3.12.
+
 If you already created a bench with Python 3.11, 3.12, or 3.14 and installation failed, remove that failed bench and recreate it with Python 3.12 plus the explicit Frappe source/branch before continuing.
 
 #### 6e. Install Bench from the user-owned fork of Triotek Bench
 
-This step has not changed.
-
-The working Bench installation command is still the fork-based Triotek Bench install:
+Use the fork-based Triotek Bench install.
 
 ##### 6e.1 Install Bench from the fork
 
@@ -854,6 +891,8 @@ uv tool install "git+ssh://git@github.com/YOUR_GITHUB_USER/triotek-bench.git"
 bench --version
 ```
 
+Check: the command should print a Bench version from your fork install.
+
 Why the docs changed later:
 
 * this Bench install step was already working
@@ -863,7 +902,7 @@ Why the docs changed later:
 
 #### 6f. Create the Bench workspace under `/opt/triotek`
 
-Bench should run as the `frappe` user, not with `sudo`.
+Run Bench as `frappe`, not with `sudo`.
 
 ##### 6f.1 Move to `/opt`
 
@@ -873,7 +912,7 @@ cd /opt
 
 ##### 6f.2 Check the workspace ownership
 
-First verify the workspace is owned by `frappe`:
+Check that `frappe` owns the workspace.
 
 ```bash
 ls -ld /opt/triotek
@@ -912,15 +951,19 @@ cd /opt/triotek
 pwd
 ```
 
+Check: the output should be `/opt/triotek`.
+
 ##### 6f.5 Create the bench with the pinned Frappe source
 
 ```bash
 bench init frappe-bench --python /home/frappe/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12 --frappe-path https://github.com/balamurali27/frappe --frappe-branch fc-ci
 ```
 
+Check: the command should finish without stopping in dependency or Frappe bootstrap errors.
+
 ##### 6f.6 Move into the new bench
 
-After `bench init` finishes successfully, verify the new bench directory:
+After `bench init`, verify the new bench directory.
 
 ```bash
 cd /opt/triotek/frappe-bench
@@ -932,13 +975,17 @@ cd /opt/triotek/frappe-bench
 pwd
 ```
 
+Check: the output should be `/opt/triotek/frappe-bench`.
+
 ##### 6f.8 Check the Bench version inside the workspace
 
 ```bash
 bench --version
 ```
 
-If `bench init` was already run with the wrong Frappe source or branch and failed during Frappe install, remove the failed bench and rerun the command above with the explicit `--frappe-path` and `--frappe-branch`.
+Check: Bench should still resolve inside the new workspace.
+
+If `bench init` already failed with the wrong Frappe source or branch, remove that failed bench and rerun it with the explicit `--frappe-path` and `--frappe-branch`.
 
 #### 6g. Clone the 3plug product from the user-owned fork
 
@@ -946,58 +993,67 @@ If `bench init` was already run with the wrong Frappe source or branch and faile
 
 ```bash
 cd /opt/triotek
-git clone git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git control
 ```
 
 ##### 6g.2 Move into the product checkout
 
 ```bash
+git clone git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git control
+```
+
+##### 6g.3 Move into the product checkout
+
+```bash
 cd /opt/triotek/control
 ```
 
-##### 6g.3 Install frontend dependencies
+##### 6g.4 Install frontend dependencies
 
 ```bash
 npm install --legacy-peer-deps
 ```
 
-##### 6g.4 Add the upstream remote
+##### 6g.5 Add the upstream remote
 
 ```bash
 git remote add upstream git@github.com:Triotek-Ltd/3plug-pro-control.git
 ```
 
-##### 6g.5 Verify the remotes
+##### 6g.6 Verify the remotes
 
 ```bash
 git remote -v
 ```
 
-Once Bench is available on the server:
+Check: you should see both `origin` and `upstream`.
 
-##### 6g.6 Move into the bench
+Once Bench is ready on the server, install the app into it.
+
+##### 6g.7 Move into the bench
 
 ```bash
 cd /opt/triotek/frappe-bench
 ```
 
-##### 6g.7 Register the local app with Bench
+##### 6g.8 Register the local app with Bench
 
 ```bash
 bench get-app /opt/triotek/control
 ```
 
-##### 6g.8 Create the control-panel site
+##### 6g.9 Create the control-panel site
 
 ```bash
 bench new-site 3plug.yourdomain.com
 ```
 
-##### 6g.9 Install the `press` app
+##### 6g.10 Install the `press` app
 
 ```bash
 bench --site 3plug.yourdomain.com install-app press
 ```
+
+Check: the app install should complete without traceback errors.
 
 That site, `3plug.yourdomain.com`, is your actual 3plug control panel.
 
@@ -1011,19 +1067,21 @@ cd /opt/triotek/frappe-bench
 
 #### 7.2 Start the local dev server
 
-For the first boot:
+Use this for the first local boot.
 
 ```bash
 bench start
 ```
 
+Check: the dev services should stay up and print local service logs.
+
 If you are still validating the app, keep it in foreground/dev mode first so you can see what breaks quickly.
 
 ### 8. Put HTTPS in front so the browser does not warn
 
-Use a real domain that points to the server first, then issue a certificate.
+Point a real domain at the server, then issue the certificate.
 
-Basic Nginx + Certbot path:
+Use the basic Nginx and Certbot flow.
 
 #### 8.1 Request the certificate through Nginx
 
@@ -1038,6 +1096,8 @@ After that, test renewal:
 ```bash
 sudo certbot renew --dry-run
 ```
+
+Check: the dry run should complete successfully.
 
 This is the simplest way to avoid the browser showing a dangerous-site warning.
 
@@ -1159,7 +1219,13 @@ For local dashboard verification in this repo:
 
 ```powershell
 $env:LOCAL_VERIFY_BUILD='1'
+```
+
+```powershell
 & 'C:\Program Files\nodejs\npm.cmd' install --legacy-peer-deps
+```
+
+```powershell
 & 'C:\Program Files\nodejs\npm.cmd' run build
 ```
 
@@ -1169,6 +1235,9 @@ Backend syntax checks used during current product work:
 
 ```powershell
 python -m py_compile press\api\selfhosted.py
+```
+
+```powershell
 python -m py_compile press\press\doctype\team\team.py
 ```
 
