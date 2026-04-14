@@ -95,3 +95,7 @@ The next pages in this book should explain:
 2. the bench onboarding workflow
 3. how sites, jobs, plays, and forensic signals fit together
 4. the current MVP boundaries and known gaps
+
+Start with:
+
+* [Product Target State](./product-target-state.md)
