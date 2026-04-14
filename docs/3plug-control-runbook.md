@@ -437,12 +437,29 @@ Why the runbook changed later:
 
 Bench should run as the `frappe` user, not with `sudo`.
 
-First verify the workspace is owned by `frappe`:
+If you previously created a broken bench and renamed it to something like `frappe-bench-broken-f16`, do not restart from the top of the runbook.
+
+Use this restart rule:
+
+* if `bench --version` still works for the `frappe` user, resume from `12f`
+* if `/opt/triotek/control` already exists and already points at your 3plug product checkout, keep it and do not clone it again
+* if both the Bench tool and the control checkout are already present, your fresh-bench restart point is `12f.1`
+
+#### 12f.1 Move to `/opt`
 
 ```bash
 cd /opt
+```
+
+#### 12f.2 Check the workspace ownership
+
+First verify the workspace is owned by `frappe`:
+
+```bash
 ls -ld /opt/triotek
 ```
+
+#### 12f.3 Repair ownership if needed
 
 If `/opt/triotek` is not owned by `frappe`, switch back to the original sudo-capable admin user and fix it:
 
@@ -465,17 +482,41 @@ The reason is:
 * default `bench init` then pulled a Frappe base that did not match this Press-derived stack cleanly
 * the fix is to keep using the same Bench command, but pin the Frappe bootstrap path during `bench init`
 
+#### 12f.4 Move into `/opt/triotek`
+
 ```bash
 cd /opt/triotek
+```
+
+#### 12f.5 Confirm the working directory
+
+```bash
 pwd
+```
+
+#### 12f.6 Create the bench with the pinned Frappe source
+
+```bash
 bench init frappe-bench --python /home/frappe/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12 --frappe-path https://github.com/balamurali27/frappe --frappe-branch fc-ci
 ```
+
+#### 12f.7 Move into the new bench
 
 After `bench init` finishes successfully, verify the new bench directory:
 
 ```bash
 cd /opt/triotek/frappe-bench
+```
+
+#### 12f.8 Confirm the bench path
+
+```bash
 pwd
+```
+
+#### 12f.9 Check the Bench version inside the workspace
+
+```bash
 bench --version
 ```
 
@@ -483,62 +524,177 @@ If `bench init` was already run with the wrong Frappe source or branch and faile
 
 ### 13. Clone the 3plug product from your fork
 
+If `/opt/triotek/control` already exists and is your current 3plug checkout, do not clone it again.
+
+In that case:
+
+* skip `13.1` through `13.3`
+* move straight to `14`
+* make sure the existing checkout has your latest intended code before you continue
+
+#### 13.1 Move into `/opt/triotek`
+
 ```bash
 cd /opt/triotek
+```
+
+#### 13.2 Clone the product fork
+
+```bash
 git clone git@github.com:YOUR_GITHUB_USER/3plug-pro-control.git control
+```
+
+#### 13.3 Move into the product checkout
+
+```bash
 cd /opt/triotek/control
+```
+
+#### 13.4 Install frontend dependencies
+
+```bash
 npm install --legacy-peer-deps
 ```
 
 Set the upstream remotes too, so later sync work is easier:
 
+#### 13.5 Add the upstream remote
+
 ```bash
-cd /opt/triotek/control
 git remote add upstream git@github.com:Triotek-Ltd/3plug-pro-control.git
+```
+
+#### 13.6 Verify the remotes
+
+```bash
 git remote -v
 ```
 
 ### 14. Add the app into the bench
 
+#### 14.1 Move into the bench
+
 ```bash
 cd /opt/triotek/frappe-bench
+```
+
+#### 14.2 Register the local app with Bench
+
+```bash
 bench get-app /opt/triotek/control
 ```
 
 ### 15. Create the real control-panel site
 
+#### 15.1 Move into the bench
+
 ```bash
 cd /opt/triotek/frappe-bench
+```
+
+#### 15.2 Create the site
+
+```bash
 bench new-site 3plug.yourdomain.com
+```
+
+#### 15.3 Install the `press` app
+
+```bash
 bench --site 3plug.yourdomain.com install-app press
 ```
 
 That site is the actual 3plug control panel.
 
-## Phase 5: Bring up the control panel
+## Phase 5: Set up the production bench
 
-### 16. Start it in foreground first
+Do not use `bench start` for this production runbook path.
+
+### 16. Leave any accidental virtual environment shell
+
+If your prompt shows something like `(env)`, leave that shell first:
+
+```bash
+deactivate
+```
+
+### 17. Move into the bench
 
 ```bash
 cd /opt/triotek/frappe-bench
-bench start
 ```
 
-This is the easiest first run because you can see immediate errors.
-
-### 17. Verify the site responds
-
-Open the site locally or from the browser once reachable.
-
-If needed:
+### 18. Confirm the site exists
 
 ```bash
-curl -I http://127.0.0.1
+bench list-sites
 ```
+
+### 19. Find the Bench binary path
+
+```bash
+which bench
+```
+
+### 20. Make Bench available under `/usr/local/bin`
+
+```bash
+sudo ln -sf /home/frappe/.local/bin/bench /usr/local/bin/bench
+```
+
+### 21. Prepare `pip` inside the Bench tool runtime
+
+```bash
+/home/frappe/.local/share/uv/tools/frappe-bench/bin/python -m ensurepip --upgrade
+```
+
+### 22. Verify `pip` inside the Bench tool runtime
+
+```bash
+/home/frappe/.local/share/uv/tools/frappe-bench/bin/python -m pip --version
+```
+
+### 23. Install Ansible for the Bench tool runtime
+
+```bash
+/home/frappe/.local/share/uv/tools/frappe-bench/bin/python -m pip install ansible
+```
+
+### 24. Run production setup
+
+```bash
+sudo /home/frappe/.local/bin/bench setup production frappe
+```
+
+### 25. Check Supervisor services
+
+```bash
+sudo supervisorctl status
+```
+
+### 26. Run site migration
+
+```bash
+bench --site 3plug.yourdomain.com migrate
+```
+
+### 27. Clear the site cache
+
+```bash
+bench --site 3plug.yourdomain.com clear-cache
+```
+
+### 28. Confirm the installed apps
+
+```bash
+bench --site 3plug.yourdomain.com list-apps
+```
+
+At this point the production bench should be serving the real control panel.
 
 ## Phase 6: Enable HTTPS
 
-### 18. Point DNS first
+### 29. Point DNS first
 
 Make sure `3plug.yourdomain.com` resolves to the server's public IP.
 
@@ -548,10 +704,15 @@ Check:
 dig +short 3plug.yourdomain.com
 ```
 
-### 19. Issue the certificate
+### 30. Issue the certificate
 
 ```bash
 sudo certbot --nginx -d 3plug.yourdomain.com
+```
+
+### 31. Test certificate renewal
+
+```bash
 sudo certbot renew --dry-run
 ```
 
@@ -559,7 +720,7 @@ Now the browser should stop showing the dangerous-site warning.
 
 ## Phase 7: First login and product readiness
 
-### 20. Log in
+### 32. Log in
 
 Open:
 
@@ -573,7 +734,7 @@ Then:
 * confirm the dashboard loads
 * confirm the operator team exists and has self-hosted server access enabled
 
-### 21. Confirm the SSH key is available
+### 33. Confirm the SSH key is available
 
 The managed-server flow depends on the default SSH key being available.
 
@@ -581,7 +742,7 @@ Inside the product, open the `Register Managed Server` flow and confirm it shows
 
 ## Phase 8: Register the first managed server
 
-### 22. Use the same server as the first managed server
+### 34. Use the same server as the first managed server
 
 For the first MVP run, use the same Linux machine hosting the control panel.
 
@@ -600,7 +761,7 @@ Enter:
 
 For the first same-server test, if app and db are on the same machine, use the same IP values for both roles.
 
-### 23. Submit registration
+### 35. Submit registration
 
 After submit, confirm:
 
@@ -611,13 +772,13 @@ After submit, confirm:
 
 ## Phase 9: Onboard the bench
 
-### 24. Open bench onboarding
+### 36. Open bench onboarding
 
 From the managed server:
 
 * open `Bench Onboarding`
 
-### 25. Configure the real bench path
+### 37. Configure the real bench path
 
 If the bench already exists on the server, enable existing bench import and use the real path, for example:
 

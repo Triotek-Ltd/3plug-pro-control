@@ -1283,25 +1283,107 @@ Check: the app install should complete without traceback errors.
 
 That site, `3plug.yourdomain.com`, is your actual 3plug control panel.
 
-### 7. Run the control panel locally first
+### 7. Set up the bench for production
 
-#### 7.1 Move into the bench
+Use the production path on the real server. Do not use `bench start` for this setup flow.
+
+#### 7.1 Leave any accidental virtual environment shell
+
+If your prompt shows something like `(env)`, leave that shell first:
+
+```bash
+deactivate
+```
+
+#### 7.2 Move into the bench
 
 ```bash
 cd /opt/triotek/frappe-bench
 ```
 
-#### 7.2 Start the local dev server
-
-Use this for the first local boot.
+#### 7.3 Confirm the site exists
 
 ```bash
-bench start
+bench list-sites
 ```
 
-Check: the dev services should stay up and print local service logs.
+Check: `3plug.yourdomain.com` should be listed.
 
-If you are still validating the app, keep it in foreground/dev mode first so you can see what breaks quickly.
+#### 7.4 Find the Bench binary path
+
+```bash
+which bench
+```
+
+Check: this should normally resolve to `/home/frappe/.local/bin/bench`.
+
+#### 7.5 Make Bench available under `/usr/local/bin`
+
+This avoids later production setup issues where `sudo` cannot resolve the Bench command path.
+
+```bash
+sudo ln -sf /home/frappe/.local/bin/bench /usr/local/bin/bench
+```
+
+#### 7.6 Prepare `pip` inside the Bench tool runtime
+
+If the Bench tool was installed by `uv`, make sure its own Python has `pip` available:
+
+```bash
+/home/frappe/.local/share/uv/tools/frappe-bench/bin/python -m ensurepip --upgrade
+```
+
+#### 7.7 Verify `pip` inside the Bench tool runtime
+
+```bash
+/home/frappe/.local/share/uv/tools/frappe-bench/bin/python -m pip --version
+```
+
+#### 7.8 Install Ansible for the Bench tool runtime
+
+This is needed by `bench setup production` when it prepares the production services.
+
+```bash
+/home/frappe/.local/share/uv/tools/frappe-bench/bin/python -m pip install ansible
+```
+
+#### 7.9 Run production setup
+
+```bash
+sudo /home/frappe/.local/bin/bench setup production frappe
+```
+
+Check: the production setup should finish without traceback errors.
+
+#### 7.10 Check Supervisor services
+
+```bash
+sudo supervisorctl status
+```
+
+Check: the Bench web, redis, worker, and scheduler services should all be running.
+
+#### 7.11 Run site migration after services are up
+
+```bash
+bench --site 3plug.yourdomain.com migrate
+```
+
+#### 7.12 Clear the site cache
+
+```bash
+bench --site 3plug.yourdomain.com clear-cache
+```
+
+#### 7.13 Confirm the installed apps
+
+```bash
+bench --site 3plug.yourdomain.com list-apps
+```
+
+Check: you should see both `frappe` and `press`.
+
+After this point, the production bench should be serving the real control panel.
 
 ### 8. Put HTTPS in front so the browser does not warn
 
@@ -1345,6 +1427,8 @@ The managed registration page pulls:
 
 ### 10. Register the server inside 3plug
 
+This is the first real control-panel workflow after the bench and site are fully up.
+
 If you are testing the same server that hosts the control panel, start with that same machine as the first managed server.
 
 Use:
@@ -1375,6 +1459,8 @@ Relevant product files:
 * [selfhosted.py](./press/api/selfhosted.py)
 
 ### 11. Onboard the existing bench
+
+This is the next real control-panel workflow after the managed server is registered.
 
 After the server is registered:
 
