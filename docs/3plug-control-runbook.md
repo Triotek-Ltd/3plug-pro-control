@@ -425,13 +425,13 @@ uv python install 3.12 --default
 python3 --version
 ```
 
-If you already created a bench with Python 3.11, 3.12, or 3.14 and installation failed, remove that failed bench and recreate it with Python 3.12 plus the explicit Frappe source/branch before continuing.
+If you already created a bench with Python 3.11, 3.12, or 3.14 and installation failed, rename that failed bench and recreate it with Python 3.12 plus the explicit Triotek Frappe source before continuing.
 
 ### 12e. Install Bench from the user-owned fork of Triotek Bench
 
 This step has not changed.
 
-The working Bench installation command is still:
+The working Triotek Bench installation command is still:
 
 ```bash
 uv tool install "git+ssh://git@github.com/YOUR_GITHUB_USER/triotek-bench.git"
@@ -442,8 +442,8 @@ Why the runbook changed later:
 
 * this Bench install step was already working
 * the failures started later, when `bench init` bootstrapped Frappe and when `bench get-app /opt/triotek/control` installed the Press-derived app
-* so we did not replace the working Bench install command
-* we only changed the later bootstrap path so Bench uses a compatible Python and the official Triotek Frappe base
+* so we did not replace the working Triotek Bench install command
+* we only changed the later bootstrap path so Triotek Bench uses a compatible Python and the official Triotek Frappe base
 
 ### 12f. Create the Bench workspace under `/opt/triotek`
 
@@ -481,7 +481,7 @@ sudo chown -R frappe:frappe /opt/triotek
 
 Then return to the `frappe` user and continue:
 
-Use an explicit Frappe source and branch for this stack instead of letting `bench init` choose its default. The official Triotek base is:
+Use an explicit Triotek Frappe source during `bench init` instead of letting Bench choose its default. The official base for this product is:
 
 * Frappe source: `https://github.com/Triotek-Ltd/triotek-frappe.git`
 * Frappe branch: `main`
@@ -493,7 +493,7 @@ The reason is:
 
 * your forked Triotek Bench tool installed correctly
 * the stale docs were still bootstrapping Frappe from the wrong upstream source
-* the fix is to keep using the same Bench command, but pin the Triotek Frappe bootstrap path during `bench init`
+* the fix is to keep using Triotek Bench, but pin the Triotek Frappe bootstrap path during `bench init`
 
 #### 12f.4 Move into `/opt/triotek`
 

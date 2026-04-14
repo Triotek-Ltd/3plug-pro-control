@@ -1089,11 +1089,11 @@ python3 --version
 
 Check: the default Python should now be 3.12.
 
-If you already created a bench with Python 3.11, 3.12, or 3.14 and installation failed, remove that failed bench and recreate it with Python 3.12 plus the explicit Frappe source/branch before continuing.
+If you already created a bench with Python 3.11, 3.12, or 3.14 and installation failed, rename that failed bench and recreate it with Python 3.12 plus the explicit Triotek Frappe source before continuing.
 
 #### 6e. Install Bench from the user-owned fork of Triotek Bench
 
-Use the fork-based Triotek Bench install.
+Use Triotek Bench as the Bench tool for this product.
 
 ##### 6e.1 Install Bench from the fork
 
@@ -1113,8 +1113,8 @@ Why the docs changed later:
 
 * this Bench install step was already working
 * the failures started later, when `bench init` bootstrapped Frappe and when `bench get-app /opt/triotek/control` installed the Press-derived app
-* so we did not change the Bench install command itself
-* we changed the later bootstrap path so Bench uses a compatible Python and the official Triotek Frappe base
+* so we did not change the Triotek Bench install command itself
+* we changed the later bootstrap path so Triotek Bench uses a compatible Python and the official Triotek Frappe base
 
 #### 6f. Create the Bench workspace under `/opt/triotek`
 
@@ -1146,7 +1146,7 @@ sudo chown -R frappe:frappe /opt/triotek
 
 Then return to the `frappe` user and continue:
 
-Use an explicit Frappe source and branch for this stack instead of letting `bench init` choose its default. The official Triotek base is:
+Use an explicit Triotek Frappe source during `bench init` instead of letting Bench choose its default. The official base for this product is:
 
 * Frappe source: `https://github.com/Triotek-Ltd/triotek-frappe.git`
 * Frappe branch: `main`
@@ -1158,7 +1158,7 @@ The reason is simple:
 
 * your forked Triotek Bench tool installed and ran correctly
 * the stale docs were still bootstrapping Frappe from the wrong upstream source
-* the fix is to keep using the Triotek Bench command and pin the Triotek Frappe bootstrap path during `bench init`
+* the fix is to keep using Triotek Bench and pin the Triotek Frappe bootstrap path during `bench init`
 
 ```bash
 cd /opt/triotek
@@ -1178,7 +1178,7 @@ Check: the output should be `/opt/triotek`.
 bench init frappe-bench --python /home/frappe/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12 --frappe-path https://github.com/Triotek-Ltd/triotek-frappe.git --frappe-branch main
 ```
 
-Check: the command should finish without stopping in dependency or Frappe bootstrap errors.
+Check: the command should finish without stopping in dependency or Triotek Frappe bootstrap errors.
 
 ##### 6f.6 Move into the new bench
 
@@ -1204,7 +1204,7 @@ bench --version
 
 Check: Bench should still resolve inside the new workspace.
 
-If `bench init` already failed with the wrong Frappe source or branch, remove that failed bench and rerun it with the explicit `--frappe-path` and `--frappe-branch`.
+If `bench init` already failed with the wrong Frappe source or branch, rename that failed bench and rerun it with the explicit `--frappe-path` and `--frappe-branch`.
 
 #### 6g. Clone the 3plug product from the user-owned fork
 
