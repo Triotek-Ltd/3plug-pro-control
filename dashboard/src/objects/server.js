@@ -41,7 +41,6 @@ export default {
 		title: 'Servers',
 		fields: [
 			'title',
-			'database_server',
 			'plan.title as plan_title',
 			'plan.price_usd as price_usd',
 			'plan.price_inr as price_inr',
@@ -91,17 +90,9 @@ export default {
 			},
 			{ label: 'Status', fieldname: 'status', type: 'Badge', width: 0.8 },
 			{
-				label: 'App Server Plan',
+				label: 'Plan',
 				format(value, row) {
 					return planTitle(row);
-				},
-			},
-			{
-				label: 'Database Server Plan',
-				fieldname: 'db_plan',
-				format(value, row) {
-					if (!value || row.is_unified_server) return '';
-					return planTitle(value);
 				},
 			},
 			{
@@ -211,36 +202,6 @@ export default {
 							},
 						},
 						{
-							label: 'View DB in Desk',
-							icon: icon('external-link'),
-							condition: () =>
-								$team.doc?.is_desk_user && !server.doc?.is_self_hosted,
-							onClick() {
-								window.open(
-									`${window.location.protocol}//${
-										window.location.host
-									}/app/database-server/${server.doc.database_server}`,
-									'_blank',
-								);
-							},
-						},
-						{
-							label: 'View Replication DB in Desk',
-							icon: icon('external-link'),
-							condition: () =>
-								$team.doc?.is_desk_user &&
-								!server.doc?.is_self_hosted &&
-								server.doc.replication_server,
-							onClick() {
-								window.open(
-									`${window.location.protocol}//${
-										window.location.host
-									}/app/database-server/${server.doc.replication_server}`,
-									'_blank',
-								);
-							},
-						},
-						{
 							label: 'Visit Server',
 							icon: icon('external-link'),
 							condition: () =>
@@ -254,6 +215,21 @@ export default {
 			];
 		},
 		tabs: [
+			{
+				label: 'Overview',
+				icon: icon('home'),
+				condition: (server) => {
+					return server.doc?.status !== 'Archived' && server.doc?.is_self_hosted;
+				},
+				route: 'overview',
+				type: 'Component',
+				component: defineAsyncComponent(
+					() => import('../components/server/ManagedServerOverview.vue'),
+				),
+				props: (server) => {
+					return { server: server.doc.name };
+				},
+			},
 			{
 				label: 'Overview',
 				icon: icon('home'),
@@ -283,6 +259,51 @@ export default {
 					return {
 						serverName: server.doc.name,
 					};
+				},
+			},
+			{
+				label: 'Health',
+				icon: icon('activity'),
+				condition: (server) => {
+					return server.doc?.status !== 'Archived' && server.doc?.is_self_hosted;
+				},
+				route: 'health',
+				type: 'Component',
+				component: defineAsyncComponent(
+					() => import('../components/server/ManagedServerHealth.vue'),
+				),
+				props: (server) => {
+					return { server: server.doc.name };
+				},
+			},
+			{
+				label: 'Security',
+				icon: icon('shield'),
+				condition: (server) => {
+					return server.doc?.status !== 'Archived' && server.doc?.is_self_hosted;
+				},
+				route: 'security',
+				type: 'Component',
+				component: defineAsyncComponent(
+					() => import('../components/server/ManagedServerSecurity.vue'),
+				),
+				props: (server) => {
+					return { server: server.doc.name };
+				},
+			},
+			{
+				label: 'Operations',
+				icon: icon('sliders'),
+				condition: (server) => {
+					return server.doc?.status !== 'Archived' && server.doc?.is_self_hosted;
+				},
+				route: 'operations',
+				type: 'Component',
+				component: defineAsyncComponent(
+					() => import('../components/server/ManagedServerOperations.vue'),
+				),
+				props: (server) => {
+					return { server: server.doc.name };
 				},
 			},
 			{

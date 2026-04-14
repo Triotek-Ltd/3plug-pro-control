@@ -96,7 +96,7 @@ function getAppsTabColumns(forSite: boolean) {
 			format: (value, row) => value || row.app_title,
 		},
 		{
-			label: 'Plan',
+			label: 'App Plan',
 			width: 0.75,
 			class: 'text-gray-600 text-sm',
 			format(_, row) {
@@ -106,13 +106,13 @@ function getAppsTabColumns(forSite: boolean) {
 			},
 		},
 		{
-			label: 'Repository',
+			label: 'Source Repository',
 			fieldname: 'repository_url',
 			format: (value) => String(value).split('/').slice(-2).join('/'),
 			link: (value) => String(value),
 		},
 		{
-			label: 'Branch',
+			label: 'Source Branch',
 			fieldname: 'branch',
 			type: 'Badge',
 			width: 1,
@@ -121,7 +121,7 @@ function getAppsTabColumns(forSite: boolean) {
 			},
 		},
 		{
-			label: 'Commit',
+			label: 'Release Commit',
 			fieldname: 'hash',
 			type: 'Badge',
 			width: 1,
@@ -133,7 +133,7 @@ function getAppsTabColumns(forSite: boolean) {
 			},
 		},
 		{
-			label: 'Commit Message',
+			label: 'Release Notes',
 			fieldname: 'commit_message',
 			width: '30rem',
 		},
@@ -151,7 +151,7 @@ const siteAppListOptions: Partial<TabList> = {
 	},
 	banner({ documentResource: site }) {
 		const bannerTitle =
-			'Your site is currently on a shared bench. Upgrade plan to install custom apps, enable server scripts and <a href="https://frappecloud.com/shared-hosting#benches" class="underline" target="_blank">more</a>.';
+			'Your site is currently on a shared bench. Upgrade plan to install custom apps, enable server scripts, and unlock more runtime control.';
 
 		return getUpsellBanner(site, bannerTitle);
 	},
@@ -209,7 +209,7 @@ const siteAppListOptions: Partial<TabList> = {
 				},
 			},
 			{
-				label: 'Uninstall',
+				label: 'Uninstall App',
 				condition: () => row.app !== 'frappe',
 				onClick() {
 					const UninstallAppDialog = defineAsyncComponent(
@@ -236,7 +236,7 @@ const benchAppListOptions: Partial<TabList> = {
 		let $team = getTeam();
 		return [
 			{
-				label: 'View in Desk',
+				label: 'View Release in Desk',
 				condition: () => $team.doc?.is_desk_user,
 				onClick() {
 					window.open(`/app/app-release/${row.release}`, '_blank');

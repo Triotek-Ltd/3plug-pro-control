@@ -88,6 +88,17 @@ const navigation = computed(() => {
 			disabled: enforce2FA,
 		},
 		{
+			name: 'Tenants',
+			icon: WalletCards,
+			route: '/tenants',
+			isActive:
+				routeName === 'Team List' ||
+				routeName === 'Team Detail' ||
+				routeName.startsWith('Team Detail'),
+			condition: onboardingComplete && !isSaasUser,
+			disabled: enforce2FA,
+		},
+		{
 			name: 'Servers',
 			icon: Server,
 			spacer: true,
@@ -186,7 +197,7 @@ const navigation = computed(() => {
 			disabled: enforce2FA,
 		},
 		{
-			name: 'Settings',
+			name: 'Control Settings',
 			icon: Settings,
 			route: '/settings',
 			isActive: routeName.startsWith('Settings'),

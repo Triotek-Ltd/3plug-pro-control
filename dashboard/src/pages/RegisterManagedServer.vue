@@ -43,9 +43,9 @@
 						Register the Linux server 3plug will manage
 					</h1>
 					<p class="mt-3 max-w-3xl text-sm text-gray-600">
-						This is the one-server path for 3plug. We verify the app and
-						database hosts, create the Press records, and hand the operator into
-						the server job flow.
+						This is the one-server path for 3plug. We verify the target Linux
+						server, create the managed server records behind the scenes, and hand
+						the operator into the bench onboarding flow.
 					</p>
 				</section>
 
@@ -65,28 +65,16 @@
 							</div>
 						</div>
 						<FormControl
-							label="Application Public IP"
+							label="Server Public IP"
 							type="text"
-							v-model="form.app_public_ip"
+							v-model="form.server_public_ip"
 							placeholder="203.0.113.10"
 						/>
 						<FormControl
-							label="Application Private IP"
+							label="Server Private IP"
 							type="text"
-							v-model="form.app_private_ip"
+							v-model="form.server_private_ip"
 							placeholder="10.0.0.10"
-						/>
-						<FormControl
-							label="Database Public IP"
-							type="text"
-							v-model="form.db_public_ip"
-							placeholder="203.0.113.11"
-						/>
-						<FormControl
-							label="Database Private IP"
-							type="text"
-							v-model="form.db_private_ip"
-							placeholder="10.0.0.11"
 						/>
 					</div>
 				</section>
@@ -98,7 +86,7 @@
 								Verification Access
 							</h2>
 							<p class="mt-2 text-sm text-gray-600">
-								The target hosts must allow the default SSH key so 3plug can
+								The target server must allow the default SSH key so 3plug can
 								verify connectivity and minimum specs.
 							</p>
 						</div>
@@ -120,8 +108,8 @@
 						<div>
 							<h2 class="text-lg font-semibold text-gray-900">Create Record</h2>
 							<p class="mt-2 text-sm text-gray-600">
-								This verifies both hosts, creates the self-hosted server record,
-								and starts setup against the managed server model.
+								This verifies the target server, creates the managed server
+								record chain, and starts setup against the one-server model.
 							</p>
 						</div>
 						<Button
@@ -145,8 +133,8 @@
 				<section class="rounded-xl border bg-white p-6">
 					<h2 class="text-lg font-semibold text-gray-900">Readiness Checks</h2>
 					<ul class="mt-4 space-y-3 text-sm text-gray-600">
-						<li>SSH access must work from 3plug to both application and database hosts.</li>
-						<li>Private IPs must actually belong to the target machines.</li>
+						<li>SSH access must work from 3plug to the target Linux server.</li>
+						<li>Private IPs must actually belong to that target machine.</li>
 						<li>Minimum baseline remains 4 GB RAM, 2 vCPU, and 40+ GB storage.</li>
 						<li>Docker is assumed available and not currently a special blocker.</li>
 					</ul>
@@ -155,10 +143,10 @@
 				<section class="rounded-xl border bg-white p-6">
 					<h2 class="text-lg font-semibold text-gray-900">What happens next</h2>
 					<ul class="mt-4 space-y-3 text-sm text-gray-600">
-						<li>3plug creates the managed server records.</li>
-						<li>The platform verifies host reachability and core specs.</li>
+						<li>3plug creates the managed server records behind the scenes.</li>
+						<li>The platform verifies reachability and core specs on that Linux server.</li>
 						<li>Setup jobs become visible on the server detail page.</li>
-						<li>After that, we move into bench and site operations.</li>
+						<li>After that, we move straight into bench and site operations.</li>
 					</ul>
 				</section>
 			</div>
@@ -183,10 +171,8 @@ export default {
 		return {
 			form: {
 				title: '',
-				app_public_ip: '',
-				app_private_ip: '',
-				db_public_ip: '',
-				db_private_ip: '',
+				server_public_ip: '',
+				server_private_ip: '',
 			},
 		};
 	},
@@ -202,7 +188,11 @@ export default {
 				url: 'press.api.selfhosted.create_and_verify_selfhosted',
 				makeParams: () => ({
 					server: {
-						...this.form,
+						title: this.form.title,
+						app_public_ip: this.form.server_public_ip,
+						app_private_ip: this.form.server_private_ip,
+						db_public_ip: this.form.server_public_ip,
+						db_private_ip: this.form.server_private_ip,
 						plan: this.defaultPlan,
 					},
 				}),

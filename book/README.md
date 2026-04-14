@@ -100,3 +100,5 @@ Start with:
 
 * [Product Target State](./product-target-state.md)
 * [Product Shell And Features](./product-shell-and-features.md)
+* [Control Settings](./control-settings.md)
+* [Client-Facing Product Benchmark](./client-facing-product-benchmark.md)

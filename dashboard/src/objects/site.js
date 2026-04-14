@@ -302,14 +302,14 @@ export default {
 				type: 'Component',
 				condition: (site) => site.doc?.status !== 'Archived',
 				component: defineAsyncComponent(
-					() => import('../components/SiteOverview.vue'),
+					() => import('../components/site/ManagedSiteOverview.vue'),
 				),
 				props: (site) => {
 					return { site: site.doc?.name };
 				},
 			},
 			{
-				label: 'Insights',
+				label: 'Health and Insights',
 				icon: icon('bar-chart-2'),
 				route: 'insights',
 				type: 'Component',
@@ -1568,7 +1568,7 @@ export default {
 				},
 			},
 			{
-				label: 'Actions',
+				label: 'Operations',
 				icon: icon('sliders'),
 				route: 'actions',
 				type: 'Component',
@@ -1603,9 +1603,9 @@ export default {
 						};
 					},
 					columns: [
-						{
-							label: 'Action',
-							fieldname: 'action',
+							{
+								label: 'Action',
+								fieldname: 'action',
 							format(value, row) {
 								let action = row.action;
 								if (action == 'Create') {
@@ -1761,7 +1761,7 @@ export default {
 					},
 				},
 				{
-					label: 'Visit Site',
+					label: 'Open Site',
 					slots: {
 						prefix: icon('external-link'),
 					},

@@ -25,17 +25,29 @@ def new(server):
 
 
 def create_self_hosted_server(server_details, team, proxy_server):
+	app_public_ip = strip(
+		server_details.get("app_public_ip", "") or server_details.get("server_public_ip", "")
+	)
+	app_private_ip = strip(
+		server_details.get("app_private_ip", "") or server_details.get("server_private_ip", "")
+	)
+	db_public_ip = strip(server_details.get("db_public_ip", "") or app_public_ip)
+	db_private_ip = strip(server_details.get("db_private_ip", "") or app_private_ip)
+
 	try:
 		self_hosted_server = frappe.new_doc(
 			"Self Hosted Server",
 			**{
-				"ip": strip(server_details.get("app_public_ip", "")),
-				"private_ip": strip(server_details.get("app_private_ip", "")),
-				"mariadb_ip": strip(server_details.get("db_public_ip", "")),
-				"mariadb_private_ip": strip(server_details.get("db_private_ip", "")),
+				"ip": app_public_ip,
+				"private_ip": app_private_ip,
+				"mariadb_ip": db_public_ip,
+				"mariadb_private_ip": db_private_ip,
 				"title": server_details.title,
 				"proxy_server": proxy_server,
 				"proxy_created": True,
+				# Keep the legacy split-runtime model underneath for now so setup,
+				# jobs, and bench onboarding continue to work while the product UX
+				# is narrowed to a single managed Linux server.
 				"different_database_server": True,
 				"team": team.name,
 				"plan": server_details.plan["name"],

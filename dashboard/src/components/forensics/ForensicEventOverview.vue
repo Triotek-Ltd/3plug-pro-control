@@ -3,7 +3,7 @@
 		<div class="rounded-lg border bg-white p-5">
 			<div class="flex items-start justify-between gap-4">
 				<div>
-					<p class="text-sm text-gray-500">Event Summary</p>
+					<p class="text-sm text-gray-500">Forensic Evidence</p>
 					<h2 class="mt-1 text-xl font-semibold text-gray-900">
 						{{ document.summary || document.event_type || document.name }}
 					</h2>
@@ -39,7 +39,7 @@
 		</div>
 
 		<div class="rounded-lg border bg-white p-5">
-			<p class="text-sm font-medium text-gray-900">Investigation Context</p>
+			<p class="text-sm font-medium text-gray-900">Incident Context</p>
 			<div class="mt-4 space-y-4">
 				<div v-for="item in contextFacts" :key="item.label">
 					<p class="text-xs uppercase tracking-wide text-gray-500">
@@ -65,7 +65,7 @@
 		<div class="rounded-lg border bg-white p-5 lg:col-span-2">
 			<div class="flex items-center justify-between gap-4">
 				<div>
-					<p class="text-sm font-medium text-gray-900">Captured Payload</p>
+					<p class="text-sm font-medium text-gray-900">Captured Evidence</p>
 					<p class="mt-1 text-sm text-gray-500">
 						Structured evidence recorded when this forensic event was created.
 					</p>

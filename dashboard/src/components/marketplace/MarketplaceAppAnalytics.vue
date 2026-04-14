@@ -3,7 +3,7 @@
 	<div v-if="$resources.analytics.loading" class="flex justify-center py-12">
 		<div class="flex items-center gap-2">
 			<LoadingIndicator class="h-4 w-4" />
-			Loading analytics...
+			Loading adoption analytics...
 		</div>
 	</div>
 	<!-- error state -->

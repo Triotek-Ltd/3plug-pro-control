@@ -11,6 +11,7 @@ from frappe.utils.user import is_system_user
 
 from press.guards import role_guard
 from press.utils import get_current_team
+from press.utils.currency import convert_amount, is_primary_currency, is_regional_currency, plan_price_field
 
 
 def is_lead_team(lead):
@@ -185,10 +186,9 @@ def transfer_credits(amount, customer):
 	credits_to_transfer = amt
 	amt -= amt * discount_percent
 	if customer_doc.currency != partner_doc.currency:
-		if partner_doc.currency == "USD":
-			credits_to_transfer = credits_to_transfer * 83
-		else:
-			credits_to_transfer = credits_to_transfer / 83
+		credits_to_transfer = convert_amount(
+			credits_to_transfer, partner_doc.currency, customer_doc.currency
+		)
 
 	try:
 		customer_doc.allocate_credit_amount(
@@ -230,10 +230,9 @@ def get_partner_contribution_list(partner_email):
 
 	for d in invoices:
 		if partner_currency != d.currency:
-			if partner_currency == "USD":
-				d.update({"partner_total": flt(d.total_before_discount / 83, 2)})
-			else:
-				d.update({"partner_total": flt(d.total_before_discount * 83)})
+			d.update(
+				{"partner_total": flt(convert_amount(d.total_before_discount, d.currency, partner_currency), 2)}
+			)
 		else:
 			d.update({"partner_total": d.total_before_discount})
 	return invoices
@@ -253,11 +252,15 @@ def get_partner_mrr(partner_email):
 	Invoice = frappe.qb.DocType("Invoice")
 	case_stmt = Case()
 
-	if partner_currency == "INR":
-		case_stmt.when(Invoice.currency == "USD", Invoice.total_before_discount * 83)
+	if is_regional_currency(partner_currency):
+		case_stmt.when(Invoice.currency == "GBP", Invoice.total_before_discount * 160)
+		case_stmt.when(Invoice.currency == "USD", Invoice.total_before_discount * 160)
+		case_stmt.when(Invoice.currency == "KES", Invoice.total_before_discount)
 		case_stmt.when(Invoice.currency == "INR", Invoice.total_before_discount)
-	elif partner_currency == "USD":
-		case_stmt.when(Invoice.currency == "INR", Invoice.total_before_discount / 83)
+	elif is_primary_currency(partner_currency):
+		case_stmt.when(Invoice.currency == "KES", Invoice.total_before_discount / 160)
+		case_stmt.when(Invoice.currency == "INR", Invoice.total_before_discount / 160)
+		case_stmt.when(Invoice.currency == "GBP", Invoice.total_before_discount)
 		case_stmt.when(Invoice.currency == "USD", Invoice.total_before_discount)
 
 	case_stmt.else_(Invoice.total_before_discount)
@@ -538,10 +541,7 @@ def get_current_month_partner_contribution(partner_email):
 	total = 0
 	for d in invoices:
 		if partner_currency != d.currency:
-			if partner_currency == "USD":
-				total += flt(d.total_before_discount / 83, 2)
-			else:
-				total += flt(d.total_before_discount * 83, 2)
+			total += flt(convert_amount(d.total_before_discount, d.currency, partner_currency), 2)
 		else:
 			total += d.total_before_discount
 
@@ -583,10 +583,7 @@ def get_prev_month_partner_contribution(partner_email):
 	total = 0
 	for d in invoices:
 		if partner_currency != d.currency:
-			if partner_currency == "USD":
-				total += flt(d.total_before_discount / 83, 2)
-			else:
-				total += flt(d.total_before_discount * 83, 2)
+			total += flt(convert_amount(d.total_before_discount, d.currency, partner_currency), 2)
 		else:
 			total += d.total_before_discount
 	return total
@@ -597,7 +594,7 @@ def get_prev_month_partner_contribution(partner_email):
 def calculate_partner_tier(contribution, currency):
 	partner_tier = frappe.qb.DocType("Partner Tier")
 	query = frappe.qb.from_(partner_tier).select(partner_tier.name)
-	if currency == "INR":
+	if is_regional_currency(currency):
 		query = query.where(partner_tier.target_in_inr <= contribution).orderby(
 			partner_tier.target_in_inr, order=frappe.qb.desc
 		)
@@ -908,7 +905,10 @@ def update_lead_status(lead_name, status, **kwargs):  # noqa: C901
 			paid_plans = (
 				frappe.qb.from_(SitePlan)
 				.select(SitePlan.name)
-				.where((SitePlan.price_inr > 0) & ((SitePlan.enabled == 1) | (SitePlan.legacy_plan == 1)))
+				.where(
+					(getattr(SitePlan, plan_price_field("KES")) > 0)
+					& ((SitePlan.enabled == 1) | (SitePlan.legacy_plan == 1))
+				)
 				.run(pluck=True)
 			)
 			site_plan = result[0].plan
@@ -950,7 +950,7 @@ def calculate_total_amount(server_name):
 	ServerPlan = frappe.qb.DocType("Server Plan")
 	query = (
 		frappe.qb.from_(ServerPlan)
-		.select(Sum(ServerPlan.price_usd).as_("total_amount"))
+		.select(Sum(getattr(ServerPlan, plan_price_field("GBP"))).as_("total_amount"))
 		.where(
 			ServerPlan.name.isin([server_plan, db_server_plan]),
 		)
@@ -964,7 +964,7 @@ def calculate_total_team_amount(team_name):
 
 	total_amount = 0
 	for d in subscriptions:
-		total_amount += frappe.db.get_value(d.plan_type, d.plan, "price_usd") or 0
+		total_amount += frappe.db.get_value(d.plan_type, d.plan, plan_price_field("GBP")) or 0
 
 	return total_amount
 
@@ -1000,7 +1000,9 @@ def check_certificate_exists(email, type):
 @frappe.whitelist()
 def get_fc_plans():
 	site_plans = frappe.get_all(
-		"Site Plan", {"enabled": 1, "document_type": "Site", "price_inr": (">", 0)}, pluck="name"
+		"Site Plan",
+		{"enabled": 1, "document_type": "Site", plan_price_field("KES"): (">", 0)},
+		pluck="name",
 	)
 	return [*site_plans, "Dedicated Server", "Managed Press"]
 

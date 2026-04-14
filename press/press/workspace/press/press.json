@@ -1,17 +1,17 @@
 {
  "charts": [],
- "content": "[{\"id\":\"zYUVFJZX-t\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Frappe Cloud</span>\",\"col\":12}},{\"id\":\"VFzeFzlnB5\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"iNJ8WoS9kD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Sites</b></span>\",\"col\":12}},{\"id\":\"EYeJrbXv1P\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Active Sites\",\"col\":3}},{\"id\":\"7jAM0HBrde\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Broken Sites\",\"col\":3}},{\"id\":\"ttO5vXfzL_\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pending Sites\",\"col\":3}},{\"id\":\"nvLoQ_N15n\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Suspended Sites\",\"col\":3}},{\"id\":\"AVO8JCkksy\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"aLqo1uNPYu\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Benches</b></span>\",\"col\":12}},{\"id\":\"BcJPVEkRcy\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Active Benches\",\"col\":3}},{\"id\":\"PhHBf-f1ej\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Broken Benches\",\"col\":3}},{\"id\":\"JJB6cOEiXy\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"7a18ugroq8\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Servers</b></span>\",\"col\":12}},{\"id\":\"M3urSE6cor\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Application Server\",\"col\":3}},{\"id\":\"5qOJXl1CkE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Database Server\",\"col\":3}},{\"id\":\"PWrCW7DruI\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Proxy Server\",\"col\":3}},{\"id\":\"_GVOmg7C_U\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hybrid Servers\",\"col\":3}},{\"id\":\"XHWA0NCImO\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"X1dteEUHoR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Settings</b></span>\",\"col\":12}},{\"id\":\"eeEbYjVj_n\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Press Settings\",\"col\":3}},{\"id\":\"EiWS2tWYwu\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Root Domain\",\"col\":3}},{\"id\":\"EoLO5YYzdR\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tls Certificate\",\"col\":3}},{\"id\":\"-Jx1Irf-28\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Team\",\"col\":3}},{\"id\":\"n-T0ehr2ca\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"xZEclbenJQ\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Masters</b></span>\",\"col\":12}},{\"id\":\"P6nCUrJreH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App\",\"col\":3}},{\"id\":\"1kAyHtrIrJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Source\",\"col\":3}},{\"id\":\"-N-Xb5MVPV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Release\",\"col\":3}},{\"id\":\"ND9oElFB7R\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"0DYlbnEtOT\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Plans</b></span>\",\"col\":12}},{\"id\":\"eddRzzqwSZ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Server Plan\",\"col\":3}},{\"id\":\"GYk3Frsy1L\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site Plan\",\"col\":3}},{\"id\":\"B8T-3IZ8Qg\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"WDyzNHuOas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Operations</b></span>\",\"col\":12}},{\"id\":\"Ziby8rOfsU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Agent Job\",\"col\":3}},{\"id\":\"LcmPx6mY2r\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensic Event\",\"col\":3}},{\"id\":\"Vm4Tn0dxiD\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Ansible Play\",\"col\":3}},{\"id\":\"n6VE51hPkc\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Press Job\",\"col\":3}}]",
+ "content": "[{\"id\":\"threeplug-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">3plug Control</span>\",\"col\":12}},{\"id\":\"threeplug-intro\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"threeplug-ops-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Operations</b></span>\",\"col\":12}},{\"id\":\"threeplug-managed-servers\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Managed Servers\",\"col\":3}},{\"id\":\"threeplug-servers\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Servers\",\"col\":3}},{\"id\":\"threeplug-benches\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Benches\",\"col\":3}},{\"id\":\"threeplug-sites\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":3}},{\"id\":\"threeplug-tenants\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenants\",\"col\":3}},{\"id\":\"threeplug-ops-spacer\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"threeplug-exec-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Execution</b></span>\",\"col\":12}},{\"id\":\"threeplug-jobs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Jobs\",\"col\":3}},{\"id\":\"threeplug-plays\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plays\",\"col\":3}},{\"id\":\"threeplug-forensics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensics\",\"col\":3}},{\"id\":\"threeplug-signals\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Incident Signals\",\"col\":3}},{\"id\":\"threeplug-exec-spacer\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"threeplug-apps-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Applications</b></span>\",\"col\":12}},{\"id\":\"threeplug-apps\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Apps\",\"col\":3}},{\"id\":\"threeplug-app-sources\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Sources\",\"col\":3}},{\"id\":\"threeplug-app-releases\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Releases\",\"col\":3}},{\"id\":\"threeplug-analytics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Analytics\",\"col\":3}},{\"id\":\"threeplug-apps-spacer\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"threeplug-admin-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Team And Settings</b></span>\",\"col\":12}},{\"id\":\"threeplug-team\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Operators\",\"col\":3}},{\"id\":\"threeplug-settings\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Control Settings\",\"col\":3}}]",
  "creation": "2024-07-30 18:43:18.421196",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
- "icon": "tool",
+ "icon": "octicon octicon-server",
  "idx": 0,
  "indicator_color": "",
- "is_hidden": 1,
- "label": "Press",
+ "is_hidden": 0,
+ "label": "3plug Control",
  "links": [],
  "modified": "2024-08-02 16:33:40.351403",
  "modified_by": "Administrator",
@@ -26,41 +26,73 @@
  "sequence_id": 28.0,
  "shortcuts": [
   {
-   "color": "Green",
+   "color": "Blue",
    "doc_view": "List",
-   "label": "Root Domain",
-   "link_to": "Root Domain",
+   "label": "Jobs",
+   "link_to": "Agent Job",
    "stats_filter": "[]",
    "type": "DocType"
   },
   {
-   "color": "Grey",
+   "color": "Blue",
    "doc_view": "List",
-   "label": "Agent Job",
-   "link_to": "Agent Job",
+   "label": "Managed Servers",
+   "link_to": "Self Hosted Server",
+   "stats_filter": "[[\"Self Hosted Server\",\"status\",\"!=\",\"Archived\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Servers",
+   "link_to": "Server",
+   "stats_filter": "[[\"Server\",\"status\",\"!=\",\"Archived\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Benches",
+   "link_to": "Bench",
+   "stats_filter": "[[\"Bench\",\"status\",\"!=\",\"Archived\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Sites",
+   "link_to": "Site",
+   "stats_filter": "[[\"Site\",\"status\",\"!=\",\"Archived\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Tenants",
+   "link_to": "Team",
+   "stats_filter": "[[\"Team\",\"enabled\",\"=\",1,false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Forensics",
+   "link_to": "Forensic Event",
    "stats_filter": "[]",
    "type": "DocType"
   },
   {
    "color": "Orange",
    "doc_view": "List",
-   "label": "Forensic Event",
+   "label": "Incident Signals",
    "link_to": "Forensic Event",
    "stats_filter": "[]",
    "type": "DocType"
   },
   {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Server Plan",
-   "link_to": "Server Plan",
-   "stats_filter": "[[\"Server Plan\",\"enabled\",\"=\",1,false]]",
-   "type": "DocType"
-  },
-  {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Ansible Play",
+   "label": "Plays",
    "link_to": "Ansible Play",
    "stats_filter": "[]",
    "type": "DocType"
@@ -68,7 +100,7 @@
   {
    "color": "Green",
    "doc_view": "List",
-   "label": "Team",
+   "label": "Operators",
    "link_to": "Team",
    "stats_filter": "[[\"Team\",\"enabled\",\"=\",1,false]]",
    "type": "DocType"
@@ -76,90 +108,15 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Press Job",
-   "link_to": "Press Job",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Green",
-   "doc_view": "List",
-   "format": "",
-   "label": "Active Sites",
-   "link_to": "Site",
-   "stats_filter": "[[\"Site\",\"status\",\"=\",\"Active\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Site Plan",
-   "link_to": "Site Plan",
-   "stats_filter": "[[\"Site Plan\",\"enabled\",\"=\",1,false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Active Benches",
-   "link_to": "Bench",
-   "stats_filter": "[[\"Bench\",\"status\",\"=\",\"Active\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Tls Certificate",
-   "link_to": "TLS Certificate",
-   "stats_filter": "[[\"TLS Certificate\",\"status\",\"=\",\"Active\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Red",
-   "doc_view": "List",
-   "format": "",
-   "label": "Broken Sites",
-   "link_to": "Site",
-   "stats_filter": "[[\"Site\",\"status\",\"=\",\"Broken\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Red",
-   "doc_view": "List",
-   "label": "Broken Benches",
-   "link_to": "Bench",
-   "stats_filter": "[[\"Bench\",\"status\",\"=\",\"Broken\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "App",
+   "label": "Apps",
    "link_to": "App",
    "stats_filter": "[]",
    "type": "DocType"
   },
   {
-   "color": "Yellow",
-   "doc_view": "List",
-   "format": "",
-   "label": "Pending Sites",
-   "link_to": "Site",
-   "stats_filter": "[[\"Site\",\"status\",\"=\",\"Pending\",false]]",
-   "type": "DocType"
-  },
-  {
    "color": "Green",
    "doc_view": "List",
-   "label": "Application Server",
-   "link_to": "Server",
-   "stats_filter": "[[\"Server\",\"status\",\"=\",\"Active\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "App Source",
+   "label": "App Sources",
    "link_to": "App Source",
    "stats_filter": "[]",
    "type": "DocType"
@@ -167,51 +124,26 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "format": "",
-   "label": "Suspended Sites",
-   "link_to": "Site",
-   "stats_filter": "[[\"Site\",\"status\",\"=\",\"Suspended\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Database Server",
-   "link_to": "Database Server",
-   "stats_filter": "[[\"Database Server\",\"status\",\"=\",\"Active\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "App Release",
+   "label": "App Releases",
    "link_to": "App Release",
    "stats_filter": "[]",
    "type": "DocType"
   },
   {
-   "color": "Green",
+   "color": "Blue",
    "doc_view": "List",
-   "label": "Proxy Server",
-   "link_to": "Proxy Server",
-   "stats_filter": "[[\"Proxy Server\",\"status\",\"=\",\"Active\",false]]",
+   "label": "Analytics",
+   "link_to": "Site Analytics",
+   "stats_filter": "[]",
    "type": "DocType"
   },
   {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Hybrid Servers",
-   "link_to": "Self Hosted Server",
-   "stats_filter": "[[\"Self Hosted Server\",\"status\",\"=\",\"Active\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Press Settings",
-   "link_to": "Press Settings",
-   "type": "DocType"
+    "color": "Grey",
+    "doc_view": "List",
+    "label": "Control Settings",
+    "link_to": "Press Settings",
+    "type": "DocType"
   }
  ],
- "title": "Press"
+ "title": "3plug Control"
 }

@@ -56,29 +56,41 @@ export function plural(number, singular, plural) {
 
 export function planTitleHourly(plan) {
 	if (plan === undefined) return;
-	const $team = getTeam();
-	const india = $team.doc?.currency === 'INR';
-	const priceField = india ? 'price_inr' : 'price_usd';
 	const price =
-		plan?.block_monthly == 1 ? plan[priceField] * 12 : plan[priceField];
+		plan?.block_monthly == 1 ? planAmount(plan) * 12 : planAmount(plan);
 
 	return price > 0 ? `${userCurrency(pricePerHour(price))}` : plan.plan_title;
 }
 
 export function planTitle(plan) {
 	if (plan === undefined) return;
-	const $team = getTeam();
-	const india = $team.doc?.currency === 'INR';
-	const priceField = india ? 'price_inr' : 'price_usd';
 	const price =
-		plan?.block_monthly == 1 ? plan[priceField] * 12 : plan[priceField];
+		plan?.block_monthly == 1 ? planAmount(plan) * 12 : planAmount(plan);
 	return price > 0 ? `${userCurrency(price, 0)}` : plan.plan_title;
 }
 
-export function userCurrency(value, fractions = 2) {
+export function currentCurrency() {
 	const $team = getTeam();
-	if (!$team.doc?.currency) return value;
-	return currency(value, $team.doc?.currency, fractions);
+	const currency = $team.doc?.currency;
+	if (!currency) return 'GBP';
+	return currency === 'INR' || currency === 'KES' ? 'KES' : 'GBP';
+}
+
+export function currentPriceField() {
+	return currentCurrency() === 'KES' ? 'price_inr' : 'price_usd';
+}
+
+export function planAmount(plan) {
+	if (plan === undefined || plan === null) return 0;
+	return plan[currentPriceField()] || 0;
+}
+
+export function planHasPrice(plan) {
+	return (plan?.price_inr || 0) > 0 || (plan?.price_usd || 0) > 0;
+}
+
+export function userCurrency(value, fractions = 2) {
+	return currency(value, currentCurrency(), fractions);
 }
 
 export function currency(value, currency, fractions = 2) {

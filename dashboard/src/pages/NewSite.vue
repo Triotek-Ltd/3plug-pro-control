@@ -932,16 +932,10 @@ export default {
 			];
 		},
 		_totalPerMonth() {
-			let total =
-				this.$team.doc.currency == 'INR'
-					? this.selectedPlan.price_inr
-					: this.selectedPlan.price_usd;
+			let total = this.$format.planAmount(this.selectedPlan);
 
 			for (let app of this.apps.filter((app) => app.plan)) {
-				total +=
-					this.$team.doc.currency == 'INR'
-						? app.plan.price_inr
-						: app.plan.price_usd;
+				total += this.$format.planAmount(app.plan);
 			}
 
 			return total;
@@ -961,11 +955,9 @@ export default {
 					`${
 						this.selectedVersionApps.find((a) => a.app === app.app).app_title
 					} ${
-						app.plan?.price_inr
+						this.$format.planHasPrice(app.plan)
 							? `- <span class="text-gray-600">${this.$format.userCurrency(
-									this.$team.doc.currency == 'INR'
-										? app.plan.price_inr
-										: app.plan.price_usd,
+									this.$format.planAmount(app.plan),
 								)} per month</span>`
 							: ''
 					}`,
@@ -988,9 +980,7 @@ export default {
 				{
 					label: 'Site Plan',
 					value: `${this.$format.userCurrency(
-						this.$team.doc.currency == 'INR'
-							? this.selectedPlan.price_inr
-							: this.selectedPlan.price_usd,
+						this.$format.planAmount(this.selectedPlan),
 					)} per month`,
 				},
 				{

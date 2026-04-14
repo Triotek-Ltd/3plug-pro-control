@@ -88,12 +88,12 @@ class TestTeam(FrappeTestCase):
 	def test_new_team_has_correct_currency_set(self):
 		account_request1 = create_test_account_request("testsubdomain")
 		with patch.object(Team, "create_stripe_customer"):
-			team1 = Team.create_new(account_request1, "Jon", "Doe", "test@gmail.com", country="India")
-		self.assertEqual(team1.currency, "INR")
+			team1 = Team.create_new(account_request1, "Jon", "Doe", "test@gmail.com", country="Kenya")
+		self.assertEqual(team1.currency, "KES")
 
 		account_request2 = create_test_account_request("testsubdomain2")
 		with patch.object(Team, "create_stripe_customer"):
 			team2 = Team.create_new(
-				account_request2, "John", "Meyer", "jonmeyer@gmail.com", country="Pakistan"
+				account_request2, "John", "Meyer", "jonmeyer@gmail.com", country="United Kingdom"
 			)
-		self.assertEqual(team2.currency, "USD")
+		self.assertEqual(team2.currency, "GBP")

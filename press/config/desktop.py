@@ -8,11 +8,11 @@ def get_data():
 		{
 			"module_name": "Press",
 			"category": "Modules",
-			"color": "grey",
-			"description": "Managed Frappe Hosting",
-			"icon": "octicon octicon-rocket",
+			"color": "blue",
+			"description": "Single-server control plane for benches, sites, jobs, and forensics",
+			"icon": "octicon octicon-server",
 			"type": "module",
-			"label": _("Press"),
+			"label": _("3plug Control"),
 			"reverse": 1,
 		}
 	]

@@ -561,16 +561,17 @@ export default {
 			if (!this.$site?.doc?.current_plan || !this.$team?.doc) return null;
 
 			const currency = this.$team.doc.currency;
+			const useRegionalCurrency = currency === 'KES' || currency === 'INR';
 			return {
 				price:
-					currency === 'INR'
+					useRegionalCurrency
 						? this.$site.doc.current_plan.price_inr
 						: this.$site.doc.current_plan.price_usd,
 				price_per_day:
-					currency === 'INR'
+					useRegionalCurrency
 						? this.$site.doc.current_plan.price_per_day_inr
 						: this.$site.doc.current_plan.price_per_day_usd,
-				currency: currency === 'INR' ? '₹' : '$',
+				currency: useRegionalCurrency ? 'KSh' : 'GBP',
 				...this.$site.doc.current_plan,
 			};
 		},

@@ -40,7 +40,7 @@
 			<div>
 				<div class="flex items-center justify-between">
 					<h2 class="text-sm font-medium leading-6 text-gray-900">
-						Select Frappe Framework Version
+						Select Bench Framework Version
 					</h2>
 				</div>
 				<div class="mt-2">
@@ -119,7 +119,7 @@
 				>
 					<lucide-info class="mr-4 inline-block h-6 w-6" />
 					<div>
-						You can only create USD 25 or higher plan sites in the bench.
+						You can only create higher-plan sites in this bench.
 						<a
 							href="https://docs.frappe.io/cloud/benches#pricing"
 							target="_blank"
@@ -131,7 +131,7 @@
 				<FormControl
 					type="checkbox"
 					v-model="agreedToRegionConsent"
-					:label="`I agree that the laws of the region selected by me shall stand applicable to me and Frappe.`"
+						:label="`I agree that the laws of the selected runtime region apply to this bench.`"
 				/>
 				<ErrorMessage class="my-2" :message="$resources.createBench.error" />
 				<Button

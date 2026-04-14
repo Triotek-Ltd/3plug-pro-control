@@ -384,9 +384,10 @@ function verifyOTP() {
 function planTitle(site) {
 	if (site.trial_end_date) return trialDays(site.trial_end_date);
 	if (site.price_usd > 0 && team) {
-		const india = team?.doc?.currency === 'INR';
 		const formattedValue = userCurrency(
-			india ? site.price_inr : site.price_usd,
+			team?.doc?.currency === 'KES' || team?.doc?.currency === 'INR'
+				? site.price_inr
+				: site.price_usd,
 			0,
 		);
 		return `${formattedValue}/mo`;

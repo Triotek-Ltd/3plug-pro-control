@@ -11,7 +11,7 @@ export function getJobsTab(doctype: JobDocTypes) {
 	const jobRoute = getJobRoute(doctype);
 
 	return {
-		label: 'Jobs',
+		label: 'Execution',
 		icon: icon('truck'),
 		condition: (record) => (doctype === 'Server' && record.doc?.status !== 'Archived') || doctype !== 'Server',
 		childrenRoutes: [jobRoute],
@@ -84,7 +84,7 @@ function getJobRoute(doctype: JobDocTypes) {
 function getJobTabColumns(doctype: JobDocTypes) {
 	const columns: ColumnField[] = [
 		{
-			label: 'Job Type',
+			label: 'Action',
 			fieldname: 'job_type',
 			class: 'font-medium'
 		},
@@ -95,7 +95,7 @@ function getJobTabColumns(doctype: JobDocTypes) {
 			width: 0.5
 		},
 		{
-			label: 'Site',
+			label: 'Target',
 			fieldname: 'site',
 			width: 1.2
 		},
@@ -109,7 +109,7 @@ function getJobTabColumns(doctype: JobDocTypes) {
 			}
 		},
 		{
-			label: 'Created By',
+			label: 'Triggered By',
 			fieldname: 'owner'
 		},
 		{

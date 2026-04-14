@@ -77,7 +77,7 @@
 		/>
 
 		<div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-			<AnalyticsCard title="Daily Usage" @share-card="shareDashboard">
+			<AnalyticsCard title="Usage Trend" @share-card="shareDashboard">
 				<LineChart
 					type="time"
 					title="Usage Counter"
@@ -99,7 +99,7 @@
 				/>
 			</AnalyticsCard>
 
-			<AnalyticsCard title="Requests" @share-card="shareDashboard">
+			<AnalyticsCard title="Request Volume" @share-card="shareDashboard">
 				<LineChart
 					type="time"
 					title="Requests"
@@ -121,7 +121,7 @@
 				</template>
 			</AnalyticsCard>
 
-			<AnalyticsCard title="Requests CPU Usage" @share-card="shareDashboard">
+			<AnalyticsCard title="Request CPU Load" @share-card="shareDashboard">
 				<LineChart
 					type="time"
 					title="Requests CPU Usage"
@@ -140,7 +140,7 @@
 			class="!mt-6 flex w-fit cursor-pointer space-x-2"
 			@click="toggleAdvancedAnalytics"
 		>
-			<h2 class="text-lg font-semibold">Advanced Analytics</h2>
+			<h2 class="text-lg font-semibold">Operational Analytics</h2>
 			<FeatherIcon
 				class="h-5 w-5 text-gray-500 hover:text-gray-700"
 				:name="showAdvancedAnalytics ? 'chevron-down' : 'chevron-right'"
@@ -152,7 +152,7 @@
 			v-if="showAdvancedAnalytics"
 			class="grid grid-cols-1 gap-5 sm:grid-cols-2"
 		>
-			<AnalyticsCard title="Background Jobs" @share-card="shareDashboard">
+			<AnalyticsCard title="Background Job Volume" @share-card="shareDashboard">
 				<LineChart
 					type="time"
 					title="Background Jobs"
@@ -167,7 +167,7 @@
 			</AnalyticsCard>
 
 			<AnalyticsCard
-				title="Background Jobs CPU Usage"
+				title="Background Job CPU Load"
 				@share-card="shareDashboard"
 			>
 				<LineChart
@@ -185,7 +185,7 @@
 
 			<AnalyticsCard
 				class="sm:col-span-2"
-				title="Frequent Requests"
+				title="Top Request Paths"
 				@share-card="shareDashboard"
 			>
 				<BarChart
@@ -203,7 +203,7 @@
 
 			<AnalyticsCard
 				class="sm:col-span-2"
-				title="Slowest Requests"
+				title="Slowest Request Paths"
 				@share-card="shareDashboard"
 			>
 				<BarChart

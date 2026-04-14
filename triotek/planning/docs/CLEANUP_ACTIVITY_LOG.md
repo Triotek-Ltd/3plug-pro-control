@@ -560,3 +560,315 @@ Reason:
 
 * the current 3plug product target is the managed-server workflow, not the broader legacy Press server-provisioning model
 * the fastest way to reduce operator confusion is to stop steering people into old server surfaces before we do deeper structural cleanup
+
+### 2026-04-13
+
+Change:
+
+* rebranded the Desk-facing app metadata from `Press` to `3plug Control`
+* replaced the hidden `Frappe Cloud` workspace with a visible `3plug Control` workspace built around the target operator areas
+* reorganized the module map into `Operations`, `Execution`, `Applications`, `Analytics`, `Team`, and `Settings`
+* added Desk shortcuts for `Tenants`, `Analytics`, and `Incident Signals` using the closest existing records while the deeper product model is still being built
+
+Reason:
+
+* the first thing the operator should feel is the right product shell, not the old Press branding and workspace model
+* this gives us a real Frappe Desk starting point for the next 3plug product cleanup and module-building work
+
+### 2026-04-13
+
+Change:
+
+* added a first-pass `Tenants` module in the dashboard on top of the existing `Team` doctype
+* created tenant list and detail surfaces with overview, sites, benches, and servers tabs
+* added `Tenants` to the dashboard sidebar so it is now a real app module instead of only a workspace shortcut
+
+Reason:
+
+* `Tenants` is part of the agreed 3plug target product shape, but it previously existed only as hidden account/session plumbing
+* this gives the product a real tenant-facing surface without forcing a risky backend rename before the rest of the shell cleanup is done
+
+### 2026-04-13
+
+Change:
+
+* reviewed the current `Press Settings` doctype against the 3plug target state
+* documented the intended `Control Settings` scope in `book/control-settings.md`
+* split the settings model into:
+  * keep and reframe for 3plug operations
+  * review carefully before simplifying
+  * hide or defer from the main product settings surface
+* decided to keep `Press Settings` as the backend single doctype for now while presenting it in-product as `Control Settings`
+
+Reason:
+
+* the settings surface is one of the biggest places where old Press product assumptions still live
+* 3plug needs a control-first settings model before we start editing the settings UI blindly
+* a direct doctype rename would be risky because `Press Settings` is still referenced widely across the backend
+
+### 2026-04-13
+
+Change:
+
+* relabeled the visible product settings entry points from `Settings` to `Control Settings`
+* updated the dashboard sidebar label, settings-page breadcrumb, and Desk workspace shortcut to use the 3plug-facing name
+* kept the underlying backend doctype linked to `Press Settings` for compatibility
+
+Reason:
+
+* the product shell should stop teaching operators the old Press name before the backend rename is safe
+* this gives us the right operator language immediately without breaking the current settings implementation
+
+### 2026-04-13
+
+Change:
+
+* reorganized the visible `Press Settings` form labels around Triotek control-plane language instead of old Press-first tab names
+* reframed tabs and sections into product-facing groups such as `Commercial`, `Storage and Backups`, `Build and Delivery`, `Tenant Provisioning`, `Communications and Integrations`, `App Marketplace`, `Control Plane Operations`, `Control Flags`, `Partner Operations`, `Hybrid Runtime`, and `Security and Compliance`
+* added a form-level `Control Settings` title and intro while keeping the underlying doctype and fieldnames unchanged
+
+Reason:
+
+* we agreed to keep billing, marketplace, and partner areas, but they should be presented as Triotek product capabilities rather than stale Press categories
+* this gives operators a more intentional settings surface without risking a backend rename or migration yet
+
+### 2026-04-13
+
+Change:
+
+* continued curating `Control Settings` by renaming weak infrastructure labels to clearer operator-facing names such as `Platform Identity`, `Bench Runtime Defaults`, `Runtime Scaling`, `Managed Server IP`, `Default Runtime Plan Type`, and `Protect Redis with Password`
+* reframed a few legacy field labels like `Trial Site Plan`, `Usage Record Batch Size`, `GitHub Personal Access Token`, `Card Verification Policy`, and `Wazuh Endpoint`
+* hid the orphan placeholder field `data_40` and the `ngrok_auth_token` field from the main operator form
+
+Reason:
+
+* after the tab-level relabeling, the next problem was that several individual fields still felt like stale internals rather than deliberate product controls
+* this keeps the backend intact while making the visible settings form more intentional for operators
+
+### 2026-04-13
+
+Change:
+
+* reshaped the `Control Settings` field order so the most important controls appear first inside the main product tabs
+* prioritized commercial defaults before deeper payment and backoffice details
+* moved build runtime and release controls ahead of registry and storage details
+* moved GitHub/source controls to the top of the integrations tab
+* moved core platform operations, monitoring, runtime defaults, and certificates ahead of lower-priority infrastructure details
+* reordered feature flags so execution and incident-response controls appear before secondary signup and billing-adjacent flags
+
+Reason:
+
+* the settings form now had better naming, but operators still would have landed on lower-value controls before the real platform knobs
+* this aligns the visible flow of the form with the actual 3plug operating model
+
+### 2026-04-13
+
+Change:
+
+* deeply shaped the `Control Plane Operations` tab so it now flows through:
+  * platform identity
+  * bench runtime defaults
+  * jobs, monitoring, and alerts
+  * TLS and certificate runtime
+  * SSH trust
+  * network overrides
+  * runtime scaling
+  * agent and automation internals
+* renamed the remaining vague infrastructure labels to clearer operator-facing names such as `Monitoring Server`, `Monitoring Token`, `Monitoring Service Password`, `Certificate Registration Email`, `Agent Source Owner`, `Agent GitHub Token`, `Agent Branch`, `Network Overrides`, and `Shared Runtime Directory`
+
+Reason:
+
+* `Control Plane Operations` is the closest thing to the product's operational backbone, so it needed to reflect the actual order in which a 3plug operator thinks and works
+* this makes the tab feel intentional instead of like a mixed bag of inherited Press infrastructure fields
+
+### 2026-04-13
+
+Change:
+
+* deeply shaped the `Build and Delivery` tab around the 3plug app and release workflow
+* reordered the tab so operators see build runtime and release execution controls first, then release queue automation, asset storage, registry delivery, remote distribution, documentation publishing, and storage enforcement
+* renamed delivery-facing fields to clearer product language such as `Release Build Server`, `Minimum Build Memory`, `Bench Provisioning Concurrency Limit`, `Use Job Callbacks`, `Enable Asset Store`, `Container Registry and Delivery`, `Remote Distribution and Links`, and `Site Storage Limits`
+
+Reason:
+
+* `Build and Delivery` is where 3plug should feel like a control plane for app and bench change delivery, not like a generic Docker settings page
+* this aligns the tab with the real release pipeline operators care about
+
+### 2026-04-13
+
+Change:
+
+* deeply shaped the `Commercial` tab so it now starts with trial, pricing, usage, and invoicing policy before payment gateway details and backoffice integrations
+* kept billing, payment, and commercial integrations in the product, but reframed them with clearer Triotek-facing language such as `Default Trial Site Count`, `Usage Record Sync Batch Size`, `Pricing and Invoicing Policy`, `Primary Payment Gateway`, `Regional Payment Gateway`, `Signup Credits`, `Card Verification Charge`, `NPO Discount Percentage`, and `Autoscale Discount Percentage`
+
+Reason:
+
+* we agreed not to drop billing and commercial controls, but they needed to stop reading like a stale Press billing admin page
+* this makes the commercial tab feel like part of the 3plug product instead of a leftover payment console
+
+### 2026-04-13
+
+Change:
+
+* deeply shaped the `App Marketplace` tab around Triotek app-channel controls
+* reordered the tab so storefront and channel controls lead, followed by payout policy, marketplace embedding, and analytics
+* renamed marketplace-facing fields to clearer product language such as `Marketplace Channel Controls`, `Max Storefront Screenshots`, `Publisher Payout Threshold`, `Marketplace Commission Rate`, `Reference USD Rate`, `Marketplace Embed Script`, and `Marketplace Analytics`
+* updated `book/control-settings.md` so billing, marketplace, and partnership settings are now documented as retained-but-reframed Triotek product areas instead of hidden/deferred areas
+
+Reason:
+
+* we agreed to keep marketplace and partner capabilities in the product, but they should read like deliberate Triotek channel operations rather than inherited Press marketplace residue
+
+### 2026-04-13
+
+Change:
+
+* deeply shaped the `Partner Operations` tab around partner commercial policy, enablement resources, and sector integrations
+* renamed the remaining partner-facing fields to clearer product language such as `Partner Commercial Policy`, `Partner Fee (USD)`, `Partner Fee (INR)`, `Partner Enablement Resources`, `Partner Resource Hub Link`, and `Education Partner Integration`
+* updated the settings contract so any remaining school-specific controls are treated as partner-sector integrations rather than core product identity
+
+Reason:
+
+* partner settings were still reading like raw inherited program fields rather than a coherent Triotek partner operations surface
+* this keeps the capability while making the product language much more intentional
+
+### 2026-04-13
+
+Change:
+
+* deeply shaped the `Communications and Integrations` tab around source control hooks, outbound messaging, cloud credentials, incident messaging, and email safety services
+* renamed the main sections and fields to clearer product language such as `Source Control and Release Hooks`, `Outbound Email`, `Telegram Alerts`, `Cloud Credentials`, `Incident Messaging`, `Email Safety`, `GitHub Service Token`, `Release Trigger Marker`, `Telegram Alert Channel ID`, `Cloud Access Key ID`, `Twilio Sender Number`, and `Spam Filter Endpoint`
+
+Reason:
+
+* this tab was still reading like a grab bag of unrelated provider settings
+* the new framing makes it feel like the integration hub for the control plane instead of a leftover integrations page
+
+### 2026-04-13
+
+Change:
+
+* updated the visible commercial and partner currency labels from `USD`/`INR` to `GBP`/`KSh` in the settings surface
+* updated the settings contract to note that the backend still uses legacy `usd`/`inr` fieldnames and should be migrated separately later
+
+Reason:
+
+* the product language should reflect the intended Triotek currency presentation now, even before we take on a deeper billing data-model migration
+
+### 2026-04-13
+
+Change:
+
+* added a shared currency helper in `press/utils/currency.py` so the product can use `GBP` and `KSh` behavior without renaming the legacy `*_usd` and `*_inr` storage fields yet
+* updated team creation and team validation defaults so new teams now default to `KES` for Kenya and `GBP` elsewhere
+* updated billing micro-charge selection, prepaid minimum validation, plan-price field lookup, invoice PDF generation, and budget-alert formatting to use the shared currency helper instead of hardcoded `USD` and `INR` checks
+* updated the team currency test so it now asserts `KES` for Kenya and `GBP` for the United Kingdom
+
+Reason:
+
+* the settings surface already spoke in `GBP` and `KSh`, but the runtime still behaved like an old `USD` and `INR` product
+* this gives the control plane a safe first backend currency pass while preserving legacy billing fields and older invoice data for the deeper migration later
+
+### 2026-04-13
+
+Change:
+
+* extended the currency migration into partner flows, marketplace pricing lookups, payouts, and bootstrap defaults
+* replaced fixed partner conversion math with shared currency conversion helpers
+* updated marketplace plan and payout lookups to resolve against the legacy `price_usd` / `price_inr` and `net_total_usd` / `net_total_inr` fields through the shared helper layer instead of building field names directly from the live team currency
+* updated the bootstrap flow so the setup wizard, starter teams, and starter plan names now reflect the Triotek `GBP` and `KES` direction while still writing into the legacy price columns
+
+Reason:
+
+* after the first backend currency pass, partner and marketplace paths were still a source of immediate breakage because they were building field lookups and conversions around the old `USD` and `INR` assumptions
+* this keeps the product behavior aligned with the new currency direction without forcing a dangerous full schema migration in the same pass
+
+### 2026-04-13
+
+Change:
+
+* added `price_gbp` / `price_kes` aliases to marketplace plan responses while keeping the legacy `price_usd` / `price_inr` keys for compatibility
+* added `net_total_gbp` / `net_total_kes` and `gbp_items` / `kes_items` aliases to marketplace payout responses while preserving the older payout keys
+* updated the marketplace pricing editor labels in the dashboard from `USD` / `INR` to `GBP` / `KSh`
+
+Reason:
+
+* after the runtime currency cleanup, the API and UI were still visibly leaking the old currency model even where the underlying values were already behaving correctly
+* this starts the outward-facing payload migration without breaking the current frontend callers in one shot
+
+### 2026-04-13
+
+Change:
+
+* added shared dashboard pricing helpers for live team currency, active price field, and plan amount resolution in `dashboard/src/utils/format.js`
+* updated the core plan cards, site app plan selector, new-site summary, site login, site overview, and new-site app selector to use the shared helper layer instead of branching directly on `INR`
+
+Reason:
+
+* after the API-level cleanup, the main dashboard surfaces were still repeating the old `INR` / `USD` assumptions file by file
+* this gives the core site-planning and plan-display flows a single pricing model, which is enough to close the settings-and-currency slice cleanly before we move to the next feature
+
+### 2026-04-14
+
+Change:
+
+* reshaped the `Servers` feature toward the one-managed-server 3plug model
+* added a dedicated managed server overview component for self-hosted server records
+* simplified the server list to a single `Plan` column instead of app-plan and database-plan split labels
+* removed the old database-server Desk shortcuts from the main server actions menu
+* collapsed managed-server registration to one public IP and one private IP in the dashboard
+* updated the self-hosted server creation API to accept the one-server input shape while still mapping it onto the legacy internal records needed by the older setup and onboarding flow
+
+Reason:
+
+* the product target is one 3plug deployment managing one Linux server, but the server feature was still visibly teaching the old Press split-host model
+* this gives operators a cleaner managed-server experience now without forcing a high-risk backend deletion of the old internal server and database records in the same pass
+## 2026-04-14 - Server operational tabs shaped for the one-managed-server model
+
+- Added a self-hosted `Health` tab to the server detail flow so operators can see managed-server readiness, onboarding checks, and recent jobs/plays without dropping into legacy split-infra views.
+- Added a self-hosted `Security` tab that frames access posture around recorded IPs, TLS identity, and the existing server firewall document instead of generic cloud-server language.
+- Added a self-hosted `Operations` tab that wraps the existing server action engine for restart, cleanup, and recovery work while preserving the old server internals only as implementation detail.
+- Wired these tabs into the self-hosted server detail route so the operator-facing server surface now reads as `Overview`, `Health`, `Security`, `Operations`, and `Bench Onboarding`.
+
+## 2026-04-14 - Home reshaped into a real client-facing command center
+
+- Reworked the main home summary away from a generic resource stack into a tighter command-center layout.
+- Made the top of the page lead with one primary next action, operator scripts, and a clearer attention board instead of mixed summary blocks.
+- Kept the existing home data contract, but reorganized the surface around the agreed product spine: managed server, bench onboarding, managed sites, jobs, and incident signals.
+- Tightened the home page toward the product benchmark so it feels more like a real client-facing control panel and less like inherited Press scaffolding.
+
+## 2026-04-14 - Benches reshaped toward the MVP product surface
+
+- Added a real bench overview tab so the bench feature now starts with runtime summary, managed server context, deploy state, and next action instead of dropping straight into inherited sub-screens.
+- Tightened product-facing bench language in the detail flow by renaming visible tabs and actions from generic internal wording to operator-facing bench wording such as `Bench Config`, `Bench Env`, and `Operations`.
+- Updated the new bench page copy so it reads as bench creation and runtime selection instead of leftover Frappe Cloud-style wording.
+
+## 2026-04-14 - Sites reshaped toward site management
+
+- Added a managed site overview tab so the site feature now starts with runtime summary, bench/server context, plan state, monitoring state, and next action instead of dropping directly into the older usage-heavy overview.
+- Renamed the most visible site tabs toward the product shape by making `Insights` read as `Health and Insights` and `Actions` read as `Operations`.
+- Tightened a high-visibility site action label from `Visit Site` to `Open Site` so the product reads more like an operator control panel than an inherited hosting dashboard.
+
+## 2026-04-14 - Jobs tightened toward execution tracking
+
+- Renamed the shared jobs tab label to `Execution` so server, bench, and site detail flows present jobs as tracked product execution rather than raw background records.
+- Tightened the shared job list columns from `Job Type`, `Site`, and `Created By` to `Action`, `Target`, and `Triggered By`.
+- Updated the job detail page to describe the job as tracked execution in context instead of leaving it as a bare internal job record view.
+
+## 2026-04-14 - Forensics tightened toward incident review and evidence
+
+- Reframed the forensic event detail tab from `Overview` to `Evidence` so the product presents forensic records as incident evidence, not just generic documents.
+- Tightened the incident signals page wording around operator review, repeated failure patterns, and evidence, while keeping the underlying data flow intact.
+- Renamed several high-visibility labels on the forensics surfaces so they read more like an incident-review product area and less like a raw internal event stream.
+
+## 2026-04-14 - Apps tightened toward a real product module
+
+- Renamed the main `/apps` module from `Marketplace` to `Apps` so it reads as a core product area instead of a deferred legacy marketplace shell.
+- Tightened visible tab and action labels around catalog, version support, releases, and pricing while preserving the marketplace-backed implementation under the hood.
+- Updated site and bench app-management wording so app operations read more like internal runtime management and less like inherited Frappe Cloud marketplace copy.
+
+## 2026-04-14 - Analytics wording tightened for the MVP product
+
+- Reframed site insights navigation from `Analytics / Reports / Jobs` to `Overview / Performance / Execution` so the analytics area reads more like an operator workflow.
+- Tightened several site analytics card titles toward product-facing language such as `Usage Trend`, `Request Volume`, `Request CPU Load`, and `Operational Analytics`.
+- Updated the analytics card share affordance text so it reads like a deliberate dashboard feature instead of a low-level implementation detail.

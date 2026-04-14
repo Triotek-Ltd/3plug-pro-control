@@ -31,7 +31,7 @@ export default {
 		moreActions({ listResource }) {
 			return [
 				{
-					label: 'View Incident Signals',
+					label: 'Open Incident Signals',
 					icon: 'activity',
 					onClick() {
 						window.location.assign('/dashboard/forensics/signals');
@@ -57,7 +57,7 @@ export default {
 		},
 		tabs: [
 			{
-				label: 'Overview',
+				label: 'Evidence',
 				icon: icon('file-search'),
 				route: 'overview',
 				type: 'Component',

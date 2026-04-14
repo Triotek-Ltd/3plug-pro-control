@@ -51,13 +51,9 @@ export default {
 			return this.app.plans.map((plan) => {
 				return {
 					label:
-						plan.price_inr === 0 || plan.price_usd === 0
+						!this.$format.planHasPrice(plan)
 							? 'Free'
-							: `${this.$format.userCurrency(
-									this.$team.doc.currency === 'INR'
-										? plan.price_inr
-										: plan.price_usd,
-								)}/mo`,
+							: `${this.$format.userCurrency(this.$format.planAmount(plan))}/mo`,
 					sublabel: ' ',
 					...plan,
 					features: plan.features.map((f) => ({

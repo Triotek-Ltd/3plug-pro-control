@@ -11,45 +11,47 @@
   "press_trial_plan",
   "column_break_2",
   "bench_configuration",
-  "billing_tab",
-  "free_credits_usd",
-  "free_credits_inr",
-  "column_break_cpry",
-  "micro_debit_charge_usd",
-  "micro_debit_charge_inr",
-  "column_break_wrqp",
-  "usage_record_creation_batch_size",
-  "default_server_plan_type",
-  "invoicing_section",
-  "invoicing_column",
-  "gst_percentage",
-  "npo_discount",
-  "autoscale_discount",
-  "column_break_qfwx",
-  "print_format",
-  "ic_key",
-  "stripe_settings_section",
-  "stripe_publishable_key",
-  "stripe_secret_key",
-  "column_break_26",
+    "billing_tab",
+    "default_server_plan_type",
+    "trial_sites_count",
+    "press_trial_plan",
+    "usage_record_creation_batch_size",
+    "invoicing_section",
+    "invoicing_column",
+    "gst_percentage",
+    "npo_discount",
+    "autoscale_discount",
+    "column_break_qfwx",
+    "print_format",
+    "ic_key",
+    "free_credits_usd",
+    "free_credits_inr",
+    "column_break_cpry",
+    "micro_debit_charge_usd",
+    "micro_debit_charge_inr",
+    "column_break_wrqp",
+    "stripe_settings_section",
+    "stripe_publishable_key",
+    "stripe_secret_key",
+    "column_break_26",
   "create_stripe_plans",
   "stripe_product_id",
   "stripe_usd_plan_id",
   "stripe_inr_plan_id",
   "column_break_yhwz",
-  "create_stripe_webhook",
-  "stripe_webhook_endpoint_id",
-  "stripe_webhook_secret",
-  "ngrok_auth_token",
-  "razorpay_settings_section",
+    "create_stripe_webhook",
+    "stripe_webhook_endpoint_id",
+    "stripe_webhook_secret",
+    "ngrok_auth_token",
+    "razorpay_settings_section",
   "razorpay_key_id",
   "razorpay_webhook_secret",
-  "paypal_enabled",
-  "column_break_123",
-  "razorpay_key_secret",
-  "erpnext_authentication",
-  "erpnext_url",
-  "erpnext_api_key",
+    "paypal_enabled",
+    "column_break_123",
+    "razorpay_key_secret",
+    "erpnext_authentication",
+    "erpnext_url",
+    "erpnext_api_key",
   "erpnext_api_secret",
   "column_break_38",
   "frappeio_authentication_section",
@@ -78,41 +80,41 @@
   "physical_backups_section",
   "disable_physical_backup",
   "max_concurrent_physical_restorations",
-  "docker_tab",
-  "section_break_59",
-  "docker_registry_url",
-  "docker_registry_namespace",
-  "docker_s3_access_key",
-  "column_break_64",
-  "docker_registry_username",
-  "docker_registry_password",
-  "docker_s3_secret_key",
-  "asset_store_section",
-  "asset_store_access_key",
-  "asset_store_secret_access_key",
-  "asset_store_endpoint",
-  "asset_store_region",
-  "asset_store_bucket_name",
-  "use_asset_store",
-  "docker_build_section",
-  "suspend_builds",
-  "clone_directory",
-  "build_directory",
-  "build_server",
-  "minimum_rebuild_memory",
-  "new_bench_concurrency_limit",
-  "column_break_66",
-  "code_server",
-  "code_server_password",
+    "docker_tab",
+    "docker_build_section",
+    "suspend_builds",
+    "build_server",
+    "clone_directory",
+    "build_directory",
+    "minimum_rebuild_memory",
+    "new_bench_concurrency_limit",
+    "column_break_66",
+    "code_server",
+    "code_server_password",
   "use_app_cache",
   "compress_app_cache",
-  "use_delta_builds",
-  "use_agent_job_callbacks",
-  "auto_update_section",
-  "auto_update_queue_size",
-  "remote_files_section",
-  "remote_uploads_bucket",
-  "remote_link_expiry",
+    "use_delta_builds",
+    "use_agent_job_callbacks",
+    "auto_update_section",
+    "auto_update_queue_size",
+    "asset_store_section",
+    "use_asset_store",
+    "asset_store_access_key",
+    "asset_store_secret_access_key",
+    "asset_store_endpoint",
+    "asset_store_region",
+    "asset_store_bucket_name",
+    "section_break_59",
+    "docker_registry_url",
+    "docker_registry_namespace",
+    "docker_s3_access_key",
+    "column_break_64",
+    "docker_registry_username",
+    "docker_registry_password",
+    "docker_s3_secret_key",
+    "remote_files_section",
+    "remote_uploads_bucket",
+    "remote_link_expiry",
   "column_break_51",
   "remote_access_key_id",
   "remote_secret_access_key",
@@ -137,34 +139,34 @@
   "standby_pool_size",
   "column_break_95",
   "standby_queue_size",
-  "integrations_tab",
-  "telegram_section",
-  "telegram_chat_id",
-  "column_break_65",
-  "telegram_bot_token",
-  "mailgun_settings_section",
-  "mailgun_api_key",
-  "root_domain",
-  "column_break_117",
-  "default_outgoing_id",
-  "default_outgoing_pass",
-  "section_break_33",
-  "create_github_app",
-  "github_app_id",
-  "github_app_client_id",
+    "integrations_tab",
+    "section_break_33",
+    "create_github_app",
+    "github_app_id",
+    "github_app_client_id",
   "github_app_client_secret",
   "column_break_36",
   "github_app_public_link",
-  "github_webhook_secret",
-  "github_access_token",
-  "deploy_marker",
-  "section_break_41",
-  "column_break_tcmy",
-  "column_break_edst",
-  "github_app_private_key",
-  "aws_section",
-  "aws_access_key_id",
-  "column_break_agig",
+    "github_webhook_secret",
+    "github_access_token",
+    "deploy_marker",
+    "section_break_41",
+    "column_break_tcmy",
+    "column_break_edst",
+    "github_app_private_key",
+    "telegram_section",
+    "telegram_chat_id",
+    "column_break_65",
+    "telegram_bot_token",
+    "mailgun_settings_section",
+    "mailgun_api_key",
+    "root_domain",
+    "column_break_117",
+    "default_outgoing_id",
+    "default_outgoing_pass",
+    "aws_section",
+    "aws_access_key_id",
+    "column_break_agig",
   "aws_secret_access_key",
   "twilio_section",
   "twilio_account_sid",
@@ -178,70 +180,70 @@
   "column_break_xhfy",
   "spamd_api_key",
   "spamd_api_secret",
-  "marketplace_tab",
-  "marketplace_settings_section",
-  "max_allowed_screenshots",
-  "threshold",
-  "commission",
-  "usd_rate",
-  "app_include_script",
-  "github_pat_token",
-  "plausible_column",
-  "plausible_url",
-  "plausible_site_id",
-  "plausible_api_key",
-  "infrastructure_tab",
-  "general_section",
-  "production_server_ip",
-  "agent_section",
-  "agent_repository_owner",
-  "agent_sentry_dsn",
-  "column_break_105",
-  "agent_github_access_token",
-  "branch",
-  "lets_encrypt_section",
-  "certbot_directory",
-  "webroot_directory",
-  "rsa_key_size",
-  "column_break_15",
-  "eff_registration_email",
-  "use_staging_ca",
-  "ssh_section",
-  "ssh_certificate_authority",
-  "bench_section",
-  "redis_cache_size",
-  "set_redis_password",
-  "monitoring_section",
-  "monitor_server",
-  "monitor_token",
-  "press_monitoring_password",
-  "send_telegram_notifications",
-  "column_break_jlzi",
-  "log_server",
-  "telegram_alert_chat_id",
-  "telegram_alerts_chat_group",
-  "send_email_notifications",
-  "email_recipients",
-  "section_break_nloq",
-  "servers_using_alternative_http_port_for_communication",
-  "auto_scale_section",
-  "shared_directory",
-  "cool_off_period",
-  "feature_flags_tab",
-  "verify_cards_with_micro_charge",
-  "enable_google_oauth",
-  "realtime_job_updates",
-  "disable_agent_job_deduplication",
-  "disable_binlog_indexer_service",
-  "column_break_rdlr",
-  "disable_auto_retry",
-  "disallow_disposable_emails",
-  "enable_email_pre_verification",
-  "execute_incident_action",
-  "enable_server_snapshot_recovery",
-  "section_break_jstu",
-  "enable_app_grouping",
-  "default_apps",
+    "marketplace_tab",
+    "marketplace_settings_section",
+    "max_allowed_screenshots",
+    "github_pat_token",
+    "app_include_script",
+    "threshold",
+    "commission",
+    "usd_rate",
+    "plausible_column",
+    "plausible_url",
+    "plausible_site_id",
+    "plausible_api_key",
+    "infrastructure_tab",
+    "general_section",
+    "production_server_ip",
+    "bench_section",
+    "redis_cache_size",
+    "set_redis_password",
+    "monitoring_section",
+    "monitor_server",
+    "monitor_token",
+    "press_monitoring_password",
+    "send_telegram_notifications",
+    "column_break_jlzi",
+    "log_server",
+    "telegram_alert_chat_id",
+    "telegram_alerts_chat_group",
+    "send_email_notifications",
+    "email_recipients",
+    "lets_encrypt_section",
+    "certbot_directory",
+    "webroot_directory",
+    "rsa_key_size",
+    "column_break_15",
+    "eff_registration_email",
+    "use_staging_ca",
+    "ssh_section",
+    "ssh_certificate_authority",
+    "section_break_nloq",
+    "servers_using_alternative_http_port_for_communication",
+    "auto_scale_section",
+    "shared_directory",
+    "cool_off_period",
+    "agent_section",
+    "agent_repository_owner",
+    "agent_sentry_dsn",
+    "column_break_105",
+    "agent_github_access_token",
+    "branch",
+    "feature_flags_tab",
+    "realtime_job_updates",
+    "disable_agent_job_deduplication",
+    "disable_binlog_indexer_service",
+    "column_break_rdlr",
+    "disable_auto_retry",
+    "execute_incident_action",
+    "enable_server_snapshot_recovery",
+    "enable_google_oauth",
+    "disallow_disposable_emails",
+    "enable_email_pre_verification",
+    "verify_cards_with_micro_charge",
+    "section_break_jstu",
+    "enable_app_grouping",
+    "default_apps",
   "partner_tab",
   "partnership_fees_section",
   "partnership_fee_usd",
@@ -278,7 +280,7 @@
    "default": "1",
    "fieldname": "trial_sites_count",
    "fieldtype": "Int",
-   "label": "Number of Sites in Trial"
+    "label": "Default Trial Site Count"
   },
   {
    "fieldname": "column_break_2",
@@ -296,18 +298,18 @@
   {
    "fieldname": "billing_tab",
    "fieldtype": "Tab Break",
-   "label": "Billing"
+   "label": "Commercial"
   },
   {
    "collapsible": 1,
    "fieldname": "stripe_settings_section",
    "fieldtype": "Section Break",
-   "label": "Stripe Settings"
+    "label": "Primary Payment Gateway"
   },
   {
    "fieldname": "stripe_inr_plan_id",
    "fieldtype": "Data",
-   "label": "Stripe INR Plan ID",
+    "label": "Stripe KSh Plan ID",
    "read_only": 1
   },
   {
@@ -329,7 +331,7 @@
   {
    "fieldname": "stripe_usd_plan_id",
    "fieldtype": "Data",
-   "label": "Stripe USD Plan ID",
+    "label": "Stripe GBP Plan ID",
    "read_only": 1
   },
   {
@@ -361,26 +363,27 @@
   {
    "fieldname": "free_credits_inr",
    "fieldtype": "Currency",
-   "label": "Credits on Signup (INR)",
+    "label": "Signup Credits (KSh)",
    "options": "INR"
   },
   {
    "fieldname": "free_credits_usd",
    "fieldtype": "Currency",
-   "label": "Credits on Signup (USD)",
+    "label": "Signup Credits (GBP)",
    "options": "USD"
   },
   {
    "description": "Sign up on ngrok.com to get one for free",
    "fieldname": "ngrok_auth_token",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Ngrok Auth Token"
   },
   {
    "collapsible": 1,
    "fieldname": "razorpay_settings_section",
    "fieldtype": "Section Break",
-   "label": "Razorpay Settings"
+    "label": "Regional Payment Gateway"
   },
   {
    "fieldname": "razorpay_key_id",
@@ -405,7 +408,7 @@
    "collapsible": 1,
    "fieldname": "erpnext_authentication",
    "fieldtype": "Section Break",
-   "label": "ERPNext Authentication"
+    "label": "ERPNext Commercial Backoffice"
   },
   {
    "fieldname": "erpnext_url",
@@ -430,7 +433,7 @@
    "collapsible": 1,
    "fieldname": "frappeio_authentication_section",
    "fieldtype": "Section Break",
-   "label": "Frappe.io Authentication"
+   "label": "Platform Authentication"
   },
   {
    "fieldname": "frappe_url",
@@ -454,12 +457,12 @@
   {
    "fieldname": "backups_tab",
    "fieldtype": "Tab Break",
-   "label": "Backups"
+   "label": "Storage and Backups"
   },
   {
    "fieldname": "offsite_backups_section",
    "fieldtype": "Section Break",
-   "label": "Offsite Backups"
+   "label": "Remote Backups"
   },
   {
    "fieldname": "backup_region",
@@ -480,7 +483,8 @@
   },
   {
    "fieldname": "data_40",
-   "fieldtype": "Data"
+   "fieldtype": "Data",
+   "hidden": 1
   },
   {
    "fieldname": "backup_rotation_scheme",
@@ -512,7 +516,7 @@
   {
    "fieldname": "backups_section",
    "fieldtype": "Section Break",
-   "label": "Backups"
+   "label": "Backup Scheduling"
   },
   {
    "fieldname": "backup_interval",
@@ -538,22 +542,22 @@
   {
    "fieldname": "docker_tab",
    "fieldtype": "Tab Break",
-   "label": "Docker"
+   "label": "Build and Delivery"
   },
   {
    "fieldname": "section_break_59",
    "fieldtype": "Section Break",
-   "label": "Docker Registry"
+   "label": "Container Registry and Delivery"
   },
   {
    "fieldname": "docker_registry_url",
    "fieldtype": "Data",
-   "label": "Docker Registry URL"
+   "label": "Container Registry URL"
   },
   {
    "fieldname": "docker_registry_namespace",
    "fieldtype": "Data",
-   "label": "Docker Registry Namespace"
+   "label": "Container Namespace"
   },
   {
    "fieldname": "column_break_64",
@@ -562,28 +566,28 @@
   {
    "fieldname": "docker_registry_username",
    "fieldtype": "Data",
-   "label": "Docker Registry Username"
+   "label": "Registry Username"
   },
   {
    "fieldname": "docker_registry_password",
    "fieldtype": "Data",
-   "label": "Docker Registry Password"
+   "label": "Registry Password"
   },
   {
    "collapsible": 1,
    "fieldname": "docker_build_section",
    "fieldtype": "Section Break",
-   "label": "Docker Build"
+   "label": "Build Runtime and Release Execution"
   },
   {
    "fieldname": "clone_directory",
    "fieldtype": "Data",
-   "label": "Clone Directory"
+   "label": "App Clone Directory"
   },
   {
    "fieldname": "build_directory",
    "fieldtype": "Data",
-   "label": "Build Directory"
+   "label": "Build Workspace Directory"
   },
   {
    "fieldname": "column_break_66",
@@ -592,7 +596,7 @@
   {
    "fieldname": "code_server",
    "fieldtype": "Data",
-   "label": "Code Server"
+   "label": "Code Mirror Server"
   },
   {
    "fieldname": "code_server_password",
@@ -603,29 +607,29 @@
    "collapsible": 1,
    "fieldname": "auto_update_section",
    "fieldtype": "Section Break",
-   "label": "Auto Update"
+   "label": "Release Queue and Automation"
   },
   {
    "default": "4",
    "fieldname": "auto_update_queue_size",
    "fieldtype": "Int",
-   "label": "Auto Update Queue Size"
+   "label": "Release Queue Size"
   },
   {
    "collapsible": 1,
    "fieldname": "remote_files_section",
    "fieldtype": "Section Break",
-   "label": "Remote Files"
+   "label": "Remote Distribution and Links"
   },
   {
    "fieldname": "remote_uploads_bucket",
    "fieldtype": "Data",
-   "label": "Uploads Bucket Name"
+   "label": "Remote Uploads Bucket"
   },
   {
    "fieldname": "remote_link_expiry",
    "fieldtype": "Int",
-   "label": "Link Expiry"
+   "label": "Remote Link Expiry"
   },
   {
    "fieldname": "column_break_51",
@@ -645,7 +649,7 @@
    "collapsible": 1,
    "fieldname": "product_documentation_section",
    "fieldtype": "Section Break",
-   "label": "Product Documentation"
+   "label": "Product Documentation Publishing"
   },
   {
    "default": "0",
@@ -657,24 +661,24 @@
    "collapsible": 1,
    "fieldname": "storage_and_disk_limits_section",
    "fieldtype": "Section Break",
-   "label": "Storage and Disk Limits"
+   "label": "Site Storage Limits"
   },
   {
    "default": "0",
    "description": "Setting this to true will start suspending sites that cross the Site Usages with respect to their existing plans.",
    "fieldname": "enforce_storage_limits",
    "fieldtype": "Check",
-   "label": "Enforce Storage and Disk Limits"
+   "label": "Enforce Site Storage Limits"
   },
   {
    "fieldname": "erpnext_tab",
    "fieldtype": "Tab Break",
-   "label": "ERPNext"
+   "label": "Tenant Provisioning"
   },
   {
    "fieldname": "erpnext_signups_section",
    "fieldtype": "Section Break",
-   "label": "ERPNext Signups"
+   "label": "ERPNext Provisioning"
   },
   {
    "fieldname": "erpnext_domain",
@@ -722,7 +726,7 @@
    "collapsible": 1,
    "fieldname": "staging_sites_section",
    "fieldtype": "Section Break",
-   "label": "Staging Sites"
+   "label": "Staging Environments"
   },
   {
    "fieldname": "staging_plan",
@@ -740,7 +744,7 @@
    "collapsible": 1,
    "fieldname": "erpnext_site_pool_section",
    "fieldtype": "Section Break",
-   "label": "ERPNext Site Pool"
+   "label": "Site Pooling"
   },
   {
    "default": "0",
@@ -767,17 +771,17 @@
   {
    "fieldname": "integrations_tab",
    "fieldtype": "Tab Break",
-   "label": "Integrations"
+   "label": "Communications and Integrations"
   },
   {
    "fieldname": "telegram_section",
    "fieldtype": "Section Break",
-   "label": "Telegram"
+    "label": "Telegram Alerts"
   },
   {
    "fieldname": "telegram_chat_id",
    "fieldtype": "Data",
-   "label": "Telegram Chat ID"
+    "label": "Telegram Channel ID"
   },
   {
    "fieldname": "column_break_65",
@@ -786,17 +790,17 @@
   {
    "fieldname": "telegram_bot_token",
    "fieldtype": "Data",
-   "label": "Telegram Bot Token"
+    "label": "Telegram Bot Access Token"
   },
   {
    "fieldname": "mailgun_settings_section",
    "fieldtype": "Section Break",
-   "label": "Mailgun"
+    "label": "Outbound Email"
   },
   {
    "fieldname": "mailgun_api_key",
    "fieldtype": "Data",
-   "label": "Api Key"
+    "label": "Mailgun API Key"
   },
   {
    "fieldname": "root_domain",
@@ -810,18 +814,18 @@
   {
    "fieldname": "default_outgoing_id",
    "fieldtype": "Data",
-   "label": "Default outgoing id"
+    "label": "Default Outgoing ID"
   },
   {
    "fieldname": "default_outgoing_pass",
    "fieldtype": "Data",
-   "label": "Default outgoing pass"
+    "label": "Default Outgoing Password"
   },
   {
    "collapsible": 1,
    "fieldname": "section_break_33",
    "fieldtype": "Section Break",
-   "label": "GitHub"
+    "label": "Source Control and Release Hooks"
   },
   {
    "depends_on": "eval: !doc.github_app_id",
@@ -868,7 +872,7 @@
   {
    "fieldname": "github_access_token",
    "fieldtype": "Data",
-   "label": "GitHub Access Token"
+    "label": "GitHub Service Token"
   },
   {
    "collapsible": 1,
@@ -886,35 +890,35 @@
   {
    "fieldname": "marketplace_tab",
    "fieldtype": "Tab Break",
-   "label": "Marketplace"
+   "label": "App Marketplace"
   },
   {
    "fieldname": "marketplace_settings_section",
    "fieldtype": "Section Break",
-   "label": "Marketplace Settings"
+   "label": "Marketplace Channel Controls"
   },
   {
    "default": "6",
    "fieldname": "max_allowed_screenshots",
    "fieldtype": "Int",
-   "label": "Max number of Allowed Screenshots",
+   "label": "Max Storefront Screenshots",
    "non_negative": 1
   },
   {
    "fieldname": "infrastructure_tab",
    "fieldtype": "Tab Break",
-   "label": "Infrastructure"
+   "label": "Control Plane Operations"
   },
   {
    "fieldname": "agent_section",
    "fieldtype": "Section Break",
-   "label": "Agent"
+   "label": "Agent and Automation"
   },
   {
    "default": "frappe",
    "fieldname": "agent_repository_owner",
    "fieldtype": "Data",
-   "label": "Agent Repository Owner"
+   "label": "Agent Source Owner"
   },
   {
    "fieldname": "column_break_105",
@@ -923,23 +927,23 @@
   {
    "fieldname": "agent_github_access_token",
    "fieldtype": "Data",
-   "label": "Agent GitHub Access Token"
+   "label": "Agent GitHub Token"
   },
   {
    "fieldname": "lets_encrypt_section",
    "fieldtype": "Section Break",
-   "label": "Let's Encrypt"
+   "label": "TLS and Certificate Runtime"
   },
   {
    "fieldname": "certbot_directory",
    "fieldtype": "Data",
-   "label": "Certbot Directory",
+   "label": "Certbot Working Directory",
    "reqd": 1
   },
   {
    "fieldname": "webroot_directory",
    "fieldtype": "Data",
-   "label": "Webroot Directory"
+   "label": "ACME Webroot Directory"
   },
   {
    "default": "2048",
@@ -956,7 +960,7 @@
   {
    "fieldname": "eff_registration_email",
    "fieldtype": "Data",
-   "label": "EFF Registration Email",
+   "label": "Certificate Registration Email",
    "reqd": 1
   },
   {
@@ -969,7 +973,7 @@
    "collapsible": 1,
    "fieldname": "ssh_section",
    "fieldtype": "Section Break",
-   "label": "SSH"
+   "label": "SSH Trust"
   },
   {
    "fieldname": "ssh_certificate_authority",
@@ -981,23 +985,23 @@
    "collapsible": 1,
    "fieldname": "monitoring_section",
    "fieldtype": "Section Break",
-   "label": "Monitoring"
+   "label": "Jobs, Monitoring, and Alerts"
   },
   {
    "fieldname": "telegram_alert_chat_id",
    "fieldtype": "Data",
-   "label": "Telegram Alert Chat ID"
+    "label": "Telegram Alert Channel ID"
   },
   {
    "fieldname": "monitor_server",
    "fieldtype": "Link",
-   "label": "Monitor Server",
+   "label": "Monitoring Server",
    "options": "Monitor Server"
   },
   {
    "fieldname": "monitor_token",
    "fieldtype": "Data",
-   "label": "Monitor Token"
+   "label": "Monitoring Token"
   },
   {
    "fieldname": "log_server",
@@ -1008,45 +1012,45 @@
   {
    "fieldname": "feature_flags_tab",
    "fieldtype": "Tab Break",
-   "label": "Feature Flags"
+   "label": "Control Flags"
   },
   {
    "default": "No",
    "fieldname": "verify_cards_with_micro_charge",
    "fieldtype": "Select",
-   "label": "Verify Cards with Micro Charge",
+   "label": "Card Verification Policy",
    "options": "No\nOnly INR\nOnly USD\nBoth INR and USD"
   },
   {
    "fieldname": "threshold",
    "fieldtype": "Float",
-   "label": "Marketplace Payout Threshold"
+   "label": "Publisher Payout Threshold"
   },
   {
    "fieldname": "commission",
    "fieldtype": "Float",
-   "label": "Marketplace Commission"
+   "label": "Marketplace Commission Rate"
   },
   {
    "fieldname": "usd_rate",
    "fieldtype": "Float",
-   "label": "USD Rate"
+    "label": "Reference GBP Rate"
   },
   {
    "fieldname": "press_monitoring_password",
    "fieldtype": "Password",
-   "label": "Press Monitoring Password"
+   "label": "Monitoring Service Password"
   },
   {
    "description": "Adds this script to app_include_js via site config. Used for in-site billing",
    "fieldname": "app_include_script",
    "fieldtype": "Data",
-   "label": "App Include Script"
+   "label": "Marketplace Embed Script"
   },
   {
    "fieldname": "telegram_alerts_chat_group",
    "fieldtype": "Link",
-   "label": "Telegram Alerts Chat Group",
+    "label": "Telegram Alert Group",
    "options": "Telegram Group"
   },
   {
@@ -1058,22 +1062,22 @@
   {
    "fieldname": "plausible_api_key",
    "fieldtype": "Password",
-   "label": "Plausible API Key"
+   "label": "Marketplace Analytics API Key"
   },
   {
    "fieldname": "plausible_column",
    "fieldtype": "Column Break",
-   "label": "Plausible"
+   "label": "Marketplace Analytics"
   },
   {
    "fieldname": "plausible_url",
    "fieldtype": "Data",
-   "label": "Plausible URL"
+   "label": "Marketplace Analytics URL"
   },
   {
    "fieldname": "plausible_site_id",
    "fieldtype": "Data",
-   "label": "Plausible site id"
+   "label": "Marketplace Analytics Site ID"
   },
   {
    "default": "0",
@@ -1085,12 +1089,12 @@
   {
    "fieldname": "aws_section",
    "fieldtype": "Section Break",
-   "label": "AWS"
+    "label": "Cloud Credentials"
   },
   {
    "fieldname": "aws_access_key_id",
    "fieldtype": "Data",
-   "label": "AWS Access Key ID"
+    "label": "Cloud Access Key ID"
   },
   {
    "fieldname": "column_break_agig",
@@ -1099,17 +1103,17 @@
   {
    "fieldname": "aws_secret_access_key",
    "fieldtype": "Password",
-   "label": "AWS Secret Access Key"
+    "label": "Cloud Secret Access Key"
   },
   {
    "fieldname": "twilio_section",
    "fieldtype": "Section Break",
-   "label": "Twilio"
+    "label": "Incident Messaging"
   },
   {
    "fieldname": "twilio_account_sid",
    "fieldtype": "Data",
-   "label": "Twilio Account SID"
+    "label": "Twilio Account SID"
   },
   {
    "fieldname": "column_break_kxuj",
@@ -1118,7 +1122,7 @@
   {
    "fieldname": "twilio_phone_number",
    "fieldtype": "Phone",
-   "label": "Twilio Phone Number"
+    "label": "Twilio Sender Number"
   },
   {
    "fieldname": "invoicing_column",
@@ -1140,17 +1144,17 @@
   {
    "fieldname": "twilio_api_key_sid",
    "fieldtype": "Data",
-   "label": "Twilio API Key SID"
+    "label": "Twilio API Key ID"
   },
   {
    "fieldname": "twilio_api_key_secret",
    "fieldtype": "Password",
-   "label": "Twilio API Key Secret"
+    "label": "Twilio API Secret"
   },
   {
    "fieldname": "invoicing_section",
    "fieldtype": "Section Break",
-   "label": "Invoicing"
+    "label": "Pricing and Invoicing Policy"
   },
   {
    "fieldname": "column_break_qfwx",
@@ -1167,7 +1171,7 @@
    "description": "Uses Bench get-app cache for faster image builds. Will be set only if Bench version is 5.22.1 or later.",
    "fieldname": "use_app_cache",
    "fieldtype": "Check",
-   "label": "Use App Cache"
+   "label": "Enable App Cache"
   },
   {
    "default": "0",
@@ -1197,7 +1201,7 @@
   {
    "fieldname": "hybrid_server_tab",
    "fieldtype": "Tab Break",
-   "label": "Hybrid Server"
+   "label": "Hybrid Runtime"
   },
   {
    "fieldname": "hybrid_cluster",
@@ -1226,12 +1230,12 @@
   {
    "fieldname": "agent_sentry_dsn",
    "fieldtype": "Data",
-   "label": "Agent Sentry DSN"
+   "label": "Agent Error Tracking DSN"
   },
   {
    "fieldname": "build_server",
    "fieldtype": "Link",
-   "label": "Build Server",
+   "label": "Release Build Server",
    "options": "Server"
   },
   {
@@ -1244,21 +1248,21 @@
    "default": "80",
    "fieldname": "micro_debit_charge_inr",
    "fieldtype": "Currency",
-   "label": "Micro Debit Charge (INR)",
+    "label": "Card Verification Charge (KSh)",
    "precision": "0"
   },
   {
    "default": "1",
    "fieldname": "micro_debit_charge_usd",
    "fieldtype": "Currency",
-   "label": "Micro Debit Charge (USD)",
+    "label": "Card Verification Charge (GBP)",
    "precision": "0"
   },
   {
    "default": "master",
    "fieldname": "branch",
    "fieldtype": "Data",
-   "label": "Branch"
+   "label": "Agent Branch"
   },
   {
    "fieldname": "column_break_yhwz",
@@ -1276,12 +1280,12 @@
    "default": "500",
    "fieldname": "usage_record_creation_batch_size",
    "fieldtype": "Int",
-   "label": "Usage Record Creation Batch Size"
+    "label": "Usage Record Sync Batch Size"
   },
   {
    "fieldname": "press_trial_plan",
    "fieldtype": "Link",
-   "label": "Press Trial Plan",
+   "label": "Trial Site Plan",
    "options": "Site Plan"
   },
   {
@@ -1309,7 +1313,7 @@
   {
    "fieldname": "bench_section",
    "fieldtype": "Section Break",
-   "label": "Bench"
+   "label": "Bench Runtime Defaults"
   },
   {
    "default": "512",
@@ -1320,17 +1324,17 @@
   {
    "fieldname": "partner_tab",
    "fieldtype": "Tab Break",
-   "label": "Partner"
+   "label": "Partner Operations"
   },
   {
    "fieldname": "partnership_fees_section",
    "fieldtype": "Section Break",
-   "label": "Partnership Fees"
+    "label": "Partner Commercial Policy"
   },
   {
    "fieldname": "partnership_fee_usd",
    "fieldtype": "Int",
-   "label": "Partnership Fee USD"
+    "label": "Partner Fee (GBP)"
   },
   {
    "fieldname": "column_break_yxrj",
@@ -1339,12 +1343,12 @@
   {
    "fieldname": "partnership_fee_inr",
    "fieldtype": "Int",
-   "label": "Partnership Fee INR"
+    "label": "Partner Fee (KSh)"
   },
   {
    "fieldname": "github_pat_token",
    "fieldtype": "Data",
-   "label": "Github PAT Token"
+   "label": "GitHub Personal Access Token"
   },
   {
    "default": "1",
@@ -1360,7 +1364,7 @@
   {
    "fieldname": "spamd_section",
    "fieldtype": "Section Break",
-   "label": "Spamd"
+    "label": "Email Safety"
   },
   {
    "default": "0",
@@ -1371,7 +1375,7 @@
   {
    "fieldname": "spamd_endpoint",
    "fieldtype": "Data",
-   "label": "Spamd Endpoint"
+    "label": "Spam Filter Endpoint"
   },
   {
    "fieldname": "column_break_xhfy",
@@ -1380,12 +1384,12 @@
   {
    "fieldname": "spamd_api_key",
    "fieldtype": "Data",
-   "label": "Spamd API Key"
+    "label": "Spam Filter API Key"
   },
   {
    "fieldname": "spamd_api_secret",
    "fieldtype": "Password",
-   "label": "Spamd API Secret"
+    "label": "Spam Filter API Secret"
   },
   {
    "default": "2",
@@ -1397,7 +1401,7 @@
    "default": "1",
    "fieldname": "send_telegram_notifications",
    "fieldtype": "Check",
-   "label": "Send Telegram Notifications"
+    "label": "Enable Telegram Notifications"
   },
   {
    "fieldname": "column_break_jlzi",
@@ -1419,13 +1423,13 @@
    "default": "1",
    "fieldname": "use_agent_job_callbacks",
    "fieldtype": "Check",
-   "label": "Use Agent Job Callbacks"
+   "label": "Use Job Callbacks"
   },
   {
    "default": "2",
    "fieldname": "minimum_rebuild_memory",
    "fieldtype": "Int",
-   "label": "Minimum Rebuild Memory (GB)",
+   "label": "Minimum Build Memory (GB)",
    "non_negative": 1
   },
   {
@@ -1442,18 +1446,19 @@
   },
   {
    "fieldname": "section_break_nloq",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Network Overrides"
   },
   {
    "fieldname": "servers_using_alternative_http_port_for_communication",
    "fieldtype": "Small Text",
-   "label": "Servers Using Alternative HTTP Port For Communication"
+   "label": "Servers Using Alternate HTTP Ports"
   },
   {
    "description": "Add value in percent (%). e.g. 10",
    "fieldname": "npo_discount",
    "fieldtype": "Float",
-   "label": "NPO Discount"
+    "label": "NPO Discount Percentage"
   },
   {
    "default": "0",
@@ -1482,14 +1487,14 @@
    "description": "Enable via RazorPay dashboard",
    "fieldname": "paypal_enabled",
    "fieldtype": "Check",
-   "label": "PayPal Enabled"
+    "label": "Enable PayPal"
   },
   {
    "default": "1",
    "description": "Set redis password common site config and redis configs at release group level",
    "fieldname": "set_redis_password",
    "fieldtype": "Check",
-   "label": "Set Redis Password"
+   "label": "Protect Redis with Password"
   },
   {
    "default": "1",
@@ -1500,7 +1505,7 @@
   {
    "fieldname": "drive_resource_link",
    "fieldtype": "Data",
-   "label": "Drive Resource Link"
+    "label": "Partner Resource Hub Link"
   },
   {
    "fieldname": "ic_key",
@@ -1508,47 +1513,48 @@
    "label": "IC Key"
   },
   {
-   "fieldname": "section_break_dhzi",
-   "fieldtype": "Section Break"
+    "fieldname": "section_break_dhzi",
+    "fieldtype": "Section Break",
+    "label": "Partner Enablement Resources"
   },
   {
    "fieldname": "auto_scale_section",
    "fieldtype": "Section Break",
-   "label": "Auto Scale"
+   "label": "Runtime Scaling"
   },
   {
    "default": "/home/frappe/shared",
    "fieldname": "shared_directory",
    "fieldtype": "Data",
-   "label": "Shared Directory"
+   "label": "Shared Runtime Directory"
   },
   {
    "default": "600",
    "description": "Time between two autoscale events (up scale or down scale)",
    "fieldname": "cool_off_period",
    "fieldtype": "Int",
-   "label": "Cool off period"
+   "label": "Scale Cool-Off Period"
   },
   {
    "fieldname": "deploy_marker",
    "fieldtype": "Data",
-   "label": "Deploy Marker",
+    "label": "Release Trigger Marker",
    "options": "If found in commit message deploy will be triggered"
   },
   {
    "fieldname": "security_tab",
    "fieldtype": "Tab Break",
-   "label": "Security"
+   "label": "Security and Compliance"
   },
   {
    "fieldname": "wazuh_server",
    "fieldtype": "Data",
-   "label": "Wazuh Server"
+   "label": "Wazuh Endpoint"
   },
   {
    "fieldname": "autoscale_discount",
    "fieldtype": "Float",
-   "label": "Autoscale Discount"
+    "label": "Autoscale Discount Percentage"
   },
   {
    "default": "1",
@@ -1559,23 +1565,23 @@
   {
    "fieldname": "default_server_plan_type",
    "fieldtype": "Link",
-   "label": "Default Server Plan Type",
+   "label": "Default Runtime Plan Type",
    "options": "Server Plan Type"
   },
   {
    "fieldname": "frappe_school_authentication_section",
    "fieldtype": "Section Break",
-   "label": "Frappe School Authentication"
+    "label": "Education Partner Integration"
   },
   {
    "fieldname": "school_url",
    "fieldtype": "Data",
-   "label": "School URL"
+    "label": "Education Portal URL"
   },
   {
    "fieldname": "school_api_key",
    "fieldtype": "Data",
-   "label": "School API Key"
+    "label": "Education API Key"
   },
   {
    "fieldname": "column_break_uxxz",
@@ -1584,7 +1590,7 @@
   {
    "fieldname": "school_api_secret",
    "fieldtype": "Password",
-   "label": "School API Secret"
+    "label": "Education API Secret"
   },
   {
    "collapsible": 1,
@@ -1597,7 +1603,7 @@
    "description": "Will only use this asset storage backend if checked.",
    "fieldname": "use_asset_store",
    "fieldtype": "Check",
-   "label": "Use Asset Store"
+   "label": "Enable Asset Store"
   },
   {
    "fieldname": "asset_store_access_key",
@@ -1657,20 +1663,20 @@
   {
    "fieldname": "general_section",
    "fieldtype": "Section Break",
-   "label": "General"
+   "label": "Platform Identity"
   },
   {
    "fieldname": "production_server_ip",
    "fieldtype": "Data",
-   "label": "Production Server IP"
+   "label": "Managed Server IP"
   },
   {
    "default": "30",
    "fieldname": "new_bench_concurrency_limit",
    "fieldtype": "Int",
-   "label": "New Bench Concurrency Limit"
-  }
- ],
+   "label": "Bench Provisioning Concurrency Limit"
+   }
+  ],
  "issingle": 1,
  "links": [],
  "modified": "2026-03-30 17:54:01.627698",

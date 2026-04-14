@@ -22,11 +22,25 @@ from press.press.doctype.marketplace_app.marketplace_app import (
 )
 from press.utils import get_app_tag, get_current_team, get_last_doc, unique
 from press.utils.billing import get_frappe_io_connection
+from press.utils.currency import payout_net_total_field, plan_price_field
 
 if TYPE_CHECKING:
 	from press.marketplace.doctype.marketplace_app_plan.marketplace_app_plan import MarketplaceAppPlan
 	from press.press.doctype.app_release.app_release import AppRelease
 	from press.press.doctype.app_source.app_source import AppSource
+
+
+def _with_currency_aliases(plan: dict | frappe._dict | None) -> dict | frappe._dict | None:
+	if not plan:
+		return plan
+
+	plan["price_gbp"] = plan.get("price_usd", 0)
+	plan["price_kes"] = plan.get("price_inr", 0)
+	return plan
+
+
+def _with_plan_aliases(plans: list[dict] | None) -> list[dict]:
+	return [_with_currency_aliases(plan) for plan in (plans or [])]
 
 
 @frappe.whitelist()
@@ -55,18 +69,18 @@ def get_install_app_options(marketplace_app: str) -> dict:
 	restricted_site_plans = [x.parent for x in restricted_site_plan_release_group]
 	private_site_plan = frappe.db.get_value(
 		"Site Plan",
-		{"private_benches": 1, "document_type": "Site", "price_inr": ["!=", 0]},
-		order_by="price_inr asc",
+		{"private_benches": 1, "document_type": "Site", plan_price_field("KES"): ["!=", 0]},
+		order_by=f"{plan_price_field('KES')} asc",
 	)
 	public_site_plan = frappe.db.get_value(
 		"Site Plan",
 		{
 			"private_benches": 0,
 			"document_type": "Site",
-			"price_inr": ["!=", 0],
+			plan_price_field("KES"): ["!=", 0],
 			"name": ["not in", restricted_site_plans],
 		},
-		order_by="price_inr asc",
+		order_by=f"{plan_price_field('KES')} asc",
 	)
 
 	clusters = frappe.db.get_all(
@@ -108,7 +122,7 @@ def get_install_app_options(marketplace_app: str) -> dict:
 			fields=["name", "title", "image", "beta"],
 		)
 
-	app_plans = get_plans_for_app(marketplace_app)
+	app_plans = _with_plan_aliases(get_plans_for_app(marketplace_app))
 
 	if not [plan for plan in app_plans if plan["price_inr"] > 0 or plan["price_usd"] > 0]:
 		app_plans = []
@@ -838,9 +852,10 @@ def get_marketplace_subscriptions_for_site(site: str):
 		subscription.plan_info = frappe.db.get_value(
 			"Marketplace App Plan",
 			subscription.plan,
-			["price_usd", "price_inr"],
+			[plan_price_field("GBP"), plan_price_field("KES")],
 			as_dict=True,
 		)
+		subscription.plan_info = _with_currency_aliases(subscription.plan_info)
 		subscription.is_free = frappe.db.get_value(
 			"Marketplace App Plan", subscription.marketplace_app_plan, "is_free"
 		)
@@ -851,7 +866,7 @@ def get_marketplace_subscriptions_for_site(site: str):
 
 @frappe.whitelist()
 def get_app_plans(app: str, include_disabled=True):
-	return get_plans_for_app(app, include_disabled=include_disabled)
+	return _with_plan_aliases(get_plans_for_app(app, include_disabled=include_disabled))
 
 
 @frappe.whitelist()
@@ -879,7 +894,7 @@ def get_apps_with_plans(apps, release_group: str):
 			"Release Group App", {"parent": release_group, "app": app.name}, "source"
 		)
 		if is_marketplace_app_source(app_source):
-			plans = get_plans_for_app(app.name, frappe_version)
+			plans = _with_plan_aliases(get_plans_for_app(app.name, frappe_version))
 		else:
 			plans = []
 
@@ -891,7 +906,7 @@ def get_apps_with_plans(apps, release_group: str):
 
 @frappe.whitelist()
 def change_app_plan(subscription, new_plan):
-	is_free = frappe.db.get_value("Marketplace App Plan", new_plan, "price_usd") <= 0
+	is_free = frappe.db.get_value("Marketplace App Plan", new_plan, plan_price_field("GBP")) <= 0
 	if not is_free:
 		team = get_current_team(get_doc=True)
 		if not team.can_install_paid_apps():
@@ -974,7 +989,7 @@ def get_subscriptions_list(marketplace_app: str) -> list:
 	usage_record = frappe.qb.DocType("Usage Record")
 	team = frappe.qb.DocType("Team")
 
-	conditions = app_plan.price_usd > 0
+	conditions = getattr(app_plan, plan_price_field("GBP")) > 0
 	conditions = conditions & (app_sub.document_name == marketplace_app)
 
 	query = (
@@ -994,8 +1009,8 @@ def get_subscriptions_list(marketplace_app: str) -> list:
 			app_sub.site,
 			team.user.as_("user_contact"),
 			app_sub.plan.as_("app_plan"),
-			app_plan.price_usd.as_("price_usd"),
-			app_plan.price_inr.as_("price_inr"),
+			getattr(app_plan, plan_price_field("GBP")).as_("price_usd"),
+			getattr(app_plan, plan_price_field("KES")).as_("price_inr"),
 			app_sub.enabled,
 		)
 		.orderby(app_sub.enabled)
@@ -1003,19 +1018,23 @@ def get_subscriptions_list(marketplace_app: str) -> list:
 	)
 
 	result = query.run(as_dict=True)
+	for row in result:
+		_with_currency_aliases(row)
 
 	return result  # noqa: RET504
 
 
 @frappe.whitelist()
 def create_app_plan(marketplace_app: str, plan_data: dict):
+	price_gbp = plan_data.get("price_gbp", plan_data.get("price_usd"))
+	price_kes = plan_data.get("price_kes", plan_data.get("price_inr"))
 	app_plan_doc = frappe.get_doc(
 		{
 			"doctype": "Marketplace App Plan",
 			"app": marketplace_app,
 			"title": plan_data.get("title"),
-			"price_inr": plan_data.get("price_inr"),
-			"price_usd": plan_data.get("price_usd"),
+			"price_inr": price_kes,
+			"price_usd": price_gbp,
 		}
 	)
 
@@ -1030,6 +1049,8 @@ def update_app_plan(app_plan_name: str, updated_plan_data: dict):
 		frappe.throw("Plan title is required")
 
 	app_plan_doc = frappe.get_doc("Marketplace App Plan", app_plan_name)
+	price_gbp = updated_plan_data.get("price_gbp", updated_plan_data.get("price_usd"))
+	price_kes = updated_plan_data.get("price_kes", updated_plan_data.get("price_inr"))
 
 	no_of_active_subscriptions = frappe.db.count(
 		"Subscription",
@@ -1041,10 +1062,7 @@ def update_app_plan(app_plan_name: str, updated_plan_data: dict):
 		},
 	)
 
-	if (
-		updated_plan_data["price_inr"] != app_plan_doc.price_inr
-		or updated_plan_data["price_usd"] != app_plan_doc.price_usd
-	) and no_of_active_subscriptions > 0:
+	if (price_kes != app_plan_doc.price_inr or price_gbp != app_plan_doc.price_usd) and no_of_active_subscriptions > 0:
 		# Someone is on this plan, don't change price for the plan,
 		# instead create and link a new plan
 		# TODO: Later we have to figure out a way for plan changes
@@ -1052,8 +1070,8 @@ def update_app_plan(app_plan_name: str, updated_plan_data: dict):
 
 	app_plan_doc.update(
 		{
-			"price_inr": updated_plan_data.get("price_inr"),
-			"price_usd": updated_plan_data.get("price_usd"),
+			"price_inr": price_kes,
+			"price_usd": price_gbp,
 			"title": updated_plan_data.get("title", app_plan_doc.title),
 		}
 	)
@@ -1088,8 +1106,8 @@ def get_payouts_list() -> list[dict]:
 			"status",
 			"period_end",
 			"mode_of_payment",
-			"net_total_inr",
-			"net_total_usd",
+			payout_net_total_field("KES"),
+			payout_net_total_field("GBP"),
 		],
 		order_by="period_end desc",
 	)
@@ -1121,16 +1139,26 @@ def get_payout_details(name: str) -> dict:
 	payout_order = frappe.db.get_value(
 		"Payout Order",
 		name,
-		["status", "due_date", "mode_of_payment", "net_total_inr", "net_total_usd"],
+		["status", "due_date", "mode_of_payment", payout_net_total_field("KES"), payout_net_total_field("GBP")],
 		as_dict=True,
 	)
 
-	grouped_items = {"usd_items": [], "inr_items": [], **payout_order}
+	grouped_items = {
+		"usd_items": [],
+		"inr_items": [],
+		"gbp_items": [],
+		"kes_items": [],
+		**payout_order,
+	}
+	grouped_items["net_total_gbp"] = payout_order.get(payout_net_total_field("GBP"))
+	grouped_items["net_total_kes"] = payout_order.get(payout_net_total_field("KES"))
 	for item in order_items:
-		if item.currency == "INR":
+		if item.currency in ("INR", "KES"):
 			grouped_items["inr_items"].append(item)
+			grouped_items["kes_items"].append(item)
 		else:
 			grouped_items["usd_items"].append(item)
+			grouped_items["gbp_items"].append(item)
 
 	return grouped_items
 
@@ -1190,7 +1218,9 @@ def login_via_token(token: str, team: str, site: str):
 @frappe.whitelist()
 def subscriptions():
 	team = get_current_team(True)
-	free_plans = frappe.get_all("Marketplace App Plan", {"price_usd": ("<=", 0)}, pluck="name")
+	free_plans = frappe.get_all(
+		"Marketplace App Plan", {plan_price_field("GBP"): ("<=", 0)}, pluck="name"
+	)
 	subscriptions = frappe.get_all(
 		"Subscription",
 		{
@@ -1202,9 +1232,9 @@ def subscriptions():
 	)
 
 	for sub in subscriptions:
-		sub["available_plans"] = get_plans_for_app(sub["app"])
+		sub["available_plans"] = _with_plan_aliases(get_plans_for_app(sub["app"]))
 		for ele in sub["available_plans"]:
-			ele["amount"] = ele[f"price_{team.currency.lower()}"]
+			ele["amount"] = ele[plan_price_field(team.currency)]
 			if ele["name"] == sub["plan"]:
 				sub["selected_plan"] = ele
 

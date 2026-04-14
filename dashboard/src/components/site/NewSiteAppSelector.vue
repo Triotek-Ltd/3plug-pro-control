@@ -209,7 +209,7 @@ export default {
 			} else {
 				if (
 					app.subscription_type &&
-					app.plans.some((plan) => plan.price_inr > 0)
+					app.plans.some((plan) => this.$format.planHasPrice(plan))
 				) {
 					this.selectedApp = app;
 					this.showAppPlanSelectorDialog = true;

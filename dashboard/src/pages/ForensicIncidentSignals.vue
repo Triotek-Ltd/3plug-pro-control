@@ -12,13 +12,13 @@
 			<div class="mb-5 rounded-lg border bg-white p-5">
 				<div class="flex flex-wrap items-start justify-between gap-4">
 					<div>
-						<p class="text-sm text-gray-500">Forensic Incident Signals</p>
+						<p class="text-sm text-gray-500">Incident Signals</p>
 						<h1 class="mt-1 text-2xl font-semibold text-gray-900">
-							Repeated failures worth operator attention
+							Repeated failures and warning patterns worth operator attention
 						</h1>
 						<p class="mt-2 max-w-3xl text-sm text-gray-600">
 							This view groups forensic events by target and event type so
-							repeated failures show up as one signal instead of a noisy flat log.
+							operators can review meaningful patterns instead of a noisy flat event stream.
 						</p>
 					</div>
 					<div class="grid gap-2 text-sm text-gray-600 sm:text-right">
@@ -110,7 +110,7 @@ export default {
 				resource: () => this.$resources.signals,
 				columns: [
 					{
-						label: 'Signal',
+						label: 'Target',
 						fieldname: 'target_label',
 						class: 'font-medium',
 						width: 1.5,
@@ -119,7 +119,7 @@ export default {
 						},
 					},
 					{
-						label: 'Event',
+						label: 'Pattern',
 						fieldname: 'event_type',
 						width: 1.1,
 					},
@@ -143,7 +143,7 @@ export default {
 						width: '80px',
 					},
 					{
-						label: 'Latest Summary',
+						label: 'Latest Evidence',
 						fieldname: 'latest_summary',
 						width: 2,
 					},
@@ -157,7 +157,7 @@ export default {
 				filterControls: () => [
 					{
 						type: 'select',
-						label: 'Window',
+						label: 'Review Window',
 						fieldname: 'hours',
 						options: [
 							{ label: '24 hours', value: '24' },
@@ -168,7 +168,7 @@ export default {
 					},
 					{
 						type: 'select',
-						label: 'Min Hits',
+						label: 'Minimum Hits',
 						fieldname: 'min_occurrences',
 						options: [
 							{ label: '2+', value: '2' },
@@ -197,16 +197,16 @@ export default {
 				}),
 				moreActions: () => [
 					{
-						label: 'Open Raw Event Stream',
+						label: 'Open Full Event Stream',
 						icon: 'list',
 						onClick: () => this.$router.push('/forensics'),
 					},
 				],
 				emptyStateMessage:
-					'No repeated forensic signals in the selected window.',
+					'No repeated incident signals in the selected review window.',
 				banner: () => ({
-					title: 'What counts as a signal?',
-					text: 'Signals group repeated warning, error, and critical forensic events by target and event type. Critical events appear even on the first hit.',
+					title: 'How incident signals work',
+					text: 'Signals group repeated warning, error, and critical forensic events by target and event type so operators can focus on patterns instead of isolated noise. Critical events appear even on the first hit.',
 					theme: 'blue',
 				}),
 			};

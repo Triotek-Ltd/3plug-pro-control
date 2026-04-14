@@ -7,6 +7,8 @@ import time
 import frappe
 from frappe.desk.page.setup_wizard.setup_wizard import setup_complete
 
+from press.utils.currency import PRIMARY_CURRENCY, REGIONAL_CURRENCY, convert_amount
+
 ADMIN_EMAIL = ""
 HOME_DIRECTORY = ""
 CERTBOT_DIRECTORY = os.path.join(HOME_DIRECTORY, ".certbot")
@@ -65,9 +67,9 @@ def complete_setup_wizard():
 	setup_complete(
 		{
 			"language": "English",
-			"country": "India",
-			"timezone": "Asia/Kolkata",
-			"currency": "INR",
+			"country": "Kenya",
+			"timezone": "Africa/Nairobi",
+			"currency": REGIONAL_CURRENCY,
 		}
 	)
 
@@ -272,20 +274,20 @@ def setup_teams():
 	request = frappe.get_all(
 		"Account Request", ["*"], {"email": "cloud@erpnext.com"}, limit=1
 	)[0]
-	cloud = Team.create_new(request, "Frappe", "Cloud", "FrappeCloud@1", "India", False)
+	cloud = Team.create_new(request, "Triotek", "Cloud", "TriotekCloud@1", "Kenya", False)
 
 	signup("aditya@erpnext.com")
 	request = frappe.get_all(
 		"Account Request", ["*"], {"email": "aditya@erpnext.com"}, limit=1
 	)[0]
-	aditya = Team.create_new(request, "Aditya", "Hase", "AdityaHase@1", "India", False)
+	aditya = Team.create_new(request, "Triotek", "Operator", "TriotekOperator@1", "United Kingdom", False)
 
 	cloud.append("team_members", {"user": aditya.name})
 	cloud.save()
 
 
 def setup_plans():
-	plans = [("Free", 0), ("USD 10", 10), ("USD 25", 25)]
+	plans = [("Free", 0), ("GBP 10", 10), ("GBP 25", 25)]
 	for index, plan in enumerate(plans, 1):
 		if frappe.db.exists("Site Plan", plan[0]):
 			continue
@@ -296,7 +298,7 @@ def setup_plans():
 				"document_type": "Site",
 				"plan_title": plan[0],
 				"price_usd": plan[1],
-				"price_inr": plan[1] * 80,
+				"price_inr": convert_amount(plan[1], PRIMARY_CURRENCY, REGIONAL_CURRENCY),
 				"cpu_time_per_day": index,
 				"max_database_usage": 1024 * index,
 				"max_storage_usage": 10240 * index,

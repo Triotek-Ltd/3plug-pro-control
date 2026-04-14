@@ -27,7 +27,7 @@ export default {
 	},
 	list: {
 		route: '/apps',
-		title: 'Marketplace',
+		title: 'Apps',
 		fields: ['image', 'title', 'status', 'description'],
 		columns: [
 			{
@@ -66,7 +66,7 @@ export default {
 		],
 		primaryAction() {
 			return {
-				label: 'New App',
+				label: 'Register App',
 				variant: 'solid',
 				slots: {
 					prefix: icon('plus'),
@@ -99,7 +99,7 @@ export default {
 		},
 		tabs: [
 			{
-				label: 'Analytics',
+				label: 'Adoption',
 				icon: icon('bar-chart-2'),
 				route: 'analytics',
 				type: 'Component',
@@ -111,7 +111,7 @@ export default {
 				},
 			},
 			{
-				label: 'Listing',
+				label: 'Catalog',
 				icon: icon('shopping-cart'),
 				route: 'listing',
 				type: 'Component',
@@ -123,7 +123,7 @@ export default {
 				},
 			},
 			{
-				label: 'Versions',
+				label: 'Versions and Releases',
 				icon: icon('package'),
 				route: 'versions',
 				type: 'list',
@@ -139,12 +139,12 @@ export default {
 					],
 					columns: [
 						{
-							label: 'Version',
+							label: 'Supported Version',
 							fieldname: 'version',
 							width: 0.5,
 						},
 						{
-							label: 'Source',
+							label: 'App Source',
 							fieldname: 'source',
 							width: 0.5,
 						},
@@ -164,7 +164,7 @@ export default {
 					],
 					primaryAction({ listResource: versions, documentResource: app }) {
 						return {
-							label: 'New Version',
+							label: 'Add Version Support',
 							slots: {
 								prefix: icon('plus'),
 							},
@@ -258,7 +258,7 @@ export default {
 					rowActions({ row, listResource: versions, documentResource: app }) {
 						return [
 							{
-								label: 'Show Releases',
+								label: 'View Releases',
 								slots: {
 									prefix: icon('plus'),
 								},
@@ -267,7 +267,7 @@ export default {
 								},
 							},
 							{
-								label: 'Change Branch',
+								label: 'Change Source Branch',
 								onClick() {
 									renderDialog(
 										h(ChangeAppBranchDialog, {
@@ -283,7 +283,7 @@ export default {
 								},
 							},
 							{
-								label: 'Remove Version',
+								label: 'Remove Version Support',
 								onClick() {
 									toast.promise(
 										app.removeVersion.submit({ version: row.version }),
@@ -303,7 +303,7 @@ export default {
 				},
 			},
 			{
-				label: 'Pricing',
+				label: 'Plans and Pricing',
 				icon: icon('dollar-sign'),
 				route: 'pricing',
 				type: 'list',
@@ -327,23 +327,23 @@ export default {
 							},
 						},
 						{
-							label: 'Price (INR)',
+							label: 'Price (KSh)',
 							fieldname: 'price_inr',
 							format: (value) => {
-								return currency(value, 'INR');
+								return currency(value, 'KES');
 							},
 						},
 						{
-							label: 'Price (USD)',
+							label: 'Price (GBP)',
 							fieldname: 'price_usd',
 							format: (value) => {
-								return currency(value, 'USD');
+								return currency(value, 'GBP');
 							},
 						},
 					],
 					primaryAction({ listResource: plans, documentResource: app }) {
 						return {
-							label: 'New Plan',
+							label: 'New App Plan',
 							slots: {
 								prefix: icon('plus'),
 							},
@@ -383,7 +383,7 @@ export default {
 		actions({ documentResource: app }) {
 			return [
 				{
-					label: 'View in Marketplace',
+					label: 'View Public Listing',
 					slots: {
 						prefix: icon('external-link'),
 					},
@@ -396,7 +396,7 @@ export default {
 					},
 				},
 				{
-					label: 'Guidelines',
+					label: 'Review Guidelines',
 					slots: {
 						icon: icon('help-circle'),
 					},
@@ -409,7 +409,7 @@ export default {
 					},
 				},
 				{
-					label: 'Complete Listing',
+					label: 'Complete Catalog Listing',
 					variant: 'solid',
 					slots: {
 						prefix: icon('alert-circle'),

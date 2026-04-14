@@ -7,11 +7,11 @@ defineOptions({ name: 'SiteInsights' });
 
 const tabs = [
 	{
-		label: 'Analytics',
+		label: 'Overview',
 		value: 'Site Analytics',
 	},
 	{
-		label: 'Reports',
+		label: 'Performance',
 		value: 'Site Performance Reports',
 		children: [
 			'Site Performance Slow Queries',
@@ -26,7 +26,7 @@ const tabs = [
 		children: ['Site Log'],
 	},
 	{
-		label: 'Jobs',
+		label: 'Execution',
 		value: 'Site Jobs',
 		children: ['Site Job'],
 	},

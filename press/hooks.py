@@ -3,12 +3,12 @@ from press.api.account import get_frappe_io_auth_url
 from . import __version__ as app_version
 
 app_name = "press"
-app_title = "Press"
-app_publisher = "Frappe"
-app_description = "Managed Frappe Hosting"
-app_icon = "octicon octicon-rocket"
-app_color = "grey"
-app_email = "aditya@frappe.io"
+app_title = "3plug Control"
+app_publisher = "Triotek"
+app_description = "Single-server control plane for benches, sites, jobs, and forensics"
+app_icon = "octicon octicon-server"
+app_color = "blue"
+app_email = ""
 app_license = "GNU Affero General Public License v3.0"
 version = app_version
 

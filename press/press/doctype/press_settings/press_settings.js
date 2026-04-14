@@ -2,6 +2,13 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Press Settings', {
+	refresh(frm) {
+		frm.page.set_inner_title(__('Control Settings'));
+		frm.set_intro(
+			__('Triotek control-plane settings for platform identity, runtime operations, apps, analytics, and commercial workflows.'),
+			'blue',
+		);
+	},
 	create_stripe_webhook(frm) {
 		frm.call('create_stripe_webhook');
 	},

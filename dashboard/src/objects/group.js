@@ -124,7 +124,7 @@ export default {
 			}
 		},
 	},
-	detail: {
+		detail: {
 		titleField: 'title',
 		statusBadge({ documentResource: releaseGroup }) {
 			return { label: releaseGroup.doc.status };
@@ -153,6 +153,20 @@ export default {
 		},
 		route: '/groups/:name',
 		tabs: [
+			{
+				label: 'Overview',
+				icon: icon('home'),
+				route: 'overview',
+				type: 'Component',
+				component: defineAsyncComponent(
+					() => import('../components/group/BenchOverview.vue'),
+				),
+				props: (releaseGroup) => {
+					return {
+						bench: releaseGroup.doc.name,
+					};
+				},
+			},
 			{
 				label: 'Sites',
 				icon: icon(LucideAppWindow),
@@ -550,7 +564,7 @@ export default {
 			},
 			getJobsTab('Release Group'),
 			{
-				label: 'Config',
+				label: 'Bench Config',
 				icon: icon('settings'),
 				route: 'bench-config',
 				type: 'list',
@@ -686,7 +700,7 @@ export default {
 				},
 			},
 			{
-				label: 'Actions',
+				label: 'Operations',
 				icon: icon('sliders'),
 				route: 'actions',
 				type: 'Component',
@@ -698,7 +712,7 @@ export default {
 				},
 			},
 			{
-				label: 'Regions',
+				label: 'Runtime Regions',
 				icon: icon('globe'),
 				route: 'regions',
 				type: 'list',
@@ -770,7 +784,7 @@ export default {
 				},
 			},
 			{
-				label: 'Env',
+				label: 'Bench Env',
 				icon: icon('tool'),
 				route: 'bench-environment-variable',
 				type: 'list',
@@ -885,8 +899,8 @@ export default {
 
 			return [
 				{
-					label: 'Impersonate Group Owner',
-					title: 'Impersonate Group Owner', // for label to pop-up on hover
+					label: 'Impersonate Bench Owner',
+					title: 'Impersonate Bench Owner', // for label to pop-up on hover
 					slots: {
 						icon: defineAsyncComponent(
 							() => import('~icons/lucide/venetian-mask'),

@@ -27,6 +27,12 @@ from press.utils.billing import (
 	is_frappe_auth_disabled,
 	process_micro_debit_test_charge,
 )
+from press.utils.currency import (
+	currency_prefix,
+	default_currency_for_country,
+	micro_debit_charge_field,
+	minimum_prepaid_amount,
+)
 from press.utils.telemetry import capture
 
 if TYPE_CHECKING:
@@ -450,7 +456,7 @@ class Team(Document):
 		self.reject_reenabling_team_for_banned_team()
 
 	def before_insert(self):
-		self.currency = "INR" if self.country == "India" else "USD"
+		self.currency = default_currency_for_country(self.country)
 
 		if not self.referrer_id:
 			self.set_referrer_id()
@@ -667,7 +673,7 @@ class Team(Document):
 
 	def set_team_currency(self):
 		if not self.currency and self.country:
-			self.currency = "INR" if self.country == "India" else "USD"
+			self.currency = default_currency_for_country(self.country)
 
 	def get_user_list(self):
 		return [row.user for row in self.team_members]
@@ -1238,10 +1244,9 @@ class Team(Document):
 		return True
 
 	def billing_info(self):
-		micro_debit_charge_field = (
-			"micro_debit_charge_usd" if self.currency == "USD" else "micro_debit_charge_inr"
+		amount = frappe.db.get_single_value(
+			"Press Settings", micro_debit_charge_field(self.currency)
 		)
-		amount = frappe.db.get_single_value("Press Settings", micro_debit_charge_field)
 
 		return {
 			"gst_percentage": frappe.db.get_single_value("Press Settings", "gst_percentage"),
@@ -1403,7 +1408,7 @@ class Team(Document):
 		self, workloads_before: list[tuple[str, float, str]], workloads_after: list[tuple[str, float, str]]
 	):
 		for before, after in zip(workloads_before, workloads_after, strict=False):
-			if after[1] - before[1] >= 8:  # 100 USD equivalent
+			if after[1] - before[1] >= 8:  # 100 GBP-equivalent legacy threshold
 				frappe.enqueue_doc(
 					"Server",
 					before[2],
@@ -1779,9 +1784,7 @@ def has_unsettled_invoices(team):
 		return False
 
 	currency = frappe.db.get_value("Team", team, "currency")
-	minimum_amount = 5
-	if currency == "INR":
-		minimum_amount = 450
+	minimum_amount = minimum_prepaid_amount(currency)
 
 	data = frappe.get_all(
 		"Invoice",
@@ -1900,13 +1903,15 @@ def send_budget_alert_email(team_info, invoice):
 	"""
 	try:
 		team_user = team_info["user"]
-		currency = "₹" if team_info["currency"] == "INR" else "$"
+		currency = currency_prefix(team_info["currency"])
 
 		invoice_amount = f"{currency}{invoice['total']}"
 		alert_threshold = f"{currency}{team_info['monthly_alert_threshold']}"
-		excess_amount = f"{currency}{round(invoice['total'] - team_info['monthly_alert_threshold'], 2)}"
+		excess_amount = (
+			f"{currency}{round(invoice['total'] - team_info['monthly_alert_threshold'], 2)}"
+		)
 
-		subject = f"Frappe Cloud Budget Alert for {team_user}"
+		subject = f"3plug Control Budget Alert for {team_user}"
 
 		frappe.sendmail(
 			recipients=team_user,

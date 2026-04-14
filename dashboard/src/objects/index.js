@@ -2,6 +2,7 @@ import site from './site';
 import group from './group';
 import bench from './bench';
 import server from './server';
+import tenant from './tenant';
 import notification from './notification';
 import accessRequests from './accessRequests';
 import forensicEvent from './forensicEvent';
@@ -11,6 +12,7 @@ let objects = {
 	Group: group,
 	Bench: bench,
 	Server: server,
+	Tenant: tenant,
 	Notification: notification,
 	AccessRequests: accessRequests,
 	'Forensic Event': forensicEvent,

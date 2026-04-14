@@ -38,6 +38,13 @@ from press.utils.billing import (
 	states_with_tin,
 	validate_gstin_check_digit,
 )
+from press.utils.currency import (
+	currency_prefix,
+	micro_debit_charge_field,
+	minimum_prepaid_amount,
+	plan_price_field,
+	should_generate_primary_currency_pdf,
+)
 from press.utils.mpesa_utils import create_mpesa_request_log
 
 # from press.press.doctype.paymob_callback_log.paymob_callback_log import create_payment_partner_transaction
@@ -259,10 +266,7 @@ def create_payment_intent_for_micro_debit():
 	team = get_current_team(True)
 	stripe = get_stripe()
 
-	micro_debit_charge_field = (
-		"micro_debit_charge_usd" if team.currency == "USD" else "micro_debit_charge_inr"
-	)
-	amount = frappe.db.get_single_value("Press Settings", micro_debit_charge_field)
+	amount = frappe.db.get_single_value("Press Settings", micro_debit_charge_field(team.currency))
 
 	intent = stripe.PaymentIntent.create(
 		amount=int(amount * 100),
@@ -489,7 +493,9 @@ def get_invoice_usage(invoice):
 	out = doc.as_dict()
 	# a dict with formatted currency values for display
 	out.formatted = make_formatted_doc(doc)
-	out.invoice_pdf = doc.invoice_pdf or (doc.currency == "USD" and doc.get_pdf())
+	out.invoice_pdf = doc.invoice_pdf or (
+		should_generate_primary_currency_pdf(doc.currency) and doc.get_pdf()
+	)
 	return out
 
 
@@ -908,9 +914,9 @@ def _validate_razorpay_order_type(transaction_type, amount, doc_name, currency):
 
 
 def _validate_prepaid_credits(amount, currency):
-	minimum_amount = 100 if currency == "INR" else 5
+	minimum_amount = minimum_prepaid_amount(currency)
 	if amount < minimum_amount:
-		currency_symbol = "₹" if currency == "INR" else "$"
+		currency_symbol = currency_prefix(currency)
 		frappe.throw(
 			_("Amount should be at least {0}{1}").format(currency_symbol, minimum_amount)
 		)  # nosemgrep
@@ -920,10 +926,10 @@ def _validate_purchase_plan(amount, doc_name, currency):
 	exists_result = frappe.db.exists("Site Plan", doc_name)
 	if not doc_name or not exists_result:
 		frappe.throw(_("Plan {0} does not exist").format(doc_name or ""))  # nosemgrep
-	price_field = "price_inr" if currency == "INR" else "price_usd"
+	price_field = plan_price_field(currency)
 	plan_amount = frappe.db.get_value("Site Plan", doc_name, price_field)
 	if amount < plan_amount:
-		currency_symbol = "₹" if currency == "INR" else "$"
+		currency_symbol = currency_prefix(currency)
 		frappe.throw(
 			_(
 				"Amount should not be less than plan amount of {0}{1}. Please verify your amount and plan amount"
@@ -947,7 +953,7 @@ def _validate_invoice_payment(amount, doc_name, currency):
 			).format(doc_name)
 		)  # nosemgrep
 	if amount < invoice_amount:
-		currency_symbol = "₹" if currency == "INR" else "$"
+		currency_symbol = currency_prefix(currency)
 		frappe.throw(
 			_("Amount should not be less than invoice amount of {0}{1}").format(
 				currency_symbol, invoice_amount
@@ -1410,7 +1416,7 @@ def _calculate_forecast_data(
 	forecasted_month_end = 0
 	per_service_forecast: dict[str, float] = {}  # Forecasted remaining cost per service
 
-	price_field = "price_usd" if currency == "USD" else "price_inr"
+	price_field = plan_price_field(currency)
 
 	for sub in subscriptions:
 		plan = frappe.db.get_value(sub.plan_type, sub.plan, [price_field], as_dict=True)

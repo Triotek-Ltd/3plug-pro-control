@@ -8,12 +8,7 @@
 			@done="$resources.errors.reload()"
 		/>
 		<Button
-			:route="{
-				name:
-					object.doctype === 'Site'
-						? 'Site Jobs'
-						: `${object.doctype} Detail Jobs`,
-			}"
+			:route="backRoute"
 		>
 			<template #prefix>
 				<lucide-arrow-left class="inline-block h-4 w-4" />
@@ -47,6 +42,9 @@
 					</div>
 				</div>
 				<div>
+					<div class="mt-2 text-sm text-gray-600">
+						{{ jobContext }}
+					</div>
 					<div
 						class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
 					>
@@ -151,8 +149,32 @@ export default {
 		object() {
 			return getObject(this.objectType);
 		},
+		backRoute() {
+			const parentName = this.$route?.params?.name;
+			if (this.objectType === 'Site') {
+				return parentName ? `/sites/${parentName}/insights/jobs` : '/sites';
+			}
+			if (this.objectType === 'Bench') {
+				return parentName ? `/benches/${parentName}/jobs` : '/benches';
+			}
+			if (this.objectType === 'Server') {
+				return parentName ? `/servers/${parentName}/jobs` : '/servers';
+			}
+			if (this.objectType === 'Release Group') {
+				return parentName ? `/groups/${parentName}/jobs` : '/groups';
+			}
+			return '/';
+		},
 		job() {
 			return this.$resources.job.doc;
+		},
+		jobContext() {
+			if (!this.job) return '';
+			const target = this.job.site || this.job.bench || this.job.server || this.job.group;
+			if (!target) {
+				return 'Tracked execution for this product action.';
+			}
+			return `Tracked execution for ${target}.`;
 		},
 		error() {
 			return this.$resources.errors?.data?.[0] ?? null;

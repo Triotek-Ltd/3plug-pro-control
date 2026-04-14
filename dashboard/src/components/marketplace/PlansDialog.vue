@@ -24,11 +24,11 @@
 					<h3 class="mb-4 text-lg font-semibold">Plan Price</h3>
 					<div class="grid grid-cols-2 gap-2">
 						<FormControl
-							label="Price INR"
+							label="Price KSh"
 							v-model="currentEditingPlan.price_inr"
 						></FormControl>
 						<FormControl
-							label="Price USD"
+							label="Price GBP"
 							v-model="currentEditingPlan.price_usd"
 						></FormControl>
 					</div>
