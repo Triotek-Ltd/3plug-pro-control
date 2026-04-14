@@ -26,13 +26,21 @@ Updated [pyproject.toml](./../../../pyproject.toml) to better match a Frappe 16-
 
 * `posthog~=5.0.0`
 * `PyGithub>=2.5,<3`
-* `pyOpenSSL~=25.1.0`
+* `pyOpenSSL>=23.2.0,<24`
 * `requests~=2.32.4`
 * `sql_metadata~=2.17.0`
 * `stripe>=11,<14`
 * `tomli~=2.2.1; python_version < '3.11'`
 
 Removed earlier temporary reliance on the old `urllib3<2` compatibility path from package metadata.
+
+During fresh-bench install testing, `pyOpenSSL~=25.1.0` was found to conflict with `oci==2.116.0`, which requires `pyOpenSSL<24.0.0`.
+
+The pin was therefore corrected to:
+
+* `pyOpenSSL>=23.2.0,<24`
+
+This keeps the app compatible with its current OCI dependency while still avoiding the older, looser historical pin.
 
 Added:
 
