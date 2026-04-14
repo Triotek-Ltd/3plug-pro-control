@@ -16,6 +16,7 @@ Start aligning the app with a Frappe 16 bench instead of continuing to patch a m
 * Confirmed server-side symptoms included:
   * `ModuleNotFoundError: No module named 'urllib3.contrib.appengine'`
   * `ModuleNotFoundError: No module named 'stripe.six.moves'`
+  * `ImportError: No module named 'ansible.module_utils.six.moves'`
   * pip resolver conflicts between `press` pins and `frappe 16.0.0-dev`
 
 ### Repo changes made
@@ -31,6 +32,7 @@ Updated [pyproject.toml](./../../../pyproject.toml) to better match a Frappe 16-
 * `sql_metadata~=2.17.0`
 * `stripe>=11,<14`
 * `tomli~=2.2.1; python_version < '3.11'`
+* `ansible-core~=2.17.0`
 
 Fresh-bench retesting later showed the runtime environment still pulled a dependency path that imports `urllib3.contrib.appengine`.
 
@@ -54,6 +56,17 @@ Another fresh-bench check showed the environment was resolving to:
 * `oci 2.116.0`
 
 Despite the newer `PyGithub`, one installed dependency path still expected `urllib3.contrib.appengine`, so the app compatibility set continues to require `urllib3<2` for now.
+
+Fresh-bench installation also exposed an Ansible runtime compatibility issue:
+
+* `ansible==3.4.0` installed `ansible-base==2.10.17`
+* in the Python 3.12 bench env, `ansible.module_utils.six.moves` could not be imported
+
+The dependency was therefore moved to:
+
+* `ansible-core~=2.17.0`
+
+This is intended to provide a Python-3.12-compatible Ansible runtime while preserving the `ansible.*` import surface used by Press.
 
 Added:
 
