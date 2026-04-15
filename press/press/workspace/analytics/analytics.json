@@ -1,0 +1,62 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"analytics-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Analytics</span>\",\"col\":12}},{\"id\":\"analytics-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Use site, server, incident, and forensic records as the operational analytics surface for the control plane.\",\"col\":12}},{\"id\":\"analytics-sites\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":3}},{\"id\":\"analytics-servers\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Runtime Records\",\"col\":3}},{\"id\":\"analytics-incidents\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Incidents\",\"col\":3}},{\"id\":\"analytics-forensics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensics\",\"col\":3}}]",
+ "creation": "2026-04-14 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "octicon octicon-graph",
+ "idx": 0,
+ "indicator_color": "orange",
+ "is_hidden": 0,
+ "label": "Analytics",
+ "links": [],
+ "modified": "2026-04-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "Analytics",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 34.0,
+ "shortcuts": [
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Sites",
+   "link_to": "Site",
+   "stats_filter": "[[\"Site\",\"status\",\"!=\",\"Archived\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Runtime Records",
+   "link_to": "Server",
+   "stats_filter": "[[\"Server\",\"status\",\"!=\",\"Archived\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Red",
+   "doc_view": "List",
+   "label": "Incidents",
+   "link_to": "Incident",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Forensics",
+   "link_to": "Forensic Event",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Analytics"
+}

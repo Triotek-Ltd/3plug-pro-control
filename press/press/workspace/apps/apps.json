@@ -1,0 +1,62 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"apps-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Apps</span>\",\"col\":12}},{\"id\":\"apps-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Work with the approved app catalog, source repositories, and release records used across your benches and sites.\",\"col\":12}},{\"id\":\"apps-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Apps\",\"col\":3}},{\"id\":\"apps-sources\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Sources\",\"col\":3}},{\"id\":\"apps-releases\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Releases\",\"col\":3}},{\"id\":\"apps-site-plans\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site Plans\",\"col\":3}}]",
+ "creation": "2026-04-14 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "octicon octicon-package-dependencies",
+ "idx": 0,
+ "indicator_color": "grey",
+ "is_hidden": 0,
+ "label": "Apps",
+ "links": [],
+ "modified": "2026-04-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "Apps",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 33.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Apps",
+   "link_to": "App",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "App Sources",
+   "link_to": "App Source",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "App Releases",
+   "link_to": "App Release",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Site Plans",
+   "link_to": "Site Plan",
+   "stats_filter": "[[\"Site Plan\",\"enabled\",\"=\",1,false]]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Apps"
+}

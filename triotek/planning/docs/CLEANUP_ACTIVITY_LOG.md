@@ -879,3 +879,9 @@ Reason:
 - Reduced sidebar confusion by promoting the actual product modules and pushing secondary/internal areas lower in the shell.
 - Simplified the Desk workspace content into clearer groups: `Runtime`, `Apps`, `Execution And Evidence`, and `Administration`.
 - Removed duplicate or low-signal workspace shortcuts so the Desk entry surface better matches the MVP product instead of exposing a grab-bag of inherited records.
+
+## 2026-04-14 - Desk sidebar split into target-state workspaces
+
+- Renamed the root `Press` workspace label to `Desk` so the app entry point now behaves like a home workspace instead of duplicating the app name in the sidebar.
+- Added dedicated Desk workspaces for `Servers`, `Benches`, `Sites`, `Tenants`, `Apps`, `Analytics`, `Jobs`, `Forensics`, `Team`, and `Settings` under the `Press` module.
+- Kept the workspaces backed by existing doctypes and records for safety, so the Frappe v16 Desk sidebar can now reflect the intended 3plug target-state modules without waiting on deeper backend renames.

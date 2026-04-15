@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"threeplug-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">3plug Control</span>\",\"col\":12}},{\"id\":\"threeplug-runtime-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Runtime</b></span>\",\"col\":12}},{\"id\":\"threeplug-managed-servers\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Managed Servers\",\"col\":3}},{\"id\":\"threeplug-benches\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Benches\",\"col\":3}},{\"id\":\"threeplug-sites\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":3}},{\"id\":\"threeplug-tenants\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenants\",\"col\":3}},{\"id\":\"threeplug-runtime-records\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Runtime Records\",\"col\":3}},{\"id\":\"threeplug-runtime-spacer\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"threeplug-apps-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Apps</b></span>\",\"col\":12}},{\"id\":\"threeplug-apps\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Apps\",\"col\":3}},{\"id\":\"threeplug-app-sources\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Sources\",\"col\":3}},{\"id\":\"threeplug-app-releases\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Releases\",\"col\":3}},{\"id\":\"threeplug-apps-spacer\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"threeplug-execution-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Execution And Evidence</b></span>\",\"col\":12}},{\"id\":\"threeplug-jobs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Jobs\",\"col\":3}},{\"id\":\"threeplug-plays\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plays\",\"col\":3}},{\"id\":\"threeplug-forensics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensics\",\"col\":3}},{\"id\":\"threeplug-execution-spacer\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"threeplug-admin-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Administration</b></span>\",\"col\":12}},{\"id\":\"threeplug-team\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Team\",\"col\":3}},{\"id\":\"threeplug-settings\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Control Settings\",\"col\":3}}]",
+ "content": "[{\"id\":\"threeplug-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">3plug Control</span>\",\"col\":12}},{\"id\":\"threeplug-intro\",\"type\":\"paragraph\",\"data\":{\"text\":\"Use the Desk sidebar to move between the core control-plane modules for servers, benches, sites, tenants, apps, analytics, jobs, forensics, team, and settings.\",\"col\":12}},{\"id\":\"threeplug-key-areas-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Key Areas</b></span>\",\"col\":12}},{\"id\":\"threeplug-managed-servers\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Managed Servers\",\"col\":3}},{\"id\":\"threeplug-benches\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Benches\",\"col\":3}},{\"id\":\"threeplug-sites\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":3}},{\"id\":\"threeplug-tenants\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenants\",\"col\":3}},{\"id\":\"threeplug-apps\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Apps\",\"col\":3}},{\"id\":\"threeplug-jobs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Jobs\",\"col\":3}},{\"id\":\"threeplug-forensics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensics\",\"col\":3}},{\"id\":\"threeplug-settings\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Control Settings\",\"col\":3}}]",
  "creation": "2024-07-30 18:43:18.421196",
  "custom_blocks": [],
  "docstatus": 0,
@@ -11,7 +11,7 @@
  "idx": 0,
  "indicator_color": "",
  "is_hidden": 0,
- "label": "3plug Control",
+ "label": "Desk",
  "links": [],
  "modified": "2024-08-02 16:33:40.351403",
  "modified_by": "Administrator",
@@ -129,5 +129,5 @@
     "type": "DocType"
   }
  ],
- "title": "3plug Control"
+ "title": "Desk"
 }
