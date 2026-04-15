@@ -13,7 +13,7 @@
 			<template #prefix>
 				<lucide-arrow-left class="inline-block h-4 w-4" />
 			</template>
-			All jobs
+			Back to execution
 		</Button>
 
 		<div class="mt-3">
@@ -44,6 +44,19 @@
 				<div>
 					<div class="mt-2 text-sm text-gray-600">
 						{{ jobContext }}
+					</div>
+					<div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+						<div
+							v-for="card in summaryCards"
+							:key="card.label"
+							class="rounded-lg border bg-white px-4 py-3"
+						>
+							<div class="text-sm text-gray-500">{{ card.label }}</div>
+							<div class="mt-1 text-base font-semibold text-gray-900">
+								{{ card.value }}
+							</div>
+							<div class="mt-1 text-xs text-gray-500">{{ card.help }}</div>
+						</div>
 					</div>
 					<div
 						class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
@@ -83,6 +96,12 @@
 			</div>
 
 			<div class="mt-8 space-y-4">
+				<div>
+					<h3 class="text-lg font-semibold text-gray-900">Execution Stages</h3>
+					<p class="mt-1 text-sm text-gray-600">
+						Each stage records what ran, how long it took, and any output or failure details captured during execution.
+					</p>
+				</div>
 				<JobStep v-for="step in job.steps" :step="step" :key="step.name" />
 			</div>
 		</div>
@@ -170,11 +189,43 @@ export default {
 		},
 		jobContext() {
 			if (!this.job) return '';
-			const target = this.job.site || this.job.bench || this.job.server || this.job.group;
+			const target =
+				this.job.site || this.job.bench || this.job.server || this.job.group;
 			if (!target) {
 				return 'Tracked execution for this product action.';
 			}
-			return `Tracked execution for ${target}.`;
+			return `Tracked execution for ${target}. Review the stage timeline below to see what ran and what still needs attention.`;
+		},
+		summaryCards() {
+			if (!this.job) return [];
+			const steps = this.job.steps || [];
+			const failedSteps = steps.filter((step) => step.status === 'Failure').length;
+			const completedSteps = steps.filter((step) => step.status === 'Success').length;
+			const runningStep =
+				steps.find((step) => step.status === 'Running')?.title || 'None';
+			return [
+				{
+					label: 'Resource',
+					value:
+						this.job.site || this.job.bench || this.job.server || this.job.group || 'Platform',
+					help: 'The resource this execution is acting on.',
+				},
+				{
+					label: 'Stages',
+					value: `${steps.length}`,
+					help: 'Recorded execution stages for this job.',
+				},
+				{
+					label: 'Completed',
+					value: `${completedSteps}`,
+					help: failedSteps ? `${failedSteps} stage failures recorded.` : 'No stage failures recorded.',
+				},
+				{
+					label: 'Current Stage',
+					value: runningStep,
+					help: this.job.status === 'Running' ? 'Execution is still active.' : 'Execution is not currently running.',
+				},
+			];
 		},
 		error() {
 			return this.$resources.errors?.data?.[0] ?? null;

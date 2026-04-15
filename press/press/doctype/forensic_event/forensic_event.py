@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import suppress
 from typing import TYPE_CHECKING
 
 import frappe
@@ -59,6 +60,21 @@ class ForensicEvent(Document):
 		"actor",
 		"summary",
 	)
+
+
+DIAGNOSTIC_LOG_KEYWORDS = (
+	"error",
+	"worker",
+	"scheduler",
+	"frappe",
+	"web",
+	"database",
+	"stderr",
+)
+DIAGNOSTIC_LOG_LIMIT = 2
+DIAGNOSTIC_STEP_LIMIT = 3
+DIAGNOSTIC_LINE_LIMIT = 80
+DIAGNOSTIC_CHAR_LIMIT = 6000
 
 
 def create_forensic_event(**kwargs):
@@ -283,6 +299,9 @@ def capture_agent_job_update(doc: "AgentJob", _method=None):
 		payload={"changes": changed_fields},
 	)
 
+	if old_status != new_status and new_status in {"Failure", "Delivery Failure", "Undelivered"}:
+		create_agent_job_diagnostic_event(doc, actor=doc.modified_by, reason="automatic")
+
 
 def capture_site_activity_insert(doc: "SiteActivity", _method=None):
 	create_forensic_event(
@@ -388,6 +407,9 @@ def capture_press_job_update(doc: "PressJob", _method=None):
 		payload={"changes": changed_fields},
 	)
 
+	if old_status != new_status and new_status == "Failure":
+		create_press_job_diagnostic_event(doc, actor=doc.modified_by, reason="automatic")
+
 
 def capture_press_job_step_update(doc: "PressJobStep", _method=None):
 	previous = doc.get_doc_before_save()
@@ -417,6 +439,9 @@ def capture_press_job_step_update(doc: "PressJobStep", _method=None):
 		},
 	)
 
+	if doc.status == "Failure":
+		create_press_job_diagnostic_event(job, actor=doc.modified_by, reason="step-failure")
+
 
 def capture_security_update_check_update(doc: "SecurityUpdateCheck", _method=None):
 	previous = doc.get_doc_before_save()
@@ -437,6 +462,45 @@ def capture_security_update_check_update(doc: "SecurityUpdateCheck", _method=Non
 		actor=doc.modified_by,
 		summary=f"Security update check on {doc.server}: {previous.get('status') or 'Unknown'} -> {doc.status or 'Unknown'}",
 		payload={"play": doc.play},
+	)
+
+
+def create_agent_job_diagnostic_event(doc: "AgentJob", actor: str | None = None, reason: str = "manual"):
+	return create_forensic_event(
+		event_type="Agent Job Diagnostics",
+		severity=_severity_for_job_status(doc.status),
+		status=doc.status,
+		team=_resolve_team(doc),
+		document_type=_resolve_primary_document_type(doc),
+		document_name=_resolve_primary_document_name(doc),
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		site=doc.site,
+		bench=doc.bench,
+		job=doc.name,
+		server_type=doc.server_type,
+		server=doc.server,
+		actor=actor or doc.modified_by or doc.owner,
+		summary=_summarize_agent_job_diagnostics(doc, reason),
+		payload=_build_agent_job_diagnostics(doc, reason),
+	)
+
+
+def create_press_job_diagnostic_event(doc: "PressJob", actor: str | None = None, reason: str = "manual"):
+	return create_forensic_event(
+		event_type="Press Job Diagnostics",
+		severity=_severity_for_press_job_status(doc.status),
+		status=doc.status,
+		team=_resolve_team(doc),
+		document_type=_resolve_primary_document_type(doc),
+		document_name=_resolve_primary_document_name(doc),
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		server_type=doc.server_type,
+		server=doc.server,
+		actor=actor or doc.modified_by or doc.owner,
+		summary=_summarize_press_job_diagnostics(doc, reason),
+		payload=_build_press_job_diagnostics(doc, reason),
 	)
 
 
@@ -558,3 +622,164 @@ def _signal_state_for(severity: str | None) -> str:
 	if severity == "Warning":
 		return "Watch"
 	return "Recovered"
+
+
+def _summarize_agent_job_diagnostics(doc, reason: str) -> str:
+	target = _describe_primary_target(doc)
+	if doc.status in {"Failure", "Delivery Failure"}:
+		return f"{doc.job_type} failed on {target}. Diagnostic evidence captured from job output and related logs."
+	if doc.status == "Undelivered":
+		return f"{doc.job_type} could not be delivered to {target}. Diagnostic evidence captured before retry."
+	return f"{doc.job_type} diagnostics captured for {target}."
+
+
+def _summarize_press_job_diagnostics(doc, reason: str) -> str:
+	target = _describe_primary_target(doc)
+	if doc.status == "Failure":
+		return f"{doc.job_type} failed on {target}. Diagnostic evidence captured from execution state."
+	return f"{doc.job_type} diagnostics captured for {target}."
+
+
+def _build_agent_job_diagnostics(doc, reason: str) -> dict:
+	step_details = []
+	for step in frappe.get_all(
+		"Agent Job Step",
+		filters={"agent_job": doc.name},
+		fields=["name", "step_name", "status", "output", "duration", "start", "end"],
+		order_by="creation desc",
+		limit_page_length=DIAGNOSTIC_STEP_LIMIT,
+	):
+		output = step.output
+		if step.status == "Running":
+			output = frappe.cache.hget("agent_job_step_output", step.name) or output
+		step_details.append(
+			{
+				"name": step.name,
+				"step_name": step.step_name,
+				"status": step.status,
+				"duration": step.duration,
+				"start": step.start,
+				"end": step.end,
+				"output_excerpt": _tail_text(output),
+			}
+		)
+
+	return {
+		"reason": reason,
+		"job_type": doc.job_type,
+		"request_method": doc.request_method,
+		"request_path": doc.request_path,
+		"reference_doctype": doc.reference_doctype,
+		"reference_name": doc.reference_name,
+		"output_excerpt": _tail_text(doc.output),
+		"traceback_excerpt": _tail_text(doc.traceback),
+		"failed_because_of_agent_update": getattr(doc, "failed_because_of_agent_update", False),
+		"failed_because_of_incident": getattr(doc, "failed_because_of_incident", False),
+		"steps": step_details,
+		"log_snapshots": _get_related_log_snapshots(doc.site, doc.bench),
+	}
+
+
+def _build_press_job_diagnostics(doc, reason: str) -> dict:
+	step_details = []
+	for step in frappe.get_all(
+		"Press Job Step",
+		filters={"job": doc.name},
+		fields=[
+			"name",
+			"step_name",
+			"status",
+			"duration",
+			"start",
+			"end",
+			"result",
+			"traceback",
+			"attempts",
+		],
+		order_by="name desc",
+		limit_page_length=DIAGNOSTIC_STEP_LIMIT,
+	):
+		step_details.append(
+			{
+				"name": step.name,
+				"step_name": step.step_name,
+				"status": step.status,
+				"duration": step.duration,
+				"start": step.start,
+				"end": step.end,
+				"attempts": step.attempts,
+				"result_excerpt": _tail_text(step.result),
+				"traceback_excerpt": _tail_text(step.traceback),
+			}
+		)
+
+	return {
+		"reason": reason,
+		"job_type": doc.job_type,
+		"callback_executed": doc.callback_executed,
+		"callback_failed": doc.callback_failed,
+		"callback_failure_count": doc.callback_failure_count,
+		"steps": step_details,
+	}
+
+
+def _get_related_log_snapshots(site_name: str | None, bench_name: str | None) -> list[dict]:
+	if site_name:
+		with suppress(Exception):
+			site = frappe.get_cached_doc("Site", site_name)
+			return _collect_log_snapshots(site.server_logs, site.get_server_log, "Site")
+
+	if bench_name:
+		with suppress(Exception):
+			bench = frappe.get_cached_doc("Bench", bench_name)
+			return _collect_log_snapshots(bench.server_logs, bench.get_server_log, "Bench")
+
+	return []
+
+
+def _collect_log_snapshots(log_entries, getter, scope: str) -> list[dict]:
+	log_names = []
+	for entry in log_entries or []:
+		if isinstance(entry, dict):
+			name = entry.get("name")
+		else:
+			name = getattr(entry, "name", None)
+		if name:
+			log_names.append(name)
+
+	selected_names = sorted(log_names, key=_log_priority)[:DIAGNOSTIC_LOG_LIMIT]
+	snapshots = []
+	for log_name in selected_names:
+		with suppress(Exception):
+			payload = getter(log_name)
+			if isinstance(payload, dict):
+				payload = payload.get(log_name)
+			excerpt = _tail_text(payload)
+			if excerpt:
+				snapshots.append({"scope": scope, "log": log_name, "excerpt": excerpt})
+	return snapshots
+
+
+def _log_priority(log_name: str) -> tuple[int, str]:
+	name = (log_name or "").lower()
+	for index, keyword in enumerate(DIAGNOSTIC_LOG_KEYWORDS):
+		if keyword in name:
+			return (index, name)
+	return (len(DIAGNOSTIC_LOG_KEYWORDS), name)
+
+
+def _tail_text(value) -> str | None:
+	if value is None:
+		return None
+
+	text = str(value).strip()
+	if not text:
+		return None
+
+	lines = text.splitlines()
+	if len(lines) > DIAGNOSTIC_LINE_LIMIT:
+		lines = lines[-DIAGNOSTIC_LINE_LIMIT:]
+	text = "\n".join(lines)
+	if len(text) > DIAGNOSTIC_CHAR_LIMIT:
+		text = text[-DIAGNOSTIC_CHAR_LIMIT:]
+	return text

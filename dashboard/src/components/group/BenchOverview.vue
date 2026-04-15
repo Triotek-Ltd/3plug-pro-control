@@ -8,8 +8,8 @@
 						{{ $bench.doc.title || $bench.doc.name }}
 					</h2>
 					<p class="mt-2 text-sm text-gray-600">
-						This bench is the managed runtime layer between the server and the
-						sites that run on it.
+						This bench is the managed runtime layer for approved apps, deploys,
+						and the sites attached to it.
 					</p>
 				</div>
 				<div class="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-700">
@@ -26,7 +26,7 @@
 		</section>
 
 		<section class="rounded-xl border bg-white p-5">
-			<h3 class="text-lg font-semibold text-gray-900">Bench Summary</h3>
+				<h3 class="text-lg font-semibold text-gray-900">Bench Summary</h3>
 			<div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
 				<div
 					v-for="card in summaryCards"
@@ -120,17 +120,17 @@ export default {
 				{
 					label: 'Apps',
 					value: `${apps.length}`,
-					help: 'Apps visible in the current deploy/runtime information.',
+					help: 'Approved apps currently attached to this bench runtime.',
 				},
 				{
 					label: 'Deploy Status',
 					value: this.deployInfo.deploy_in_progress ? 'Running' : 'Idle',
-					help: 'Whether this bench is actively deploying right now.',
+					help: 'Whether this bench is actively applying runtime changes right now.',
 				},
 				{
 					label: 'Update State',
 					value: updateAvailable ? 'Available' : 'Current',
-					help: 'Whether this bench has app changes ready to deploy.',
+					help: 'Whether this bench has app or release changes ready to deploy.',
 				},
 			];
 		},
@@ -138,15 +138,15 @@ export default {
 			if (this.deployInfo.deploy_in_progress) {
 				return {
 					label: 'Track Deploy',
-					detail: 'A bench deploy is already running. Follow the execution trail before starting another change.',
-					action: 'Open deploys',
+					detail: 'A bench deploy is already running. Follow the execution trail before starting another runtime change.',
+					action: 'Open deploy history',
 					route: `/groups/${this.bench}/deploys`,
 				};
 			}
 			if (this.deployInfo.update_available) {
 				return {
 					label: 'Review App Updates',
-					detail: 'This bench has app changes available. Review apps and deploy when ready.',
+					detail: 'This bench has app or release changes available. Review apps and start a deploy when ready.',
 					action: 'Open apps',
 					route: `/groups/${this.bench}/apps`,
 				};
@@ -154,15 +154,15 @@ export default {
 			if (!(this.$bench.doc.site_count || 0)) {
 				return {
 					label: 'Create First Site',
-					detail: 'This bench is ready, but no managed sites are attached yet.',
+					detail: 'This bench is ready, but no managed sites are attached to it yet.',
 					action: 'Open sites',
 					route: `/groups/${this.bench}/sites`,
 				};
 			}
 			return {
 				label: 'Operate Bench',
-				detail: 'This bench is already part of the active runtime. Use sites, jobs, and actions for day-to-day operations.',
-				action: 'Open jobs',
+				detail: 'This bench is part of the active runtime. Use sites, execution, and bench operations for day-to-day work.',
+				action: 'Open execution',
 				route: `/groups/${this.bench}/jobs`,
 			};
 		},

@@ -114,7 +114,7 @@ export default {
 		banner({ listResource: groups }) {
 			if (!groups.data?.length) {
 				return {
-					title: 'Learn how to create a new private bench and sites',
+					title: 'Learn how to create a managed bench and attach sites to it',
 					button: {
 						label: 'Read docs',
 						variant: 'outline',
@@ -278,7 +278,7 @@ export default {
 						let team = getTeam();
 						return [
 							{
-								label: 'View in Desk',
+								label: 'Open in Desk',
 								condition: () => team.doc?.is_desk_user,
 								onClick() {
 									window.open(
@@ -288,7 +288,7 @@ export default {
 								},
 							},
 							{
-								label: 'Fetch Latest Updates',
+								label: 'Check for App Updates',
 								onClick() {
 									toast.promise(
 										releaseGroup.fetchLatestAppUpdates.submit({
@@ -306,7 +306,7 @@ export default {
 								},
 							},
 							{
-								label: 'Change Branch',
+								label: 'Change Source Branch',
 								onClick() {
 									renderDialog(
 										h(ChangeAppBranchDialog, {
@@ -347,7 +347,7 @@ export default {
 								},
 							},
 							{
-								label: 'Visit Repo',
+								label: 'Open Repository',
 								onClick() {
 									window.open(
 										`${row.repository_url}/tree/${row.branch}`,
@@ -373,7 +373,7 @@ export default {
 						documentResource: releaseGroup,
 					}) {
 						return {
-							label: 'Add App',
+							label: 'Install App on Bench',
 							slots: {
 								prefix: icon('plus'),
 							},
@@ -419,7 +419,7 @@ export default {
 				},
 			},
 			{
-				label: 'Deploys',
+				label: 'Deploys and Updates',
 				route: 'deploys',
 				icon: icon('package'),
 				childrenRoutes: ['Deploy Candidate'],
@@ -512,7 +512,7 @@ export default {
 					],
 					primaryAction({ listResource: deploys, documentResource: group }) {
 						return {
-							label: 'Deploy',
+							label: 'Start Deploy',
 							slots: {
 								prefix: icon(LucideRocket),
 							},
@@ -564,7 +564,7 @@ export default {
 			},
 			getJobsTab('Release Group'),
 			{
-				label: 'Bench Config',
+				label: 'Configuration',
 				icon: icon('settings'),
 				route: 'bench-config',
 				type: 'list',
@@ -700,7 +700,7 @@ export default {
 				},
 			},
 			{
-				label: 'Operations',
+				label: 'Bench Operations',
 				icon: icon('sliders'),
 				route: 'actions',
 				type: 'Component',
@@ -712,7 +712,7 @@ export default {
 				},
 			},
 			{
-				label: 'Runtime Regions',
+				label: 'Regions',
 				icon: icon('globe'),
 				route: 'regions',
 				type: 'list',
@@ -784,7 +784,7 @@ export default {
 				},
 			},
 			{
-				label: 'Bench Env',
+				label: 'Environment',
 				icon: icon('tool'),
 				route: 'bench-environment-variable',
 				type: 'list',
@@ -900,7 +900,7 @@ export default {
 			return [
 				{
 					label: 'Impersonate Bench Owner',
-					title: 'Impersonate Bench Owner', // for label to pop-up on hover
+					title: 'Switch to Bench Owner', // for label to pop-up on hover
 					slots: {
 						icon: defineAsyncComponent(
 							() => import('~icons/lucide/venetian-mask'),
@@ -914,8 +914,8 @@ export default {
 				},
 				{
 					label: group.doc?.deploy_information?.last_deploy
-						? 'Update Available'
-						: 'Deploy Now',
+						? 'Deploy App Updates'
+						: 'Start Initial Deploy',
 					slots: {
 						prefix: group.doc?.deploy_information?.last_deploy
 							? icon(LucideHardDriveDownload)
@@ -963,7 +963,7 @@ export default {
 					condition: () => team.doc?.is_desk_user,
 					options: [
 						{
-							label: 'View in Desk',
+							label: 'Open in Desk',
 							icon: icon('external-link'),
 							condition: () => team.doc?.is_desk_user,
 							onClick() {

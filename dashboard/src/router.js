@@ -66,6 +66,16 @@ let router = createRouter({
 			meta: { hideSidebar: true },
 		},
 		{
+			path: '/analytics',
+			name: 'Analytics',
+			component: () => import('./pages/Analytics.vue'),
+		},
+		{
+			path: '/jobs',
+			name: 'Jobs',
+			component: () => import('./pages/Jobs.vue'),
+		},
+		{
 			path: '/login',
 			name: 'Login',
 			component: () => import('./pages/LoginSignup.vue'),

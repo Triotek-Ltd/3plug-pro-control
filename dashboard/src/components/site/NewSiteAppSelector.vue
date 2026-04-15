@@ -2,12 +2,11 @@
 	<div v-if="availableApps.length" class="space-y-12">
 		<div v-if="publicApps">
 			<h2 class="text-sm font-medium leading-6 text-gray-900">
-				{{
-					!siteOnPublicBench && privateApps
-						? 'Select Marketplace Apps'
-						: 'Select Apps'
-				}}
+				Select Approved Apps
 			</h2>
+			<p class="mt-2 text-sm text-gray-600">
+				Choose the apps that should be installed when this site is provisioned.
+			</p>
 			<div class="mt-2 w-full space-y-2">
 				<ObjectList :options="publicApps" />
 			</div>
@@ -25,8 +24,11 @@
 		</div>
 		<div v-if="!siteOnPublicBench && privateApps">
 			<h2 class="text-sm font-medium leading-6 text-gray-900">
-				Select Private Apps
+				Select Bench Apps
 			</h2>
+			<p class="mt-2 text-sm text-gray-600">
+				These apps are already available on the selected bench runtime.
+			</p>
 			<div class="mt-2 w-full space-y-2">
 				<ObjectList :options="privateApps" />
 			</div>

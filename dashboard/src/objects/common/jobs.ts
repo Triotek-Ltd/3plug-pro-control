@@ -95,9 +95,12 @@ function getJobTabColumns(doctype: JobDocTypes) {
 			width: 0.5
 		},
 		{
-			label: 'Target',
+			label: 'Resource',
 			fieldname: 'site',
-			width: 1.2
+			width: 1.2,
+			format: (value, row) => {
+				return row.site || row.bench || row.server || row.group || 'Platform';
+			}
 		},
 		{
 			label: 'Duration',
@@ -113,7 +116,7 @@ function getJobTabColumns(doctype: JobDocTypes) {
 			fieldname: 'owner'
 		},
 		{
-			label: '',
+			label: 'Started',
 			fieldname: 'creation',
 			type: 'Timestamp',
 			width: 0.75,

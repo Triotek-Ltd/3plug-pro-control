@@ -150,7 +150,7 @@ const markAllAsRead = (togglePopover) => {
 				class="text-ink-gray-9 bg-white h-screen ml-2 shadow-xl w-[400px] flex flex-col"
 			>
 				<div class="text-base flex items-center py-2 px-4 border-b">
-					<span class="font-medium mr-auto"> Notifications</span>
+					<span class="font-medium mr-auto"> Alert Center</span>
 
 					<Button variant="ghost" @click="markAllAsRead(togglePopover)">
 						<template #icon>
@@ -209,7 +209,7 @@ const markAllAsRead = (togglePopover) => {
 					</div>
 
 					<div v-else class="text-center text-ink-gray-6 text-sm py-10">
-						No notifications to show
+						No alerts to review
 					</div>
 				</section>
 

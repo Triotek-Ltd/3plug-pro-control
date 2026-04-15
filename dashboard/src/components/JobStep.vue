@@ -3,7 +3,7 @@
 		:open="Boolean(step.isOpen)"
 		:caption="step.duration"
 		:title="step.title"
-		:body="step.output || 'No Output'"
+		:body="step.output || 'No execution output captured yet.'"
 		:status="step.status"
 		@toggle="handleToggle"
 	/>

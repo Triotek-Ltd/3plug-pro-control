@@ -885,3 +885,63 @@ Reason:
 - Renamed the root `Press` workspace label to `Desk` so the app entry point now behaves like a home workspace instead of duplicating the app name in the sidebar.
 - Added dedicated Desk workspaces for `Servers`, `Benches`, `Sites`, `Tenants`, `Apps`, `Analytics`, `Jobs`, `Forensics`, `Team`, and `Settings` under the `Press` module.
 - Kept the workspaces backed by existing doctypes and records for safety, so the Frappe v16 Desk sidebar can now reflect the intended 3plug target-state modules without waiting on deeper backend renames.
+
+## 2026-04-14 - Improved MVP function target documented from Frappe Cloud benchmark
+
+- Added a dedicated book page that captures the benchmarked lifecycle functions we want from Frappe Cloud patterns without copying the old multi-server product model.
+- Locked the improved MVP function set around practical server, bench, site, job, and notification behavior, especially restore, migrate, move, deploy, trace, and notify flows.
+- Set the next implementation order explicitly: `Sites`, then `Benches`, then `Jobs`, then `Notifications`.
+
+## 2026-04-14 - Roadmap and status tracking added for focused product execution
+
+- Added a working roadmap page that turns the target state into ordered product phases and keeps implementation anchored to the real operator journey.
+- Added a status tracker page that marks each major module as done for now, in progress, not started, or needing rework.
+- Linked both into the book so planning, implementation, and cleanup can stay coordinated as the product evolves.
+
+## 2026-04-14 - First-run onboarding redirected to server-first product flow
+
+- Replaced the inherited site-trial onboarding screen with a 3plug-specific first-run flow that clearly starts with managed server onboarding.
+- Updated the Home create-action dropdown so incomplete onboarding exposes only the managed server path instead of implying benches and sites come first.
+- Framed the onboarding sequence around server onboarding, runtime readiness, bench onboarding, and then site creation/import to match the real product model.
+
+## 2026-04-14 - Site creation flow reframed as managed provisioning
+
+- Added a product-facing provisioning intro to the new-site page so the flow now reads as managed site creation rather than old mixed setup and pricing copy.
+- Renamed the high-visibility site-creation steps around runtime version, infrastructure provider, region, site resource profile, and site address.
+- Reframed app selection toward approved apps and private bench apps so site provisioning aligns with the curated app model we want for 3plug.
+
+## 2026-04-14 - Site detail reshaped toward lifecycle management
+
+- Renamed the major site detail tabs and actions toward lifecycle language, including `Backups and Recovery`, `Migrations and Moves`, `Release Updates`, `Site Operations`, and `Activity Timeline`.
+- Tightened high-visibility site actions so they read like product operations, such as `Open Live Site`, `Complete Site Setup`, and `Open in Desk`.
+- Added a first-pass `Notifications` tab for sites so notification ownership is visible in the product while the deeper notification rules model is still being built.
+
+## 2026-04-14 - Bench lifecycle reshaped toward managed runtime operations
+
+- Tightened the bench module wording around lifecycle work so deploys, updates, configuration, environment, and operations now read like bench management rather than inherited Press internals.
+- Renamed high-visibility bench tabs and actions toward the target product language, including `Deploys and Updates`, `Configuration`, `Bench Operations`, `Regions`, `Environment`, `Install App on Bench`, `Check for App Updates`, `Change Source Branch`, and `Open in Desk`.
+- Refined the bench overview and next-action copy so operators are guided toward deploy tracking, app update review, first site creation, and day-to-day runtime execution in a more intentional MVP flow.
+
+## 2026-04-14 - Site creation locked to bench-first parenting
+
+- Reworked the site creation flow so benches are treated as the parent of sites in the client-facing product, with an explicit bench-selection step before the rest of provisioning is shown.
+- Switched the create-site flow to use the selected bench as the runtime parent even from the generic `New Site` route, rather than quietly falling back to a public-site path.
+- Tightened the provisioning copy so it talks in 3plug language such as `runtime version`, `bench`, and `approved apps`, instead of leaning on inherited platform naming.
+
+## 2026-04-14 - Execution detail refined into a clearer jobs timeline
+
+- Tightened the shared execution list wording so tracked jobs now show `Resource` and `Started` instead of a vague target column and unlabeled timestamp.
+- Improved the job detail page with an execution summary layer that surfaces the resource, stage count, completed stages, and current running stage before the detailed timeline.
+- Reframed the stage timeline copy and empty-output messaging so jobs read like a client-facing execution trail rather than raw internal records.
+
+## 2026-04-14 - Notifications reshaped into a clearer alerting feature
+
+- Renamed the dedicated notifications module toward an `Alert Center` so the feed, sidebar drawer, and surrounding wording read like a real operator feature instead of a leftover internal inbox.
+- Reworked the site notifications tab to show current routing, expose the site-specific routes directly, and connect site alerts back to team defaults and the alert center.
+- Reframed the notification channel dialog as `Notification Routing`, with clearer alert-type labels and product-facing copy around how site, server, and team routes fall back to one another.
+
+## 2026-04-14 - Dashboard shell aligned closer to the target-state modules
+
+- Added first-pass top-level `Analytics` and `Jobs` pages so those target-state modules now exist in the dashboard shell instead of living only in planning documents.
+- Replaced the dashboard sidebar navigation with the agreed product order: `Desk`, `Servers`, `Benches`, `Sites`, `Tenants`, `Apps`, `Analytics`, `Jobs`, `Forensics`, `Team`, and `Control Settings`, while keeping notifications as a dedicated alert entry.
+- Removed low-signal internal-first sidebar clutter from the main navigation so the client-facing shell better matches the actual 3plug product map.

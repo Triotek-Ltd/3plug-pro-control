@@ -39,8 +39,8 @@
 			</div>
 		</div>
 		<ListItem
-			title="Notification Settings"
-			subtitle="Manage notification channels"
+			title="Notification Routing"
+			subtitle="Manage your default alert channels"
 			v-if="$team?.doc?.user === $session?.user"
 		>
 			<template #actions>

@@ -470,7 +470,7 @@ export default {
 					},
 					primaryAction({ listResource: domains, documentResource: site }) {
 						return {
-							label: 'Add Domain',
+							label: 'Add Site Address',
 							slots: {
 								prefix: icon('plus'),
 							},
@@ -633,7 +633,7 @@ export default {
 				},
 			},
 			{
-				label: 'Backups',
+				label: 'Backups and Recovery',
 				icon: icon('archive'),
 				route: 'backups',
 				type: 'list',
@@ -1028,7 +1028,7 @@ export default {
 					},
 					primaryAction({ listResource: backups, documentResource: site }) {
 						return {
-							label: 'Schedule Backup',
+							label: 'Run Backup Now',
 							slots: {
 								prefix: icon('upload-cloud'),
 							},
@@ -1207,7 +1207,7 @@ export default {
 				},
 			},
 			{
-				label: 'Migrations',
+				label: 'Migrations and Moves',
 				icon: icon(ArrowLeftRightIcon),
 				route: 'migrations',
 				type: 'list',
@@ -1263,7 +1263,7 @@ export default {
 					},
 					primaryAction({ listResource: backups, documentResource: site }) {
 						return {
-							label: 'Trigger Migration',
+							label: 'Start Migration',
 							slots: {
 								prefix: icon('upload-cloud'),
 							},
@@ -1285,7 +1285,7 @@ export default {
 				},
 			},
 			{
-				label: 'Updates',
+				label: 'Release Updates',
 				icon: icon('arrow-up-circle'),
 				route: 'updates',
 				type: 'list',
@@ -1568,7 +1568,7 @@ export default {
 				},
 			},
 			{
-				label: 'Operations',
+				label: 'Site Operations',
 				icon: icon('sliders'),
 				route: 'actions',
 				type: 'Component',
@@ -1582,7 +1582,7 @@ export default {
 			},
 
 			{
-				label: 'Activity',
+				label: 'Activity Timeline',
 				icon: icon('activity'),
 				route: 'activity',
 				type: 'list',
@@ -1664,6 +1664,19 @@ export default {
 			getForensicTab((site) => {
 				return { site: site.doc?.name };
 			}),
+			{
+				label: 'Notifications',
+				icon: icon('bell'),
+				route: 'notifications',
+				type: 'Component',
+				condition: (site) => site.doc?.status !== 'Archived',
+				component: defineAsyncComponent(
+					() => import('../components/site/SiteNotifications.vue'),
+				),
+				props: (site) => {
+					return { site: site.doc?.name };
+				},
+			},
 		],
 		actions(context) {
 			let { documentResource: site } = context;
@@ -1761,7 +1774,7 @@ export default {
 					},
 				},
 				{
-					label: 'Open Site',
+					label: 'Open Live Site',
 					slots: {
 						prefix: icon('external-link'),
 					},
@@ -1778,7 +1791,7 @@ export default {
 					},
 				},
 				{
-					label: 'Setup Site',
+					label: 'Complete Site Setup',
 					slots: {
 						prefix: icon('external-link'),
 					},
@@ -1803,7 +1816,7 @@ export default {
 					context,
 					options: [
 						{
-							label: 'View in Desk',
+							label: 'Open in Desk',
 							icon: 'external-link',
 							condition: () => $team.doc?.is_desk_user,
 							onClick: () => {
@@ -1814,7 +1827,7 @@ export default {
 							},
 						},
 						{
-							label: 'Login As Administrator',
+							label: 'Login as Administrator',
 							icon: 'external-link',
 							condition: () => ['Active', 'Broken'].includes(site.doc.status),
 							onClick: () => {
@@ -1865,6 +1878,12 @@ export default {
 			name: 'Site Migration',
 			path: 'migrations/:id',
 			component: () => import('../pages/SiteMigration.vue'),
+		},
+		{
+			name: 'Site Detail Notifications',
+			path: 'notifications',
+			component: () => import('../components/site/SiteNotifications.vue'),
+			props: true,
 		},
 	],
 };

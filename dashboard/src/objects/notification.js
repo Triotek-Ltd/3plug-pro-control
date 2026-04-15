@@ -35,7 +35,7 @@ export default {
 			};
 		},
 		route: '/notifications',
-		title: 'Notifications',
+		title: 'Alert Center',
 		orderBy: 'creation desc',
 		filterControls() {
 			return [
@@ -59,7 +59,7 @@ export default {
 		actions({ listResource: notifications }) {
 			return [
 				{
-					label: 'Mark all as read',
+					label: 'Mark all as reviewed',
 					slots: {
 						prefix: icon('check-circle'),
 					},
@@ -71,9 +71,9 @@ export default {
 							{
 								success: () => {
 									notifications.reload();
-									return 'All notifications marked as read';
+									return 'All alerts marked as reviewed';
 								},
-								loading: 'Marking all notifications as read...',
+								loading: 'Marking all alerts as reviewed...',
 								error: (error) =>
 									error.messages?.length
 										? error.messages.join('\n')
@@ -86,7 +86,7 @@ export default {
 		},
 		columns: [
 			{
-				label: 'Title',
+				label: 'Signal',
 				fieldname: 'title',
 				width: '20rem',
 				format(value, row) {
@@ -115,7 +115,7 @@ export default {
 				},
 			},
 			{
-				label: 'Message',
+				label: 'Summary',
 				fieldname: 'message',
 				type: 'Component',
 				width: '40rem',
@@ -130,7 +130,7 @@ export default {
 				},
 			},
 			{
-				label: '',
+				label: 'Received',
 				fieldname: 'creation',
 				type: 'Timestamp',
 				align: 'right',

@@ -1,13 +1,13 @@
 <template>
 	<Dialog
-		:options="{ title: 'Notification Configuration', size: '3xl' }"
+		:options="{ title: 'Notification Routing', size: '3xl' }"
 		v-model="showDialog"
 	>
 		<template #body-content>
 			<div class="flex flex-col w-full">
 				<AlertBanner
 					v-if="referenceDoctype === 'Team'"
-					title="Notifications will go to the General channel by default. If General isn't available, they'll be delivered to registered email addresses."
+					title="Team-level notification routing defines the default channels for the whole control plane. If a specific route is missing, alerts fall back to these team channels."
 					type="info"
 					:showIcon="false"
 					class="mb-3"
@@ -15,7 +15,7 @@
 
 				<AlertBanner
 					v-else
-					title="Notifications will go to the General channel by default. If General isn't available, they'll be delivered through team-level channels."
+					title="This resource can override team defaults. If a matching route is not configured here, alerts fall back to the team-level notification channels."
 					type="info"
 					:showIcon="false"
 					class="mb-3"
@@ -34,7 +34,7 @@
 							})
 						"
 					>
-						New
+						Add Route
 					</Button>
 					<Button
 						variant="subtle"
@@ -43,7 +43,7 @@
 						:loading="$resources.getCommunicationInfos.loading"
 						@click="$resources.getCommunicationInfos.submit"
 					>
-						Refresh
+						Reload
 					</Button>
 				</div>
 				<div
@@ -63,7 +63,7 @@
 						class="w-full mt-5"
 						@click="$resources?.updateCommunicationInfos?.submit"
 						:loading="$resources?.updateCommunicationInfos?.loading"
-						>Update Settings</Button
+						>Save Routing</Button
 					>
 				</div>
 			</div>
@@ -151,7 +151,7 @@ export default {
 				columns: [
 					{
 						fieldname: 'type',
-						label: 'Type',
+						label: 'Alert Type',
 						width: '2fr',
 						type: 'Component',
 						component_width: '100%',
@@ -165,7 +165,7 @@ export default {
 									h(Select, {
 										style: { width: '100%' },
 										options: this.filteredCommunicationTypes.map((type) => ({
-											label: type,
+											label: this.communicationTypeLabels[type] || type,
 											value: type,
 										})),
 										modelValue: row.type,
@@ -179,7 +179,7 @@ export default {
 					},
 					{
 						fieldname: 'channel',
-						label: 'Channel',
+						label: 'Delivery Channel',
 						width: '2fr',
 						type: 'Component',
 						component: ({ row }) => {
@@ -219,7 +219,7 @@ export default {
 					},
 					{
 						fieldname: 'value',
-						label: 'Email / Phone No',
+						label: 'Address',
 						width: '5fr',
 						type: 'Component',
 						component({ row }) {
@@ -270,6 +270,15 @@ export default {
 				'Site Activity',
 				'Marketplace',
 			];
+		},
+		communicationTypeLabels() {
+			return {
+				General: 'General Alerts',
+				Incident: 'Incidents',
+				'Server Activity': 'Server Activity',
+				'Site Activity': 'Site Activity',
+				Marketplace: 'Marketplace Activity',
+			};
 		},
 	},
 	methods: {

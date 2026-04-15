@@ -21,17 +21,57 @@
 			<div class="py-4 text-base text-gray-600">Something went wrong</div>
 		</div>
 		<div v-else-if="options" class="space-y-12 pb-[50vh] pt-12">
+			<section class="rounded-2xl border bg-white p-6">
+				<p class="text-sm uppercase tracking-wide text-gray-500">
+					Site Provisioning
+				</p>
+				<h1 class="mt-2 text-2xl font-semibold text-gray-900">
+					Create a managed site
+				</h1>
+				<p class="mt-3 text-sm leading-6 text-gray-600">
+					Sites are created on benches. Choose the target bench, app stack,
+					runtime version, region, and resource profile. 3plug will run the
+					provisioning work behind tracked jobs so the execution trail stays
+					visible after submission.
+				</p>
+			</section>
+			<div v-if="!bench" class="space-y-3">
+				<h2 class="text-base font-medium leading-6 text-gray-900">
+					Select Bench
+				</h2>
+				<p class="text-sm text-gray-600">
+					Every site belongs to a bench. Start by choosing the bench that will
+					parent this site.
+				</p>
+				<FormControl
+					type="select"
+					:modelValue="selectedBench"
+					@update:modelValue="selectedBench = $event"
+					:options="benchOptions"
+				/>
+				<div
+					v-if="!benchOptions.length"
+					class="rounded-lg border border-dashed px-4 py-3 text-sm text-gray-600"
+				>
+					No active benches are available yet. Create or onboard a bench first,
+					then come back to create a site.
+				</div>
+			</div>
+			<div v-if="effectiveBench" class="space-y-12">
 			<NewSiteAppSelector
 				:availableApps="selectedVersionAppOptions"
-				:siteOnPublicBench="!bench"
+				:siteOnPublicBench="false"
 				v-model="apps"
 			/>
-			<div v-if="!bench">
+			<div>
 				<div class="flex items-center justify-between">
 					<h2 class="text-base font-medium leading-6 text-gray-900">
-						Select Frappe Framework Version
+						Select Runtime Version
 					</h2>
 				</div>
+				<p class="mt-2 text-sm text-gray-600">
+					Choose the runtime version that should back this site.
+				</p>
 				<div class="mt-2">
 					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
 						<component
@@ -150,8 +190,11 @@
 				class="flex flex-col"
 			>
 				<h2 class="text-base font-medium leading-6 text-gray-900">
-					Select Provider
+					Select Infrastructure Provider
 				</h2>
+				<p class="mt-2 text-sm text-gray-600">
+					Pick where this site should run when using a shared runtime path.
+				</p>
 				<div class="mt-2 w-full space-y-2">
 					<div class="grid grid-cols-2 gap-3">
 						<button
@@ -187,12 +230,15 @@
 					!this.selectedDedicatedServer &&
 					selectedVersion?.group &&
 					filteredClusters.length &&
-					(provider || bench)
+					(provider || effectiveBench)
 				"
 			>
 				<h2 class="text-base font-medium leading-6 text-gray-900">
 					Select Region
 				</h2>
+				<p class="mt-2 text-sm text-gray-600">
+					Choose the runtime region for this site.
+				</p>
 				<div class="mt-2 w-full space-y-2">
 					<div class="grid grid-cols-2 gap-3">
 						<button
@@ -222,7 +268,7 @@
 			<div v-if="selectedVersion && cluster">
 				<div class="flex items-center justify-between">
 					<h2 class="text-base font-medium leading-6 text-gray-900">
-						Select Plan
+						Select Site Resource Profile
 					</h2>
 					<div>
 						<Button link="https://frappecloud.com/pricing" variant="ghost">
@@ -233,6 +279,9 @@
 						</Button>
 					</div>
 				</div>
+				<p class="mt-2 text-sm text-gray-600">
+					This plan defines the runtime resources assigned to the site.
+				</p>
 				<div class="mt-2">
 					<SitePlansCards
 						v-model="plan"
@@ -277,7 +326,7 @@
 			<div v-if="selectedVersion && plan && cluster">
 				<div class="flex justify-between items-center">
 					<h2 class="text-base font-medium leading-6 text-gray-900">
-						Enter Subdomain
+						Choose Site Address
 					</h2>
 					<Tooltip
 						v-if="this.domain !== this.options.domain"
@@ -354,12 +403,13 @@
 					:loading="$resources.newSite.loading"
 					:loadingText="
 						isPrivateBenchPlan
-							? 'Provisioning private bench and creating site...'
-							: 'Creating site... This may take a while...'
+							? 'Provisioning bench and creating site...'
+							: 'Creating site and starting provisioning...'
 					"
 				>
 					Create site
 				</Button>
+			</div>
 			</div>
 		</div>
 	</div>
@@ -376,6 +426,7 @@ import {
 	Breadcrumbs,
 	getCachedDocumentResource,
 	Badge,
+	createResource,
 } from 'frappe-ui';
 import SitePlansCards from '../components/SitePlansCards.vue';
 import { validateSubdomain } from '../utils/site';
@@ -412,6 +463,7 @@ export default {
 			provider: null,
 			plan: null,
 			apps: [],
+			selectedBench: this.bench || null,
 			appPlans: {},
 			selectedApp: null,
 			closestCluster: null,
@@ -432,6 +484,17 @@ export default {
 				this.cluster = null;
 			}
 			this.agreedToRegionConsent = false;
+		},
+		selectedBench(newBench, oldBench) {
+			if (this.bench || newBench === oldBench) return;
+			this.version = null;
+			this.cluster = null;
+			this.provider = null;
+			this.plan = null;
+			this.subdomain = '';
+			this.apps = [];
+			this.agreedToRegionConsent = false;
+			this.$resources.options.reload();
 		},
 		showLocalisationOption() {
 			if (this.showLocalisationOption) {
@@ -460,7 +523,7 @@ export default {
 			this.showLocalisationOption = false;
 		},
 		provider() {
-			if (this.bench || this.selectedDedicatedServer) {
+			if (this.effectiveBench || this.selectedDedicatedServer) {
 				// provider is inferred from cluster selection, so avoid clearing it
 				return;
 			}
@@ -474,7 +537,7 @@ export default {
 			this.agreedToRegionConsent = false;
 
 			// For bench flow, set provider based on the selected cluster's cloud_provider
-			if ((this.bench || this.selectedDedicatedServer) && this.cluster) {
+			if ((this.effectiveBench || this.selectedDedicatedServer) && this.cluster) {
 				const selectedCluster = this.selectedVersion?.group?.clusters.find(
 					(c) => c.name === this.cluster,
 				);
@@ -521,11 +584,11 @@ export default {
 			return {
 				url: 'press.api.site.options_for_new',
 				makeParams() {
-					return { for_bench: this.bench, for_server: this.server };
+					return { for_bench: this.effectiveBench, for_server: this.server };
 				},
 				onSuccess() {
 					this.closestCluster = this.options.closest_cluster;
-					if (this.bench && this.options.versions.length > 0) {
+					if (this.effectiveBench && this.options.versions.length > 0) {
 						this.version = this.options.versions[0].name;
 					}
 					this.applyDedicatedServerDefaults();
@@ -556,7 +619,7 @@ export default {
 		newSite() {
 			if (!(this.options && this.selectedVersion)) return;
 
-			if (this.bench) {
+			if (this.effectiveBench) {
 				return {
 					url: 'press.api.client.insert',
 					makeParams() {
@@ -589,6 +652,9 @@ export default {
 						};
 					},
 					validate() {
+						if (!this.effectiveBench) {
+							throw new DashboardError('Please select a bench for this site.');
+						}
 						if (this.useDedicatedServer && !this.selectedDedicatedServer) {
 							throw new DashboardError(
 								'Please select a dedicated server to deploy your site.',
@@ -671,9 +737,44 @@ export default {
 			}
 		},
 	},
+	created() {
+		if (!this.bench) {
+			this.$resources.benches = createResource({
+				url: 'press.api.client.get_list',
+				params: {
+					doctype: 'Bench',
+					fields: ['name', 'group', 'group.title as group_title', 'status'],
+					filters: { status: 'Active' },
+					order_by: 'creation desc',
+					limit: 100,
+				},
+				initialData: [],
+				auto: true,
+				transform: (data) => data || [],
+			});
+		}
+	},
 	computed: {
 		options() {
 			return this.$resources.options.data;
+		},
+		effectiveBench() {
+			return this.bench || this.selectedBench;
+		},
+		benchOptions() {
+			const benches = this.$resources.benches?.data || [];
+			return benches.map((bench) => ({
+				label: bench.group_title
+					? `${bench.group_title} (${bench.name})`
+					: bench.name,
+				value: bench.group,
+			}));
+		},
+		selectedBenchLabel() {
+			return (
+				this.benchOptions.find((bench) => bench.value === this.effectiveBench)
+					?.label || this.effectiveBench
+			);
 		},
 		domain() {
 			return (
@@ -686,7 +787,7 @@ export default {
 			return this.options?.versions.find((v) => v.name === this.version);
 		},
 		dedicatedServerConfig() {
-			if (this.bench) {
+			if (this.effectiveBench) {
 				return this.selectedVersion?.group?.dedicated_server_config || {};
 			} else {
 				return this.options?.dedicated_server_config || {};
@@ -721,7 +822,7 @@ export default {
 			);
 		},
 		availableVersions() {
-			if (!this.apps.length || this.bench)
+			if (!this.apps.length || this.effectiveBench)
 				return (this.options?.versions || []).sort((a, b) =>
 					b.name.localeCompare(a.name),
 				);
@@ -772,7 +873,7 @@ export default {
 		selectedVersionApps() {
 			let apps = [];
 
-			if (!this.bench)
+			if (!this.effectiveBench)
 				apps = (this.options?.app_source_details || []).sort((a, b) =>
 					a.total_installs !== b.total_installs
 						? b.total_installs - a.total_installs
@@ -815,7 +916,7 @@ export default {
 			);
 		},
 		isPrivateBenchPlan() {
-			return !this.bench && Boolean(this.plan?.private_bench_support);
+			return Boolean(this.plan?.private_bench_support);
 		},
 		showLocalisationSelector() {
 			if (
@@ -890,7 +991,7 @@ export default {
 		versionAppsMap() {
 			const versions = this.availableVersions.map((v) => v.name);
 			let problemAppVersions = {};
-			if (!this.bench)
+			if (!this.effectiveBench)
 				for (let app of this.apps) {
 					const appVersions = app.sources.map((s) => s.version);
 					const problemVersions = versions.filter(
@@ -966,8 +1067,12 @@ export default {
 
 			return [
 				{
-					label: 'Frappe Framework Version',
+					label: 'Runtime Version',
 					value: this.selectedVersion?.name,
+				},
+				{
+					label: 'Bench',
+					value: this.selectedBenchLabel,
 				},
 				{
 					label: 'Region',
@@ -978,13 +1083,13 @@ export default {
 					value: `${this.subdomain}.${this.domain}`,
 				},
 				{
-					label: 'Site Plan',
+					label: 'Site Resource Profile',
 					value: `${this.$format.userCurrency(
 						this.$format.planAmount(this.selectedPlan),
 					)} per month`,
 				},
 				{
-					label: 'Product Warranty',
+					label: 'Support',
 					value: this.selectedPlan.support_included
 						? 'Included'
 						: 'Not Included',
@@ -994,7 +1099,7 @@ export default {
 					value: this.apps.length ? appPlans.join('<br>') : 'No apps selected',
 				},
 				{
-					label: 'Total',
+					label: 'Provisioning Total',
 					value: `${this.totalPerMonth} per month <div class="text-gray-600">${this.totalPerDay} per day</div>`,
 					condition: () => this._totalPerMonth,
 				},

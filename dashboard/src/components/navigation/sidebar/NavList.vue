@@ -1,25 +1,20 @@
 <script setup lang="ts">
-import { h, computed, onMounted, onUnmounted, getCurrentInstance } from 'vue';
+import { computed, onMounted, onUnmounted, getCurrentInstance } from 'vue';
 
 import DoorOpen from '~icons/lucide/door-open';
 import PanelTopInactive from '~icons/lucide/panel-top-inactive';
 import Boxes from '~icons/lucide/boxes';
 import Server from '~icons/lucide/server';
 import WalletCards from '~icons/lucide/wallet-cards';
-import Key from '~icons/lucide/key';
 import Settings from '~icons/lucide/settings';
 import App from '~icons/lucide/layout-grid';
-import DatabaseZap from '~icons/lucide/database-zap';
 import Activity from '~icons/lucide/activity';
 import Logs from '~icons/lucide/scroll-text';
-import Globe from '~icons/lucide/globe';
-import Code from '~icons/lucide/code';
 import FileSearch from '~icons/lucide/file-search';
 import Briefcase from '~icons/lucide/briefcase-business';
 import NotificationPanel from './Notifications.vue';
 
 import { unreadNotificationsCount } from '@/data/notifications';
-
 import { getTeam } from '@/data/team';
 import { session } from '@/data/session';
 import { useRoute } from 'vue-router';
@@ -43,11 +38,11 @@ const navigation = computed(() => {
 
 	return [
 		{
-			name: 'Welcome',
+			name: 'Desk',
 			icon: DoorOpen,
 			route: '/welcome',
-			isActive: routeName === 'Welcome',
-			condition: !onboardingComplete,
+			isActive: routeName === 'Welcome' || routeName === 'Home',
+			disabled: enforce2FA,
 		},
 		{
 			name: 'Notifications',
@@ -56,12 +51,13 @@ const navigation = computed(() => {
 			disabled: enforce2FA,
 		},
 		{
-			name: 'Sites',
-			icon: PanelTopInactive,
-			route: '/sites',
+			name: 'Servers',
+			icon: Server,
+			route: onboardingComplete ? '/servers' : '/enable-servers',
 			isActive:
-				['Site List', 'Site Detail', 'New Site'].includes(routeName) ||
-				routeName.startsWith('Site Detail'),
+				['New Server', 'Register Managed Server'].includes(routeName) ||
+				routeName.startsWith('Server') ||
+				routeName === 'Enable Servers',
 			disabled: enforce2FA,
 		},
 		{
@@ -83,14 +79,12 @@ const navigation = computed(() => {
 			disabled: enforce2FA,
 		},
 		{
-			name: 'Apps',
-			icon: App,
-			route: '/apps',
+			name: 'Sites',
+			icon: PanelTopInactive,
+			route: '/sites',
 			isActive:
-				routeName.startsWith('Marketplace') ||
-				routeName === 'Install App' ||
-				$route.path.startsWith('/apps'),
-			condition: onboardingComplete && !isSaasUser,
+				['Site List', 'Site Detail', 'New Site'].includes(routeName) ||
+				routeName.startsWith('Site Detail'),
 			disabled: enforce2FA,
 		},
 		{
@@ -105,14 +99,47 @@ const navigation = computed(() => {
 			disabled: enforce2FA,
 		},
 		{
-			name: 'Servers',
-			icon: Server,
-			spacer: true,
-			route: onboardingComplete ? '/servers' : '/enable-servers',
+			name: 'Apps',
+			icon: App,
+			route: '/apps',
 			isActive:
-				['New Server', 'Register Managed Server'].includes(routeName) ||
-				routeName.startsWith('Server') ||
-				routeName === 'Enable Servers',
+				routeName.startsWith('Marketplace') ||
+				routeName === 'Install App' ||
+				$route.path.startsWith('/apps'),
+			condition: onboardingComplete && !isSaasUser,
+			disabled: enforce2FA,
+		},
+		{
+			name: 'Analytics',
+			icon: Activity,
+			route: '/analytics',
+			isActive: routeName === 'Analytics',
+			condition: onboardingComplete && !isSaasUser,
+			disabled: enforce2FA,
+		},
+		{
+			name: 'Jobs',
+			icon: Logs,
+			route: '/jobs',
+			isActive:
+				routeName === 'Jobs' ||
+				routeName === 'Site Job' ||
+				routeName === 'Bench Job' ||
+				routeName === 'Server Job' ||
+				routeName === 'Release Group Job',
+			condition: onboardingComplete && !isSaasUser,
+			disabled: enforce2FA,
+		},
+		{
+			name: 'Forensics',
+			icon: FileSearch,
+			route: '/forensics',
+			isActive:
+				routeName === 'Forensic Event List' ||
+				routeName === 'Forensic Event Detail' ||
+				routeName.startsWith('Forensic Event Detail') ||
+				routeName === 'Forensic Incident Signals',
+			condition: onboardingComplete && !isSaasUser,
 			disabled: enforce2FA,
 		},
 		{
@@ -124,93 +151,10 @@ const navigation = computed(() => {
 			disabled: enforce2FA,
 		},
 		{
-			name: 'Forensics',
-			icon: FileSearch,
-			route: '/forensics',
-			isActive:
-				routeName === 'Forensic Event List' ||
-				routeName === 'Forensic Event Detail' ||
-				routeName.startsWith('Forensic Event Detail'),
-			condition: onboardingComplete && !isSaasUser,
-			disabled: enforce2FA,
-		},
-		{
-			name: 'Incident Signals',
-			icon: Activity,
-			route: '/forensics/signals',
-			isActive: routeName === 'Forensic Incident Signals',
-			condition: onboardingComplete && !isSaasUser,
-			disabled: enforce2FA,
-		},
-		{
-			name: 'Dev Tools',
-			icon: Code,
-			route: '/devtools',
-			condition: onboardingComplete && !isSaasUser,
-			disabled: enforce2FA,
-			children: [
-				{
-					name: 'Log Browser',
-					icon: Logs,
-					route: '/log-browser',
-					isActive: routeName === 'Log Browser',
-				},
-				{
-					name: 'DB Analyzer',
-					icon: Activity,
-					route: '/database-analyzer',
-					isActive: routeName === 'DB Analyzer',
-				},
-				{
-					name: 'SQL Playground',
-					icon: DatabaseZap,
-					route: '/sql-playground',
-					isActive: routeName === 'SQL Playground',
-				},
-				{
-					name: 'Binlog Browser',
-					icon: FileSearch,
-					route: '/binlog-browser',
-					isActive: routeName === 'Binlog Browser',
-					condition: $team.doc.is_binlog_indexer_enabled ?? false,
-				},
-			].filter((item) => item.condition ?? true),
-			isActive: [
-				'SQL Playground',
-				'DB Analyzer',
-				'Log Browser',
-				'Binlog Browser',
-			].includes(routeName),
-		},
-		{
-			name: 'Access Requests',
-			icon: Key,
-			route: '/access-requests',
-			isActive: routeName === 'Access Requests',
-			condition: onboardingComplete && !isSaasUser,
-			disabled: enforce2FA,
-		},
-		{
-			name: 'Partnership',
-			icon: Globe,
-			route: '/partners',
-			isActive: routeName === 'Partnership',
-			// Triotek v1 defers partner-program surfaces.
-			condition: false && Boolean($team.doc.erpnext_partner),
-			disabled: enforce2FA,
-		},
-		{
 			name: 'Control Settings',
 			icon: Settings,
 			route: '/settings',
 			isActive: routeName.startsWith('Settings'),
-			disabled: enforce2FA,
-		},
-		{
-			name: 'Status',
-			icon: () => h(Globe),
-			route: '/status',
-			isActive: routeName === 'Status',
 			disabled: enforce2FA,
 		},
 	].filter((item) => item.condition ?? true);
@@ -220,7 +164,7 @@ onMounted(() => {
 	$socket.emit('doctype_subscribe', 'Press Notification');
 	$socket.on('press_notification', (data) => {
 		if (data.team === $team.doc.name) {
-			unreadNotificationsCount.setData((data) => data + 1);
+			unreadNotificationsCount.setData((count) => count + 1);
 		}
 	});
 });
