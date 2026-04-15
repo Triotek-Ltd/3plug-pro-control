@@ -7,9 +7,7 @@
 			:title="error.title"
 			@done="$resources.errors.reload()"
 		/>
-		<Button
-			:route="backRoute"
-		>
+		<Button :route="backRoute">
 			<template #prefix>
 				<lucide-arrow-left class="inline-block h-4 w-4" />
 			</template>
@@ -59,6 +57,30 @@
 						</div>
 					</div>
 					<div
+						v-if="latestDiagnostic"
+						class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3"
+					>
+						<div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+							<div>
+								<p class="text-sm font-medium text-amber-900">Latest diagnostic evidence</p>
+								<p class="mt-1 text-sm text-amber-800">
+									{{ latestDiagnostic.summary || latestDiagnostic.event_type }}
+								</p>
+								<p class="mt-1 text-xs text-amber-700">
+									{{ latestDiagnostic.event_type }} recorded
+									{{ $format.date(latestDiagnostic.creation, 'lll') }}
+								</p>
+							</div>
+							<Button
+								v-if="latestDiagnosticRoute"
+								:route="latestDiagnosticRoute"
+								variant="outline"
+							>
+								Review Evidence
+							</Button>
+						</div>
+					</div>
+					<div
 						class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
 					>
 						<div>
@@ -95,6 +117,50 @@
 				</div>
 			</div>
 
+			<div class="mt-8 rounded-lg border bg-white p-5" v-if="diagnosticEvents.length">
+				<div class="flex items-center justify-between gap-4">
+					<div>
+						<h3 class="text-lg font-semibold text-gray-900">Diagnostic Trail</h3>
+						<p class="mt-1 text-sm text-gray-600">
+							Automatic and manual forensic evidence captured from this job, its stage output, and related runtime logs.
+						</p>
+					</div>
+					<Button route="/forensics" variant="ghost">
+						Open Forensics
+					</Button>
+				</div>
+				<div class="mt-4 space-y-3">
+					<div
+						v-for="event in diagnosticEvents"
+						:key="event.name"
+						class="rounded-lg border border-gray-200 px-4 py-3"
+					>
+						<div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+							<div>
+								<div class="flex items-center gap-2">
+									<Badge :label="event.severity || 'Info'" />
+									<p class="text-sm font-medium text-gray-900">
+										{{ event.event_type }}
+									</p>
+								</div>
+								<p class="mt-2 text-sm text-gray-700">
+									{{ event.summary || 'Diagnostic evidence captured for this execution.' }}
+								</p>
+								<p class="mt-1 text-xs text-gray-500">
+									Recorded {{ $format.date(event.creation, 'lll') }}
+								</p>
+							</div>
+							<Button
+								:route="{ name: 'Forensic Event Detail', params: { name: event.name } }"
+								variant="outline"
+							>
+								View Evidence
+							</Button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<div class="mt-8 space-y-4">
 				<div>
 					<h3 class="text-lg font-semibold text-gray-900">Execution Stages</h3>
@@ -109,7 +175,9 @@
 </template>
 <script>
 import { FeatherIcon, Tooltip } from 'frappe-ui';
+import { toast } from 'vue-sonner';
 import AlertAddressableError from '../components/AlertAddressableError.vue';
+import call from '../controllers/call';
 import { duration } from '../utils/format';
 import { getObject } from '../objects';
 import JobStep from '../components/JobStep.vue';
@@ -161,6 +229,19 @@ export default {
 				},
 				limit: 1,
 				orderBy: 'creation desc',
+			};
+		},
+		diagnostics() {
+			return {
+				type: 'list',
+				doctype: 'Forensic Event',
+				auto: true,
+				fields: ['name', 'creation', 'severity', 'event_type', 'summary', 'status'],
+				filters: {
+					job: this.id,
+				},
+				orderBy: 'creation desc',
+				pageLength: 10,
 			};
 		},
 	},
@@ -230,8 +311,105 @@ export default {
 		error() {
 			return this.$resources.errors?.data?.[0] ?? null;
 		},
+		diagnosticEvents() {
+			return (this.$resources.diagnostics?.data || [])
+				.filter((event) => String(event.event_type || '').includes('Diagnostics'))
+				.slice(0, 5);
+		},
+		latestDiagnostic() {
+			return this.diagnosticEvents[0] || null;
+		},
+		latestDiagnosticRoute() {
+			if (!this.latestDiagnostic) return null;
+			return {
+				name: 'Forensic Event Detail',
+				params: { name: this.latestDiagnostic.name },
+			};
+		},
+		canDiagnose() {
+			return ['Failure', 'Delivery Failure', 'Undelivered', 'Running'].includes(
+				this.job?.status,
+			);
+		},
+		canRetry() {
+			return ['Failure', 'Delivery Failure', 'Undelivered'].includes(
+				this.job?.status,
+			);
+		},
+		canRetryInPlace() {
+			return this.job?.status === 'Undelivered';
+		},
+		canRetrySkipPatches() {
+			return this.canRetry && /patch/i.test(this.job?.job_type || '');
+		},
+		canCancel() {
+			return ['Pending', 'Running'].includes(this.job?.status);
+		},
 		dropdownOptions() {
 			return [
+				{
+					label: 'Diagnose',
+					icon: 'search',
+					condition: () => this.canDiagnose,
+					onClick: () =>
+						this.runJobAction('diagnose', {
+							loading: 'Capturing diagnostic evidence...',
+							success: 'Diagnostic evidence captured',
+							error: 'Failed to capture diagnostic evidence',
+						}),
+				},
+				{
+					label: 'Retry Job',
+					icon: 'rotate-ccw',
+					condition: () => this.canRetry,
+					onClick: () =>
+						this.runJobAction('retry', {
+							loading: 'Queueing retry...',
+							success: 'Retry queued',
+							error: 'Failed to queue retry',
+						}),
+				},
+				{
+					label: 'Retry In Place',
+					icon: 'refresh-ccw',
+					condition: () => this.canRetryInPlace,
+					onClick: () =>
+						this.runJobAction('retry_in_place', {
+							loading: 'Retrying this execution...',
+							success: 'Retry started for this execution',
+							error: 'Failed to retry this execution',
+						}),
+				},
+				{
+					label: 'Retry and Skip Failing Patches',
+					icon: 'shield-alert',
+					condition: () => this.canRetrySkipPatches,
+					onClick: () =>
+						this.runJobAction('retry_skip_failing_patches', {
+							loading: 'Queueing patch-safe retry...',
+							success: 'Patch-safe retry queued',
+							error: 'Failed to queue patch-safe retry',
+						}),
+				},
+				{
+					label: 'Cancel Execution',
+					icon: 'x-circle',
+					condition: () => this.canCancel,
+					onClick: () =>
+						this.runJobAction('cancel_job', {
+							loading: 'Cancelling execution...',
+							success: 'Execution cancel requested',
+							error: 'Failed to cancel execution',
+						}),
+				},
+				{
+					label: 'Review Latest Evidence',
+					icon: 'file-search',
+					condition: () => !!this.latestDiagnostic,
+					onClick: () => {
+						this.$router.push(this.latestDiagnosticRoute);
+					},
+				},
 				{
 					label: 'View in Desk',
 					icon: 'external-link',
@@ -283,6 +461,24 @@ export default {
 			) {
 				this.$resources.job.reload();
 			}
+		},
+		runJobAction(method, messages) {
+			return toast.promise(
+				call('press.api.client.run_doc_method', {
+					dt: 'Agent Job',
+					dn: this.id,
+					method,
+				}).then(() => {
+					this.$resources.job.reload();
+					this.$resources.errors.reload();
+					this.$resources.diagnostics.reload();
+				}),
+				{
+					loading: messages.loading,
+					success: messages.success,
+					error: (error) => error?.messages?.[0] || messages.error,
+				},
+			);
 		},
 	},
 };

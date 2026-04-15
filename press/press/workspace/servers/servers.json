@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"servers-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Servers</span>\",\"col\":12}},{\"id\":\"servers-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Operate the managed Linux server, inspect runtime records, and review server-linked execution and forensic evidence.\",\"col\":12}},{\"id\":\"servers-managed\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Managed Servers\",\"col\":3}},{\"id\":\"servers-runtime\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Runtime Records\",\"col\":3}},{\"id\":\"servers-jobs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Jobs\",\"col\":3}},{\"id\":\"servers-forensics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensics\",\"col\":3}}]",
+ "content": "[{\"id\":\"servers-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Servers</span>\",\"col\":12}},{\"id\":\"servers-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Operate the managed Linux server and its runtime records from a single server-management workspace.\",\"col\":12}},{\"id\":\"servers-managed\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Managed Servers\",\"col\":4}},{\"id\":\"servers-runtime\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Runtime Records\",\"col\":4}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -39,22 +39,6 @@
    "label": "Runtime Records",
    "link_to": "Server",
    "stats_filter": "[[\"Server\",\"status\",\"!=\",\"Archived\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Orange",
-   "doc_view": "List",
-   "label": "Jobs",
-   "link_to": "Agent Job",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Red",
-   "doc_view": "List",
-   "label": "Forensics",
-   "link_to": "Forensic Event",
-   "stats_filter": "[]",
    "type": "DocType"
   }
  ],

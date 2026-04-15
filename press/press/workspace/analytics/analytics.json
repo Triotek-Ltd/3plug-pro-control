@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"analytics-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Analytics</span>\",\"col\":12}},{\"id\":\"analytics-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Use site, server, incident, and forensic records as the operational analytics surface for the control plane.\",\"col\":12}},{\"id\":\"analytics-sites\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":3}},{\"id\":\"analytics-servers\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Runtime Records\",\"col\":3}},{\"id\":\"analytics-incidents\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Incidents\",\"col\":3}},{\"id\":\"analytics-forensics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensics\",\"col\":3}}]",
+ "content": "[{\"id\":\"analytics-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Analytics</span>\",\"col\":12}},{\"id\":\"analytics-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Review operational analytics and incident patterns without mixing in the other runtime workspaces.\",\"col\":12}},{\"id\":\"analytics-incidents\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Incidents\",\"col\":4}},{\"id\":\"analytics-site-analytics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site Analytics\",\"col\":4}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -26,22 +26,6 @@
  "sequence_id": 34.0,
  "shortcuts": [
   {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Sites",
-   "link_to": "Site",
-   "stats_filter": "[[\"Site\",\"status\",\"!=\",\"Archived\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Blue",
-   "doc_view": "List",
-   "label": "Runtime Records",
-   "link_to": "Server",
-   "stats_filter": "[[\"Server\",\"status\",\"!=\",\"Archived\",false]]",
-   "type": "DocType"
-  },
-  {
    "color": "Red",
    "doc_view": "List",
    "label": "Incidents",
@@ -50,10 +34,10 @@
    "type": "DocType"
   },
   {
-   "color": "Orange",
+   "color": "Blue",
    "doc_view": "List",
-   "label": "Forensics",
-   "link_to": "Forensic Event",
+   "label": "Site Analytics",
+   "link_to": "Site Analytics",
    "stats_filter": "[]",
    "type": "DocType"
   }

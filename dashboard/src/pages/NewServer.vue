@@ -1330,8 +1330,8 @@ export default {
 				},
 				onSuccess(server) {
 					this.$router.push({
-						name: 'Server Detail Plays',
-						params: { name: server },
+						name: 'Managed Server Onboarding',
+						params: { name: server.self_hosted_server },
 					});
 				},
 			};

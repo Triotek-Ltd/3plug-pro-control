@@ -1,0 +1,61 @@
+---
+- name: Gather Runtime Service Facts
+  service_facts:
+
+- name: Restart NGINX Service
+  systemd:
+    name: nginx
+    state: restarted
+  when:
+    - operation_scope in ['all', 'nginx']
+    - "'nginx.service' in ansible_facts.services"
+
+- name: Restart Supervisor Service
+  systemd:
+    name: "{{ 'supervisor' if 'supervisor.service' in ansible_facts.services else 'supervisord' }}"
+    state: restarted
+  when:
+    - operation_scope in ['all', 'supervisor']
+    - "'supervisor.service' in ansible_facts.services or 'supervisord.service' in ansible_facts.services"
+
+- name: Restart Redis Systemd Services
+  shell: |
+    services=$(systemctl list-unit-files 'redis*' --type=service --no-legend 2>/dev/null | awk '{print $1}')
+    if [ -n "$services" ]; then
+      systemctl restart $services
+    else
+      echo "No redis systemd services found"
+    fi
+  when: operation_scope in ['all', 'redis']
+
+- name: Restart Supervisor Runtime Programs
+  shell: |
+    if ! command -v supervisorctl >/dev/null 2>&1; then
+      echo "supervisorctl not installed"
+      exit 0
+    fi
+
+    case "{{ operation_scope }}" in
+      all)
+        programs=$(supervisorctl status | awk '/web|worker|schedule|redis|socketio/{print $1}')
+        ;;
+      workers)
+        programs=$(supervisorctl status | awk '/worker|schedule/{print $1}')
+        ;;
+      redis)
+        programs=$(supervisorctl status | awk '/redis/{print $1}')
+        ;;
+      web)
+        programs=$(supervisorctl status | awk '/web|socketio/{print $1}')
+        ;;
+      *)
+        programs=""
+        ;;
+    esac
+
+    if [ -n "$programs" ]; then
+      supervisorctl restart $programs
+    else
+      echo "No matching supervisor programs found"
+    fi
+  when: operation_scope in ['all', 'workers', 'redis', 'web']

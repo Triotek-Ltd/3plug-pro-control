@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"jobs-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Jobs</span>\",\"col\":12}},{\"id\":\"jobs-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Inspect queued, running, and completed execution across agent jobs, plays, and press jobs.\",\"col\":12}},{\"id\":\"jobs-agent\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Jobs\",\"col\":3}},{\"id\":\"jobs-plays\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plays\",\"col\":3}},{\"id\":\"jobs-press\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Press Jobs\",\"col\":3}},{\"id\":\"jobs-forensics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensics\",\"col\":3}}]",
+ "content": "[{\"id\":\"jobs-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Jobs</span>\",\"col\":12}},{\"id\":\"jobs-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Inspect queued, running, and completed execution across agent jobs, plays, and press jobs only.\",\"col\":12}},{\"id\":\"jobs-agent\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Jobs\",\"col\":4}},{\"id\":\"jobs-plays\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plays\",\"col\":4}},{\"id\":\"jobs-press\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Press Jobs\",\"col\":4}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -46,14 +46,6 @@
    "doc_view": "List",
    "label": "Press Jobs",
    "link_to": "Press Job",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Red",
-   "doc_view": "List",
-   "label": "Forensics",
-   "link_to": "Forensic Event",
    "stats_filter": "[]",
    "type": "DocType"
   }

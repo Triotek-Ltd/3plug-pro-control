@@ -1,0 +1,90 @@
+---
+- name: Gather Runtime Service Facts
+  service_facts:
+
+- name: Capture Bench Supervisor Status
+  shell: |
+    if command -v supervisorctl >/dev/null 2>&1; then
+      supervisorctl status || true
+    else
+      echo "supervisorctl not installed"
+    fi
+  register: supervisor_status
+  changed_when: false
+
+- name: Capture Supervisor Service State
+  shell: |
+    if command -v systemctl >/dev/null 2>&1; then
+      if systemctl list-unit-files supervisor.service --no-legend 2>/dev/null | grep -q '^supervisor.service'; then
+        systemctl is-active supervisor || true
+      elif systemctl list-unit-files supervisord.service --no-legend 2>/dev/null | grep -q '^supervisord.service'; then
+        systemctl is-active supervisord || true
+      else
+        echo "missing"
+      fi
+    else
+      echo "missing"
+    fi
+  register: supervisor_service
+  changed_when: false
+
+- name: Capture NGINX Service State
+  shell: |
+    if command -v systemctl >/dev/null 2>&1; then
+      if systemctl list-unit-files nginx.service --no-legend 2>/dev/null | grep -q '^nginx.service'; then
+        systemctl is-active nginx || true
+      else
+        echo "missing"
+      fi
+    else
+      echo "missing"
+    fi
+  register: nginx_service
+  changed_when: false
+
+- name: Capture Redis Service States
+  shell: |
+    if command -v systemctl >/dev/null 2>&1; then
+      systemctl list-units --type=service --all 'redis*' --no-legend 2>/dev/null || true
+    else
+      echo "missing"
+    fi
+  register: redis_services
+  changed_when: false
+
+- name: Capture Runtime Processes
+  shell: |
+    ps -eo user,comm,args --no-headers | grep -E 'nginx:|redis-server|supervisord|gunicorn|bench worker|frappe schedule|socketio' | grep -v grep || true
+  register: runtime_processes
+  changed_when: false
+
+- name: Capture Runtime Users
+  shell: |
+    ps -eo user,args --no-headers | grep -E 'nginx:|redis-server|supervisord|gunicorn|bench worker|frappe schedule|socketio' | grep -v grep | awk '{print $1}' | sort -u | paste -sd ',' - || true
+  register: runtime_users
+  changed_when: false
+
+- name: Capture Bench Owner
+  shell: |
+    bench_path="{{ bench_directory | default('/home/frappe') }}"
+    if [ -e "$bench_path" ]; then
+      stat -c '%U' "$bench_path"
+    elif [ -d /home/frappe ]; then
+      stat -c '%U' /home/frappe
+    else
+      echo ""
+    fi
+  register: bench_owner
+  changed_when: false
+
+- name: Capture Disk Usage
+  shell: |
+    df -hT --output=source,fstype,size,used,avail,pcent,target | tail -n +2 || true
+  register: disk_usage
+  changed_when: false
+
+- name: Capture Block Devices
+  shell: |
+    lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT,PKNAME,MODEL -J 2>/dev/null || lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT,PKNAME,MODEL 2>/dev/null || true
+  register: block_devices
+  changed_when: false

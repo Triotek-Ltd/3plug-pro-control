@@ -1,9 +1,14 @@
+import json
+import socket
 import time
+from contextlib import suppress
+from urllib.parse import urlparse
 
 import frappe
 from dns.resolver import Resolver
 from frappe.query_builder.functions import Count
 from frappe.utils import cint
+from frappe.utils import get_url
 from frappe.utils import strip
 
 from press.api.server import plans
@@ -25,14 +30,21 @@ def new(server):
 
 
 def create_self_hosted_server(server_details, team, proxy_server):
-	app_public_ip = strip(
-		server_details.get("app_public_ip", "") or server_details.get("server_public_ip", "")
+	server_url = strip(server_details.get("server_url", ""))
+	onboarding_email = strip(server_details.get("onboarding_email", ""))
+	managed_domains = _normalize_managed_domains(server_details.get("managed_domains"))
+	app_public_ip = _resolve_public_ip(
+		server_details.get("app_public_ip", "") or server_details.get("server_public_ip", ""),
+		server_url=server_url,
+		managed_domains=managed_domains,
 	)
 	app_private_ip = strip(
 		server_details.get("app_private_ip", "") or server_details.get("server_private_ip", "")
 	)
 	db_public_ip = strip(server_details.get("db_public_ip", "") or app_public_ip)
 	db_private_ip = strip(server_details.get("db_private_ip", "") or app_private_ip)
+	ssh_user = strip(server_details.get("ssh_user", "") or "root")
+	ssh_port = cint(server_details.get("ssh_port") or 22)
 
 	try:
 		self_hosted_server = frappe.new_doc(
@@ -53,6 +65,11 @@ def create_self_hosted_server(server_details, team, proxy_server):
 				"plan": server_details.plan["name"],
 				"database_plan": server_details.plan["name"],
 				"new_server": True,
+				"ssh_user": ssh_user,
+				"ssh_port": ssh_port,
+				"server_url": server_url,
+				"onboarding_email": onboarding_email,
+				"managed_domains": managed_domains,
 			},
 		).insert()
 	except frappe.DuplicateEntryError as e:
@@ -168,19 +185,77 @@ def check_dns(domain, ip):
 
 @frappe.whitelist()
 def options_for_new():
-	return {"plans": get_plans(), "ssh_key": sshkey()}
+	return {
+		"plans": get_plans(),
+		"ssh_key": sshkey(),
+		"default_ssh_user": "root",
+		"default_ssh_port": 22,
+	}
+
+
+def _resolve_public_ip(explicit_ip, server_url: str, managed_domains: str):
+	explicit_ip = strip(explicit_ip or "")
+	if explicit_ip:
+		return explicit_ip
+
+	for host in _candidate_hosts(server_url, managed_domains):
+		try:
+			_, _, addresses = socket.gethostbyname_ex(host)
+		except OSError:
+			continue
+
+		for address in addresses:
+			address = strip(address or "")
+			if address and not address.startswith("127."):
+				return address
+
+	frappe.throw(
+		"3plug could not determine the server public IP from the primary domain. "
+		"Point the domain to the server first, then start onboarding again."
+	)
+
+
+def _candidate_hosts(server_url: str, managed_domains: str):
+	hosts = []
+	for value in [server_url, *(managed_domains.splitlines() if managed_domains else [])]:
+		host = _normalize_host(value)
+		if host and host not in hosts:
+			hosts.append(host)
+
+	with suppress(Exception):
+		current_host = _normalize_host(urlparse(get_url()).hostname or get_url())
+		if current_host and current_host not in hosts:
+			hosts.append(current_host)
+
+	return hosts
+
+
+def _normalize_host(value):
+	raw_value = strip(value or "")
+	if not raw_value:
+		return ""
+
+	parsed = urlparse(raw_value if "://" in raw_value else f"https://{raw_value}")
+	return strip(parsed.hostname or raw_value).strip("/")
 
 
 @frappe.whitelist()
 def create_and_verify_selfhosted(server):
 	self_hosted_server_name = new(server)
+	self_hosted_server = frappe.get_doc("Self Hosted Server", self_hosted_server_name)
+	self_hosted_server.start_onboarding()
+	return {
+		"self_hosted_server": self_hosted_server_name,
+		"onboarding_stage": self_hosted_server.onboarding_stage,
+	}
 
-	if verify(self_hosted_server_name):
-		setup(self_hosted_server_name)
-		return frappe.get_value("Self Hosted Server", self_hosted_server_name, "server")
 
-	frappe.throw("Server verification failed. Please check the server details and try again.")
-	return None
+def _get_self_hosted_server(self_hosted_server: str | None = None, server: str | None = None):
+	if self_hosted_server:
+		return frappe.get_doc("Self Hosted Server", self_hosted_server)
+	if server:
+		return _get_self_hosted_server_for_managed_server(server)
+	frappe.throw("A self-hosted server reference is required")
 
 
 def _get_self_hosted_server_for_managed_server(server: str):
@@ -228,6 +303,15 @@ def _serialize_self_hosted_bench_state(self_hosted_server):
 		"self_hosted_server": self_hosted_server.name,
 		"server": self_hosted_server.server,
 		"status": self_hosted_server.status,
+		"onboarding_stage": self_hosted_server.onboarding_stage,
+		"onboarding_error": self_hosted_server.onboarding_error,
+		"onboarding_started_at": self_hosted_server.onboarding_started_at,
+		"onboarding_completed_at": self_hosted_server.onboarding_completed_at,
+		"onboarding_profile": _serialize_onboarding_profile(self_hosted_server),
+		"machine_facts": _serialize_machine_facts(self_hosted_server),
+		"readiness_checks": _serialize_readiness_checks(self_hosted_server),
+		"production_checks": _serialize_production_checks(self_hosted_server),
+		"production_checks_updated_at": self_hosted_server.production_checks_updated_at,
 		"existing_bench_present": bool(self_hosted_server.existing_bench_present),
 		"bench_directory": self_hosted_server.bench_directory,
 		"release_group": self_hosted_server.release_group,
@@ -269,6 +353,117 @@ def _serialize_self_hosted_bench_state(self_hosted_server):
 		"operation_status": operation_status,
 		"recent_plays": recent_plays,
 	}
+
+
+def _serialize_onboarding_profile(self_hosted_server):
+	managed_domains = [
+		domain.strip()
+		for domain in (self_hosted_server.managed_domains or "").splitlines()
+		if domain.strip()
+	]
+	return {
+		"title": self_hosted_server.title,
+		"primary_domain": self_hosted_server.server_url,
+		"managed_domains": managed_domains,
+		"onboarding_email": self_hosted_server.onboarding_email,
+		"ssh_user": self_hosted_server.ssh_user,
+		"ssh_port": self_hosted_server.ssh_port,
+	}
+
+
+def _serialize_machine_facts(self_hosted_server):
+	return {
+		"hostname": self_hosted_server.hostname,
+		"distribution": self_hosted_server.distribution,
+		"architecture": self_hosted_server.architecture,
+		"processor": self_hosted_server.processor,
+		"vendor": self_hosted_server.vendor,
+		"vcpus": self_hosted_server.vcpus,
+		"ram": self_hosted_server.ram,
+		"total_storage": self_hosted_server.total_storage,
+		"swap_total": self_hosted_server.swap_total,
+		"db_vcpus": self_hosted_server.db_vcpus,
+		"db_ram": self_hosted_server.db_ram,
+		"db_total_storage": self_hosted_server.db_total_storage,
+		"storage_layout": self_hosted_server.storage_layout,
+		"runtime_user": self_hosted_server.runtime_user,
+		"public_ip": self_hosted_server.ip,
+		"private_ip": self_hosted_server.private_ip,
+		"database_public_ip": self_hosted_server.mariadb_ip,
+		"database_private_ip": self_hosted_server.mariadb_private_ip,
+	}
+
+
+def _normalize_managed_domains(value):
+	if not value:
+		return ""
+
+	if isinstance(value, (list, tuple)):
+		items = value
+	else:
+		raw_text = str(value).replace(",", "\n")
+		items = raw_text.splitlines()
+
+	normalized = []
+	for item in items:
+		domain = strip(item or "")
+		if domain and domain not in normalized:
+			normalized.append(domain)
+	return "\n".join(normalized)
+
+
+def _serialize_readiness_checks(self_hosted_server):
+	checks = [
+		{
+			"label": "Access Profile",
+			"status": "Ready"
+			if self_hosted_server.ssh_user and self_hosted_server.server_url and self_hosted_server.onboarding_email
+			else "Pending",
+			"detail": self_hosted_server.ssh_user
+			and f"{self_hosted_server.ssh_user}@{self_hosted_server.ip or 'server'}"
+			or "Server access details still need to be completed.",
+		},
+		{
+			"label": "Machine Facts",
+			"status": "Ready"
+			if self_hosted_server.ram and self_hosted_server.vcpus and self_hosted_server.total_storage
+			else "Pending",
+			"detail": self_hosted_server.total_storage
+			or "CPU, memory, and storage facts will appear after verification.",
+		},
+		{
+			"label": "Runtime User",
+			"status": "Ready" if self_hosted_server.runtime_user else "Pending",
+			"detail": self_hosted_server.runtime_user
+			or "The managed runtime user will be confirmed after setup starts.",
+		},
+		{
+			"label": "Storage Layout",
+			"status": "Ready" if self_hosted_server.storage_layout else "Pending",
+			"detail": "Disk partitions and mounts captured."
+			if self_hosted_server.storage_layout
+			else "Storage layout will appear after verification.",
+		},
+		{
+			"label": "Managed Server Records",
+			"status": "Ready"
+			if self_hosted_server.server_created and self_hosted_server.database_setup and self_hosted_server.server
+			else "Pending",
+			"detail": self_hosted_server.server
+			or "Managed server records are not fully created yet.",
+		},
+	]
+	return checks
+
+
+def _serialize_production_checks(self_hosted_server):
+	if not self_hosted_server.production_checks:
+		return {"checks": []}
+
+	try:
+		return json.loads(self_hosted_server.production_checks)
+	except Exception:
+		return {"checks": []}
 
 
 def _get_recent_onboarding_jobs(server: str | None, bench_names: list[str], site_names: list[str]):
@@ -405,6 +600,46 @@ def _get_onboarding_operation_status(self_hosted_server, recent_plays: list[dict
 @frappe.whitelist()
 def get_bench_onboarding_state(server: str):
 	self_hosted_server = _get_self_hosted_server_for_managed_server(server)
+	return _serialize_self_hosted_bench_state(self_hosted_server)
+
+
+@frappe.whitelist()
+def get_managed_server_onboarding_state(self_hosted_server: str):
+	doc = _get_self_hosted_server(self_hosted_server=self_hosted_server)
+	return _serialize_self_hosted_bench_state(doc)
+
+
+@frappe.whitelist()
+def rerun_managed_server_onboarding(self_hosted_server: str):
+	doc = _get_self_hosted_server(self_hosted_server=self_hosted_server)
+	doc.start_onboarding()
+	doc.reload()
+	return _serialize_self_hosted_bench_state(doc)
+
+
+@frappe.whitelist()
+def run_managed_server_production_checks(server: str):
+	self_hosted_server = _get_self_hosted_server_for_managed_server(server)
+	self_hosted_server.run_production_checks()
+	self_hosted_server.reload()
+	return _serialize_self_hosted_bench_state(self_hosted_server)
+
+
+@frappe.whitelist()
+def restart_managed_server_runtime(server: str, operation_scope: str = "all"):
+	self_hosted_server = _get_self_hosted_server_for_managed_server(server)
+	operation_scope = strip(operation_scope or "") or "all"
+	if operation_scope == "all":
+		self_hosted_server.restart_production_services()
+	elif operation_scope == "nginx":
+		self_hosted_server.restart_nginx()
+	elif operation_scope == "redis":
+		self_hosted_server.restart_redis()
+	elif operation_scope == "workers":
+		self_hosted_server.restart_workers()
+	else:
+		frappe.throw("Unsupported runtime operation requested")
+	self_hosted_server.reload()
 	return _serialize_self_hosted_bench_state(self_hosted_server)
 
 

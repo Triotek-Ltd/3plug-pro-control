@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"benches-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Benches</span>\",\"col\":12}},{\"id\":\"benches-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Track managed benches, their sites, and the execution records connected to bench lifecycle work.\",\"col\":12}},{\"id\":\"benches-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Benches\",\"col\":3}},{\"id\":\"benches-sites\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":3}},{\"id\":\"benches-jobs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Jobs\",\"col\":3}},{\"id\":\"benches-plays\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plays\",\"col\":3}}]",
+ "content": "[{\"id\":\"benches-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Benches</span>\",\"col\":12}},{\"id\":\"benches-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Track and operate managed benches as the parent runtime for your sites.\",\"col\":12}},{\"id\":\"benches-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Benches\",\"col\":4}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -31,30 +31,6 @@
    "label": "Benches",
    "link_to": "Bench",
    "stats_filter": "[[\"Bench\",\"status\",\"!=\",\"Archived\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Sites",
-   "link_to": "Site",
-   "stats_filter": "[[\"Site\",\"status\",\"!=\",\"Archived\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Orange",
-   "doc_view": "List",
-   "label": "Jobs",
-   "link_to": "Agent Job",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Plays",
-   "link_to": "Ansible Play",
-   "stats_filter": "[]",
    "type": "DocType"
   }
  ],

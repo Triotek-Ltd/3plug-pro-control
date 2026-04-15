@@ -3,11 +3,12 @@
 
 
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import frappe
 from frappe.tests.utils import FrappeTestCase, change_settings
 
+from press.api import selfhosted as selfhosted_api
 from press.api.tests.test_server import create_test_server_plan
 from press.press.doctype.ansible_play.test_ansible_play import create_test_ansible_play
 from press.press.doctype.press_settings.test_press_settings import (
@@ -185,6 +186,83 @@ class TestSelfHostedServer(FrappeTestCase):
 		server.fetch_private_ip()
 		server.reload()
 		self.assertEqual(server.private_ip, "192.168.1.1")
+
+	@change_settings("Press Settings", {"hybrid_domain": "fc.dev"})
+	def test_create_self_hosted_server_resolves_public_ip_from_primary_domain(self):
+		from press.press.doctype.cluster.test_cluster import create_test_cluster
+		from press.press.doctype.proxy_server.test_proxy_server import (
+			create_test_proxy_server,
+		)
+
+		plan = create_test_server_plan(document_type="Self Hosted Server")
+		create_test_cluster(name="Default", hybrid=True)
+		proxy = create_test_proxy_server()
+		team = create_test_team()
+
+		server_details = frappe._dict(
+			{
+				"title": "Managed Runtime",
+				"server_url": "control.fc.dev",
+				"onboarding_email": "ops@fc.dev",
+				"managed_domains": "control.fc.dev\napps.fc.dev",
+				"ssh_user": "ubuntu",
+				"ssh_port": 22,
+				"plan": {"name": plan.name},
+			}
+		)
+
+		with patch.object(
+			selfhosted_api.socket,
+			"gethostbyname_ex",
+			return_value=("control.fc.dev", [], ["203.0.113.10"]),
+		):
+			name = selfhosted_api.create_self_hosted_server(server_details, team, proxy.name)
+
+		server = frappe.get_doc("Self Hosted Server", name)
+		self.assertEqual(server.ip, "203.0.113.10")
+		self.assertEqual(server.mariadb_ip, "203.0.113.10")
+		self.assertEqual(server.server_url, "control.fc.dev")
+		self.assertEqual(server.onboarding_email, "ops@fc.dev")
+		self.assertEqual(server.managed_domains, "control.fc.dev\napps.fc.dev")
+
+	def test_create_and_verify_selfhosted_starts_onboarding(self):
+		server = create_test_self_hosted_server("queued")
+		server.onboarding_stage = None
+		server.save()
+
+		def fake_start_onboarding(doc):
+			doc.onboarding_stage = "Queued"
+			doc.save()
+
+		with patch.object(selfhosted_api, "new", return_value=server.name), patch.object(
+			SelfHostedServer, "start_onboarding", fake_start_onboarding
+		):
+			result = selfhosted_api.create_and_verify_selfhosted({"title": "Queued"})
+
+		server.reload()
+		self.assertEqual(result["self_hosted_server"], server.name)
+		self.assertEqual(result["onboarding_stage"], "Queued")
+		self.assertEqual(server.onboarding_stage, "Queued")
+
+	def test_verify_target_fetches_private_ip_when_missing(self):
+		server = create_test_self_hosted_server("verify-missing-private")
+		server.private_ip = None
+		server.save()
+
+		with patch(
+			"press.press.doctype.self_hosted_server.self_hosted_server.Ansible.run",
+			return_value=frappe._dict({"status": "Success", "name": "PLAY-VERIFY"}),
+		), patch.object(server, "fetch_private_ip", MagicMock()) as fetch_private_ip, patch.object(
+			server, "validate_private_ip", MagicMock()
+		) as validate_private_ip, patch.object(
+			server, "fetch_system_specifications", MagicMock()
+		) as fetch_system_specifications:
+			result = server._verify_target("app")
+
+		self.assertTrue(result)
+		fetch_private_ip.assert_called_once_with("PLAY-VERIFY", server_type="app")
+		validate_private_ip.assert_not_called()
+		fetch_system_specifications.assert_called_once_with("PLAY-VERIFY", server_type="app")
 
 	@change_settings("Press Settings", {"hybrid_domain": "fc.dev"})
 	def test_create_server_and_check_total_records(self):

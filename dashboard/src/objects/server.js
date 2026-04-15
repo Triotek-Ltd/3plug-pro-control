@@ -38,7 +38,7 @@ export default {
 	},
 	list: {
 		route: '/servers',
-		title: 'Servers',
+		title: 'Server Management',
 		fields: [
 			'title',
 			'plan.title as plan_title',
@@ -112,7 +112,7 @@ export default {
 		],
 		primaryAction({ listResource: servers }) {
 			return {
-				label: 'Register Managed Server',
+				label: 'Onboard Server',
 				variant: 'solid',
 				slots: {
 					prefix: icon('plus'),
@@ -125,9 +125,9 @@ export default {
 		banner({ listResource: servers }) {
 			if (!servers.data?.length) {
 				return {
-					title: 'Register the first managed server for this 3plug deployment',
+					title: 'Onboard the Linux server this 3plug deployment will manage',
 					button: {
-						label: 'Register Managed Server',
+						label: 'Onboard Server',
 						variant: 'solid',
 						route: { name: 'Register Managed Server' },
 					},

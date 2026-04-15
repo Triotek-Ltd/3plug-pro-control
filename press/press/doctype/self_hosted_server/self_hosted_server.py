@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 import json
+from contextlib import suppress
+from collections import Counter
 
 import frappe
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
+from frappe.utils import now_datetime
 
 from press.runner import Ansible
 from press.utils import log_error
@@ -56,9 +59,16 @@ class SelfHostedServer(Document):
 		mariadb_root_password: DF.Password
 		mariadb_root_user: DF.Data | None
 		new_server: DF.Check
+		onboarding_email: DF.Data | None
+		onboarding_completed_at: DF.Datetime | None
+		onboarding_error: DF.SmallText | None
+		onboarding_stage: DF.Data | None
+		onboarding_started_at: DF.Datetime | None
 		plan: DF.Link | None
 		private_ip: DF.Data | None
 		processor: DF.Data | None
+		production_checks: DF.LongText | None
+		production_checks_updated_at: DF.Datetime | None
 		proxy_created: DF.Check
 		proxy_private_ip: DF.Data | None
 		proxy_public_ip: DF.Data | None
@@ -72,10 +82,13 @@ class SelfHostedServer(Document):
 		ssh_port: DF.Int
 		ssh_user: DF.Data | None
 		status: DF.Literal["Active", "Pending", "Broken", "Archived", "Unreachable"]
+		storage_layout: DF.SmallText | None
 		swap_total: DF.Data | None
 		team: DF.Link
 		title: DF.Data | None
 		total_storage: DF.Data | None
+		managed_domains: DF.SmallText | None
+		runtime_user: DF.Data | None
 		vcpus: DF.Data | None
 		vendor: DF.Data | None
 	# end: auto-generated types
@@ -644,10 +657,116 @@ class SelfHostedServer(Document):
 		self.update_tls()
 
 	def setup_server(self):
+		if not self.runtime_user:
+			# The self-hosted setup playbook creates and runs the managed runtime
+			# under the dedicated `frappe` user.
+			self.runtime_user = "frappe"
+			self.save()
+
 		self._setup_db_server()
 
 		if self.different_database_server:
 			self._setup_app_server()
+
+		self.run_production_checks()
+
+	@frappe.whitelist()
+	def start_onboarding(self):
+		if self.onboarding_stage in {
+			"Queued",
+			"Verifying Access",
+			"Validating Machine Capacity",
+			"Creating Database Runtime",
+			"Creating Application Runtime",
+			"Applying Runtime Setup",
+		}:
+			frappe.throw("Server onboarding is already running for this managed server")
+		self.onboarding_stage = "Queued"
+		self.onboarding_error = None
+		self.onboarding_started_at = now_datetime()
+		self.onboarding_completed_at = None
+		self.status = "Pending"
+		self.save()
+		frappe.enqueue_doc(
+			self.doctype,
+			self.name,
+			"_run_onboarding_pipeline",
+			queue="long",
+			timeout=3600,
+			enqueue_after_commit=True,
+		)
+
+	def _run_onboarding_pipeline(self):
+		try:
+			self.reload()
+			self._set_onboarding_state("Verifying Access")
+
+			app_server_verified = self._verify_target("app")
+			db_server_verified = self._verify_target("db")
+			if not (app_server_verified and db_server_verified):
+				frappe.throw("Managed server verification failed")
+
+			self._set_onboarding_state("Validating Machine Capacity")
+			self.check_minimum_specs()
+			self.status = "Pending"
+			self.save()
+
+			if not self.database_server:
+				self._set_onboarding_state("Creating Database Runtime")
+				self.create_database_server()
+
+			if not self.server:
+				self._set_onboarding_state("Creating Application Runtime")
+				self.create_application_server()
+
+			self._set_onboarding_state("Applying Runtime Setup")
+			self.setup_server()
+
+			self._set_onboarding_state("Completed", completed=True)
+			self.status = "Active"
+			self.save()
+		except Exception:
+			self.reload()
+			self.status = "Broken"
+			self.onboarding_stage = "Failed"
+			self.onboarding_error = frappe.get_traceback(with_context=False)
+			self.save()
+			log_error("Self Hosted Server Onboarding Failed", server=self.as_dict())
+			raise
+
+	def _set_onboarding_state(self, stage: str, completed: bool = False):
+		self.onboarding_stage = stage
+		self.onboarding_error = None
+		if completed:
+			self.onboarding_completed_at = now_datetime()
+		self.save()
+
+	def _verify_target(self, server_type: str):
+		ping = Ansible(
+			playbook="ping.yml",
+			server=frappe._dict(
+				{
+					"doctype": "Self Hosted Server",
+					"name": self.name,
+					"ssh_user": self.ssh_user,
+					"ssh_port": self.ssh_port,
+					"ip": self.ip if server_type == "app" else self.mariadb_ip,
+				}
+			),
+		)
+		result = ping.run()
+
+		if result.status == "Success":
+			private_ip = self.private_ip if server_type == "app" else self.mariadb_private_ip
+			if private_ip:
+				self.validate_private_ip(result.name, server_type=server_type)
+			else:
+				self.fetch_private_ip(result.name, server_type=server_type)
+			self.fetch_system_specifications(result.name, server_type=server_type)
+			self.reload()
+			return True
+
+		return False
 
 	def _setup_db_server(self):
 		db_server = frappe.get_doc("Database Server", self.database_server)
@@ -766,6 +885,7 @@ class SelfHostedServer(Document):
 				self.processor = result["ansible_facts"]["processor"][2]
 				self.distribution = result["ansible_facts"]["lsb"]["description"]
 				self.total_storage = self._get_total_storage(result)
+				self.storage_layout = self._get_storage_layout(result)
 
 			else:
 				self.db_ram = result["ansible_facts"]["memtotal_mb"]
@@ -786,6 +906,352 @@ class SelfHostedServer(Document):
 				total_storage = result["ansible_facts"]["devices"]["sda"]["size"]
 
 		return total_storage
+
+	def _get_storage_layout(self, result):
+		ansible_facts = result.get("ansible_facts", {})
+		devices = ansible_facts.get("devices") or {}
+		mounts = ansible_facts.get("mounts") or []
+		lines = []
+
+		if devices:
+			lines.append("Devices")
+			for name in sorted(devices):
+				device = devices.get(name) or {}
+				size = device.get("size") or "unknown-size"
+				model = device.get("model") or device.get("vendor") or "unknown-model"
+				lines.append(f"- {name} ({size}, {model})")
+				for partition_name in sorted((device.get("partitions") or {}).keys()):
+					partition = device["partitions"][partition_name]
+					partition_size = partition.get("size") or "unknown-size"
+					lines.append(f"  - {partition_name} ({partition_size})")
+
+		if mounts:
+			if lines:
+				lines.append("")
+			lines.append("Mounts")
+			for mount in mounts:
+				device = mount.get("device") or "unknown-device"
+				path = mount.get("mount") or "unknown-mount"
+				fstype = mount.get("fstype") or "unknown-fs"
+				size_total = mount.get("size_total")
+				size_label = self._format_bytes(size_total) if size_total else "unknown-size"
+				lines.append(f"- {path} -> {device} [{fstype}] ({size_label})")
+
+		return "\n".join(lines[:24])
+
+	@frappe.whitelist()
+	def run_production_checks(self):
+		try:
+			ansible = Ansible(
+				playbook="self_hosted_runtime_checks.yml",
+				server=self,
+				user=self.ssh_user or "root",
+				port=self.ssh_port or 22,
+				variables={"bench_directory": self.bench_directory or "/home/frappe"},
+			)
+			play = ansible.run()
+			checks = self._build_production_checks(play.name, play.status)
+			self.production_checks = json.dumps(checks, indent=2)
+			self.production_checks_updated_at = now_datetime()
+
+			detected_runtime_user = checks.get("runtime_user", {}).get("value")
+			if detected_runtime_user:
+				self.runtime_user = detected_runtime_user
+
+			device_layout = checks.get("storage_devices", {}).get("detail")
+			if device_layout:
+				self.storage_layout = device_layout
+
+			self.save()
+			return checks
+		except Exception:
+			log_error("Self Hosted Production Checks Failed", server=self.as_dict())
+			return {
+				"status": "Failure",
+				"checks": [],
+				"last_error": "Production checks could not be collected from the managed server.",
+			}
+
+	@frappe.whitelist()
+	def restart_production_services(self):
+		return self._restart_runtime("all")
+
+	@frappe.whitelist()
+	def restart_nginx(self):
+		return self._restart_runtime("nginx")
+
+	@frappe.whitelist()
+	def restart_redis(self):
+		return self._restart_runtime("redis")
+
+	@frappe.whitelist()
+	def restart_workers(self):
+		return self._restart_runtime("workers")
+
+	def _restart_runtime(self, operation_scope: str):
+		try:
+			ansible = Ansible(
+				playbook="self_hosted_runtime_operation.yml",
+				server=self,
+				user=self.ssh_user or "root",
+				port=self.ssh_port or 22,
+				variables={"operation_scope": operation_scope},
+			)
+			play = ansible.run()
+			self.run_production_checks()
+			return {
+				"status": play.status,
+				"operation_scope": operation_scope,
+			}
+		except Exception:
+			log_error(
+				"Self Hosted Runtime Operation Failed",
+				server=self.as_dict(),
+				operation_scope=operation_scope,
+			)
+			return {
+				"status": "Failure",
+				"operation_scope": operation_scope,
+			}
+
+	def _build_production_checks(self, play_name: str, play_status: str):
+		service_facts = self._get_task_result_dict(play_name, "Gather Runtime Service Facts")
+		supervisor_status = self._get_task_output(play_name, "Capture Bench Supervisor Status")
+		supervisor_service = self._get_task_output(play_name, "Capture Supervisor Service State")
+		nginx_service = self._get_task_output(play_name, "Capture NGINX Service State")
+		redis_services = self._get_task_output(play_name, "Capture Redis Service States")
+		runtime_processes = self._get_task_output(play_name, "Capture Runtime Processes")
+		runtime_users = self._get_task_output(play_name, "Capture Runtime Users")
+		disk_usage = self._get_task_output(play_name, "Capture Disk Usage")
+		block_devices = self._get_task_output(play_name, "Capture Block Devices")
+		bench_owner = self._get_task_output(play_name, "Capture Bench Owner")
+
+		services = (service_facts.get("ansible_facts") or {}).get("services") or {}
+		supervisor_programs = self._parse_supervisor_programs(supervisor_status)
+		redis_units = [
+			line.strip()
+			for line in redis_services.splitlines()
+			if line.strip() and ".service" in line
+		]
+		detected_users = [user.strip() for user in runtime_users.split(",") if user.strip()]
+		if not detected_users and bench_owner.strip():
+			detected_users = [bench_owner.strip()]
+		runtime_user = self._pick_runtime_user(detected_users)
+		storage_detail = (
+			self._format_block_devices_output(block_devices, disk_usage)
+			or self.storage_layout
+			or "No storage devices captured yet."
+		)
+
+		check_rows = [
+			self._make_check(
+				"NGINX",
+				self._is_active_service(services, "nginx.service", nginx_service),
+				nginx_service or self._service_summary(services, "nginx.service"),
+				success_detail="NGINX is active and ready to serve traffic.",
+				failure_detail="NGINX is missing or not active on the managed server.",
+			),
+			self._make_check(
+				"Supervisor",
+				self._is_supervisor_ready(supervisor_service, supervisor_status),
+				supervisor_service or "Supervisor service state not captured.",
+				success_detail="Supervisor is available for bench process control.",
+				failure_detail="Supervisor is not active, so worker and scheduler recovery will be limited.",
+			),
+			self._make_check(
+				"Redis",
+				self._is_redis_ready(redis_units, supervisor_programs),
+				redis_services or supervisor_status or "Redis service state not captured.",
+				success_detail="Redis services were detected in a running or active state.",
+				failure_detail="Redis services were not detected as healthy.",
+			),
+			self._make_check(
+				"Workers",
+				self._are_supervisor_programs_ready(supervisor_programs, ("worker",)),
+				supervisor_status or "Worker state not captured.",
+				success_detail="Worker processes are running under supervisor.",
+				failure_detail="One or more worker processes are missing or not running.",
+			),
+			self._make_check(
+				"Scheduler",
+				self._are_supervisor_programs_ready(supervisor_programs, ("schedule",)),
+				supervisor_status or "Scheduler state not captured.",
+				success_detail="Scheduler process is running under supervisor.",
+				failure_detail="Scheduler process is missing or not running.",
+			),
+			self._make_check(
+				"Web",
+				self._are_supervisor_programs_ready(supervisor_programs, ("web", "socketio")),
+				supervisor_status or "Web process state not captured.",
+				success_detail="Web-facing supervisor programs are running.",
+				failure_detail="Web-facing supervisor programs are missing or not running.",
+			),
+			{
+				"label": "Runtime User",
+				"status": "Ready" if runtime_user else "Pending",
+				"detail": runtime_user or "Runtime process owner has not been detected yet.",
+			},
+			{
+				"label": "Storage Devices",
+				"status": "Ready" if storage_detail else "Pending",
+				"detail": storage_detail,
+			},
+		]
+
+		return {
+			"status": "Success" if play_status == "Success" else "Failure",
+			"play": play_name,
+			"checked_at": str(now_datetime()),
+			"checks": check_rows,
+			"runtime_user": {
+				"label": "Runtime User",
+				"value": runtime_user,
+				"detail": ", ".join(detected_users) if detected_users else bench_owner.strip(),
+			},
+			"storage_devices": {
+				"label": "Storage Devices",
+				"detail": storage_detail,
+			},
+			"runtime_processes": runtime_processes.strip(),
+		}
+
+	def _get_task_output(self, play_name: str, task_name: str) -> str:
+		task = frappe.db.get_value(
+			"Ansible Task",
+			{"play": play_name, "task": task_name},
+			["output", "result"],
+			as_dict=True,
+		)
+		if not task:
+			return ""
+		return (task.output or "").strip()
+
+	def _get_task_result_dict(self, play_name: str, task_name: str) -> dict:
+		task = frappe.db.get_value(
+			"Ansible Task",
+			{"play": play_name, "task": task_name},
+			["result"],
+			as_dict=True,
+		)
+		if not task or not task.result:
+			return {}
+		with suppress(Exception):
+			return json.loads(task.result)
+		return {}
+
+	def _is_active_service(self, services: dict, service_name: str, systemctl_state: str):
+		service = services.get(service_name) or {}
+		active_states = {"running", "started", "active"}
+		return (
+			service.get("state") in active_states
+			or service.get("status") in active_states
+			or systemctl_state.strip() == "active"
+		)
+
+	def _service_summary(self, services: dict, service_name: str):
+		service = services.get(service_name) or {}
+		state = service.get("state") or "missing"
+		status = service.get("status") or "missing"
+		return f"{service_name}: state={state}, status={status}"
+
+	def _parse_supervisor_programs(self, output: str):
+		programs = {}
+		for line in output.splitlines():
+			parts = line.split()
+			if len(parts) < 2:
+				continue
+			programs[parts[0]] = parts[1]
+		return programs
+
+	def _are_supervisor_programs_ready(self, programs: dict, patterns: tuple[str, ...]):
+		matching = {
+			name: status
+			for name, status in programs.items()
+			if any(pattern in name.lower() for pattern in patterns)
+		}
+		if not matching:
+			return False
+		return all(status.upper() == "RUNNING" for status in matching.values())
+
+	def _is_supervisor_ready(self, supervisor_service: str, supervisor_status: str):
+		return supervisor_service.strip() == "active" or "RUNNING" in supervisor_status
+
+	def _is_redis_ready(self, redis_units: list[str], supervisor_programs: dict):
+		has_active_systemd_redis = any(" active " in f" {line} " or " running " in f" {line} " for line in redis_units)
+		redis_supervisor_programs = {
+			name: status for name, status in supervisor_programs.items() if "redis" in name.lower()
+		}
+		has_running_supervisor_redis = any(
+			status.upper() == "RUNNING" for status in redis_supervisor_programs.values()
+		)
+		return has_active_systemd_redis or has_running_supervisor_redis
+
+	def _pick_runtime_user(self, users: list[str]):
+		if not users:
+			return None
+		counts = Counter(users)
+		return counts.most_common(1)[0][0]
+
+	def _format_block_devices_output(self, block_devices: str, disk_usage: str):
+		block_devices = (block_devices or "").strip()
+		disk_usage = (disk_usage or "").strip()
+		lines = []
+
+		if block_devices.startswith("{"):
+			with suppress(Exception):
+				parsed = json.loads(block_devices)
+				devices = parsed.get("blockdevices") or []
+				lines.append("Devices")
+				for device in devices:
+					name = device.get("name") or "unknown"
+					type_ = device.get("type") or "unknown"
+					size = device.get("size") or "unknown-size"
+					model = device.get("model") or "unknown-model"
+					mountpoint = device.get("mountpoint") or "-"
+					lines.append(f"- {name} [{type_}] {size} mount={mountpoint} model={model}")
+					for child in device.get("children") or []:
+						child_name = child.get("name") or "unknown"
+						child_type = child.get("type") or "unknown"
+						child_size = child.get("size") or "unknown-size"
+						child_mount = child.get("mountpoint") or "-"
+						child_fs = child.get("fstype") or "unknown-fs"
+						lines.append(
+							f"  - {child_name} [{child_type}] {child_size} fs={child_fs} mount={child_mount}"
+						)
+
+		if disk_usage:
+			if lines:
+				lines.append("")
+			lines.append("Mount Usage")
+			lines.extend(f"- {line}" for line in disk_usage.splitlines()[:12])
+
+		return "\n".join(lines).strip()
+
+	def _make_check(
+		self,
+		label: str,
+		passed: bool,
+		raw_detail: str,
+		*,
+		success_detail: str,
+		failure_detail: str,
+	):
+		status = "Ready" if passed else "Failed"
+		detail = success_detail if passed else failure_detail
+		if raw_detail:
+			detail = f"{detail} {raw_detail}".strip()
+		return {"label": label, "status": status, "detail": detail}
+
+	def _format_bytes(self, value):
+		try:
+			size = float(value)
+		except (TypeError, ValueError):
+			return str(value)
+
+		for unit in ("B", "KB", "MB", "GB", "TB"):
+			if size < 1024 or unit == "TB":
+				return f"{size:.1f} {unit}"
+			size /= 1024
 
 	def check_minimum_specs(self):
 		"""

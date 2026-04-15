@@ -297,6 +297,16 @@ class AgentJob(Document):
 		return self.retry()
 
 	@frappe.whitelist()
+	def diagnose(self):
+		from press.press.doctype.forensic_event.forensic_event import (
+			create_agent_job_diagnostic_event,
+		)
+
+		event = create_agent_job_diagnostic_event(self, actor=frappe.session.user, reason="manual")
+		frappe.db.commit()
+		return {"forensic_event": event.name}
+
+	@frappe.whitelist()
 	def succeed_and_process_job_updates(self):
 		self.status = "Success"
 		self.save()

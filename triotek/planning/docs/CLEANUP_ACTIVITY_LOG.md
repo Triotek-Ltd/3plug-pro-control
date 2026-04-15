@@ -945,3 +945,33 @@ Reason:
 - Added first-pass top-level `Analytics` and `Jobs` pages so those target-state modules now exist in the dashboard shell instead of living only in planning documents.
 - Replaced the dashboard sidebar navigation with the agreed product order: `Desk`, `Servers`, `Benches`, `Sites`, `Tenants`, `Apps`, `Analytics`, `Jobs`, `Forensics`, `Team`, and `Control Settings`, while keeping notifications as a dedicated alert entry.
 - Removed low-signal internal-first sidebar clutter from the main navigation so the client-facing shell better matches the actual 3plug product map.
+
+## 2026-04-14 - Server onboarding shifted toward the real scripted first-run flow
+
+- Expanded the managed-server onboarding flow so operators now provide the actual first-run inputs we care about: server title, primary contact email, primary domain, managed domains, sudo or SSH user, SSH port, and server IPs.
+- Wired those onboarding inputs into the self-hosted server creation path so the managed server record now persists the onboarding profile instead of only saving title and IP information.
+- Extended the managed server overview to surface that onboarding profile alongside the machine facts discovered during verification, so server management starts from automated setup and machine inspection rather than a thin registration shell.
+
+## 2026-04-14 - Managed server view extended with runtime user, partitions, and readiness
+
+- Extended self-hosted server fact capture so the managed server record now stores a readable storage layout summary from Ansible mount facts.
+- Reflected the scripted runtime assumption directly in the self-hosted setup flow by tracking the managed runtime user as `frappe`, which matches the current self-hosted setup role.
+- Added production-readiness checks and storage-layout visibility to the managed server overview so operators can see access profile, machine facts, runtime user, disk layout, and record-creation progress in one place.
+
+## 2026-04-14 - Server management upgraded with real runtime checks and recovery actions
+
+- Added a dedicated self-hosted runtime inspection playbook so managed servers can now capture real production checks for NGINX, supervisor, Redis, workers, scheduler, web processes, runtime user, and storage devices instead of inferring health only from onboarding state.
+- Added managed-server runtime recovery actions for rerunning checks and restarting production services, NGINX, Redis, or workers directly from the server management flow.
+- Updated the health and operations screens so they consume the real production-check snapshot, show process ownership and verification timestamps, and tie recommended actions to failed runtime checks.
+
+## 2026-04-14 - Workspace landings separated so each module owns its own space
+
+- Trimmed the dedicated Desk workspaces so `Servers`, `Benches`, `Sites`, `Apps`, `Analytics`, `Jobs`, `Forensics`, `Tenants`, `Team`, and `Settings` no longer mix one another's shortcuts into their landing pages.
+- Kept `Desk` as the overview entry point, while making each module workspace focus on its own records and actions only.
+- Tightened settings and analytics workspace content so resource plans, incidents, and analytics records live in the correct module instead of being scattered across unrelated pages.
+- 2026-04-14: Upgraded the operator job flow so failed and undelivered executions can now be diagnosed and retried directly from the client-facing job page. Added a manual `diagnose` document method to `Agent Job`, exposed retry, retry-in-place, patch-safe retry, and cancel actions in the dashboard job detail, and surfaced the latest captured forensic evidence plus recent diagnostic trail so operators can work from logs and evidence without dropping into Desk internals.
+- 2026-04-14: Converted managed server onboarding from a blocking verify-and-setup request into a staged background pipeline. `Self Hosted Server` now records onboarding stage, start/completion times, and failure details; the onboarding API queues real worker execution instead of pretending setup completes inline; and the dashboard now has a dedicated managed-server onboarding progress page that polls the live pipeline before handing operators into full server management.
+- 2026-04-14: Upgraded the server-first UX pass so registration, onboarding progress, and server management stop reading like plain admin forms. Added stronger hero sections, visible primary and quick-action buttons, clearer first-run sequencing, and more intentional control-surface layout across the managed server registration page, onboarding progress page, and managed server overview.
+- 2026-04-14: Extended the same client-facing server UX language into the remaining management tabs. `Health`, `Operations`, and `Security` now use the same control-panel layout as onboarding, with clear hero summaries, quick decisions, guided recovery actions, and a more intentional separation between health checks, operator runbooks, and security posture.
+- 2026-04-14: Removed manual IP entry from the managed server onboarding flow. The onboarding API now resolves the public server IP from the primary domain and falls back to discovering the private IP during verification, so the operator only supplies the server identity, access user, and domain information that 3plug actually needs.
+- 2026-04-14: Locked live validation in as the next required gate. Added a dedicated live-validation checklist to the product book and updated the roadmap and status tracker so we validate server onboarding and server management on a real server before proceeding with deeper feature work.

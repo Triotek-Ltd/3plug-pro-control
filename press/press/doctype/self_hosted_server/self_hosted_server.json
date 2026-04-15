@@ -11,6 +11,12 @@
   "new_server",
   "different_database_server",
   "server_url",
+  "onboarding_email",
+  "managed_domains",
+  "onboarding_stage",
+  "onboarding_error",
+  "onboarding_started_at",
+  "onboarding_completed_at",
   "hostname",
   "domain",
   "column_break_3eap",
@@ -28,6 +34,8 @@
   "plan",
   "private_ip",
   "ssh_port",
+  "runtime_user",
+  "production_checks_updated_at",
   "section_break_0fky",
   "dedicated_proxy",
   "proxy_public_ip",
@@ -66,6 +74,8 @@
   "architecture",
   "processor",
   "distribution",
+  "storage_layout",
+  "production_checks",
   "database_server_section",
   "db_vcpus",
   "db_total_storage",
@@ -263,6 +273,17 @@
    "label": "SSH Port"
   },
   {
+   "fieldname": "runtime_user",
+   "fieldtype": "Data",
+   "label": "Runtime User"
+  },
+  {
+   "fieldname": "production_checks_updated_at",
+   "fieldtype": "Datetime",
+   "label": "Production Checks Updated At",
+   "read_only": 1
+  },
+  {
    "default": "0",
    "fieldname": "new_server",
    "fieldtype": "Check",
@@ -311,6 +332,40 @@
    "fieldname": "server_url",
    "fieldtype": "Data",
    "label": "Server URL"
+  },
+  {
+   "fieldname": "onboarding_email",
+   "fieldtype": "Data",
+   "label": "Primary Contact Email"
+  },
+  {
+   "fieldname": "managed_domains",
+   "fieldtype": "Small Text",
+   "label": "Managed Domains"
+  },
+  {
+   "fieldname": "onboarding_stage",
+   "fieldtype": "Data",
+   "label": "Onboarding Stage",
+   "read_only": 1
+  },
+  {
+   "fieldname": "onboarding_error",
+   "fieldtype": "Small Text",
+   "label": "Onboarding Error",
+   "read_only": 1
+  },
+  {
+   "fieldname": "onboarding_started_at",
+   "fieldtype": "Datetime",
+   "label": "Onboarding Started At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "onboarding_completed_at",
+   "fieldtype": "Datetime",
+   "label": "Onboarding Completed At",
+   "read_only": 1
   },
   {
    "fieldname": "plan",
@@ -372,6 +427,17 @@
    "fieldname": "distribution",
    "fieldtype": "Data",
    "label": "Distribution"
+  },
+  {
+   "fieldname": "storage_layout",
+   "fieldtype": "Small Text",
+   "label": "Storage Layout"
+  },
+  {
+   "fieldname": "production_checks",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "label": "Production Checks"
   },
   {
    "fieldname": "vendor",

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"tenants-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tenants</span>\",\"col\":12}},{\"id\":\"tenants-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Review tenant ownership across sites, benches, and managed infrastructure.\",\"col\":12}},{\"id\":\"tenants-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenants\",\"col\":3}},{\"id\":\"tenants-sites\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":3}},{\"id\":\"tenants-benches\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Benches\",\"col\":3}},{\"id\":\"tenants-servers\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Managed Servers\",\"col\":3}}]",
+ "content": "[{\"id\":\"tenants-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tenants</span>\",\"col\":12}},{\"id\":\"tenants-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Review tenant ownership and account records without mixing in runtime workspaces.\",\"col\":12}},{\"id\":\"tenants-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenants\",\"col\":4}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -31,30 +31,6 @@
    "label": "Tenants",
    "link_to": "Team",
    "stats_filter": "[[\"Team\",\"enabled\",\"=\",1,false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Blue",
-   "doc_view": "List",
-   "label": "Sites",
-   "link_to": "Site",
-   "stats_filter": "[[\"Site\",\"status\",\"!=\",\"Archived\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Benches",
-   "link_to": "Bench",
-   "stats_filter": "[[\"Bench\",\"status\",\"!=\",\"Archived\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Orange",
-   "doc_view": "List",
-   "label": "Managed Servers",
-   "link_to": "Self Hosted Server",
-   "stats_filter": "[[\"Self Hosted Server\",\"status\",\"!=\",\"Archived\",false]]",
    "type": "DocType"
   }
  ],

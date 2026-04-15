@@ -105,3 +105,4 @@ Start with:
 * [Benchmarks And MVP Functions](./benchmarks-and-mvp-functions.md)
 * [Product Roadmap](./roadmap.md)
 * [Product Status Tracker](./status-tracker.md)
+* [Live Validation Checklist](./live-validation-checklist.md)

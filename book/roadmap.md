@@ -235,10 +235,15 @@ The active implementation order should be:
 
 ## Immediate Next Slice
 
-The next practical implementation slice should be:
+The next required gate is live validation of the current server-first slice.
 
-1. make server onboarding the first-run product task
-2. tighten the server-first home state
-3. build the real site lifecycle flow starting with `Create Site`
+Use:
 
-That keeps us aligned with both the product model and the benchmarked function set.
+1. [Live Validation Checklist](./live-validation-checklist.md)
+
+Only after that should we continue with:
+
+1. tighten the server-first home state if validation exposes issues
+2. build the real site lifecycle flow starting with `Create Site`
+
+That keeps us aligned with both the product model and the requirement to prove the real workflow before building further.

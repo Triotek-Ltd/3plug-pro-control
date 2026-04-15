@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"sites-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Sites</span>\",\"col\":12}},{\"id\":\"sites-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Manage sites, certificates, plans, and site-level evidence from one control-plane view.\",\"col\":12}},{\"id\":\"sites-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":3}},{\"id\":\"sites-plans\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site Plans\",\"col\":3}},{\"id\":\"sites-certs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"TLS Certificates\",\"col\":3}},{\"id\":\"sites-forensics\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Forensics\",\"col\":3}}]",
+ "content": "[{\"id\":\"sites-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Sites</span>\",\"col\":12}},{\"id\":\"sites-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Manage sites, certificates, and site resource profiles from one site-focused workspace.\",\"col\":12}},{\"id\":\"sites-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sites\",\"col\":4}},{\"id\":\"sites-plans\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site Plans\",\"col\":4}},{\"id\":\"sites-certs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"TLS Certificates\",\"col\":4}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -46,14 +46,6 @@
    "doc_view": "List",
    "label": "TLS Certificates",
    "link_to": "TLS Certificate",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Orange",
-   "doc_view": "List",
-   "label": "Forensics",
-   "link_to": "Forensic Event",
    "stats_filter": "[]",
    "type": "DocType"
   }

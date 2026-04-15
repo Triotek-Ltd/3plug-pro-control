@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"apps-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Apps</span>\",\"col\":12}},{\"id\":\"apps-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Work with the approved app catalog, source repositories, and release records used across your benches and sites.\",\"col\":12}},{\"id\":\"apps-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Apps\",\"col\":3}},{\"id\":\"apps-sources\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Sources\",\"col\":3}},{\"id\":\"apps-releases\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Releases\",\"col\":3}},{\"id\":\"apps-site-plans\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site Plans\",\"col\":3}}]",
+ "content": "[{\"id\":\"apps-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Apps</span>\",\"col\":12}},{\"id\":\"apps-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Work with the approved app catalog, source repositories, and release records used by the control plane.\",\"col\":12}},{\"id\":\"apps-list\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Apps\",\"col\":4}},{\"id\":\"apps-sources\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Sources\",\"col\":4}},{\"id\":\"apps-releases\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Releases\",\"col\":4}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -47,14 +47,6 @@
    "label": "App Releases",
    "link_to": "App Release",
    "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Orange",
-   "doc_view": "List",
-   "label": "Site Plans",
-   "link_to": "Site Plan",
-   "stats_filter": "[[\"Site Plan\",\"enabled\",\"=\",1,false]]",
    "type": "DocType"
   }
  ],

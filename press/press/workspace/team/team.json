@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"team-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Team</span>\",\"col\":12}},{\"id\":\"team-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Manage tenants, operators, and the shared control-plane ownership model for your managed environments.\",\"col\":12}},{\"id\":\"team-tenants\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenants\",\"col\":3}},{\"id\":\"team-team\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Team\",\"col\":3}},{\"id\":\"team-settings\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Control Settings\",\"col\":3}}]",
+ "content": "[{\"id\":\"team-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Team</span>\",\"col\":12}},{\"id\":\"team-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Manage the operator team and shared ownership of the control plane from one team workspace.\",\"col\":12}},{\"id\":\"team-team\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Team\",\"col\":4}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -39,13 +39,6 @@
    "label": "Team",
    "link_to": "Team",
    "stats_filter": "[[\"Team\",\"enabled\",\"=\",1,false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Control Settings",
-   "link_to": "Press Settings",
    "type": "DocType"
   }
  ],

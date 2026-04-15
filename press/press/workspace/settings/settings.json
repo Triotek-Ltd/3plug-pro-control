@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"settings-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Settings</span>\",\"col\":12}},{\"id\":\"settings-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Review runtime, commercial, security, certificate, and plan settings that shape the 3plug control plane.\",\"col\":12}},{\"id\":\"settings-control\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Control Settings\",\"col\":3}},{\"id\":\"settings-root-domain\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Root Domains\",\"col\":3}},{\"id\":\"settings-tls\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"TLS Certificates\",\"col\":3}},{\"id\":\"settings-plans\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plans\",\"col\":3}}]",
+ "content": "[{\"id\":\"settings-header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Settings</span>\",\"col\":12}},{\"id\":\"settings-summary\",\"type\":\"paragraph\",\"data\":{\"text\":\"Review runtime, certificate, and resource-plan settings that shape the 3plug control plane.\",\"col\":12}},{\"id\":\"settings-control\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Control Settings\",\"col\":3}},{\"id\":\"settings-root-domain\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Root Domains\",\"col\":3}},{\"id\":\"settings-server-plans\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Server Plans\",\"col\":3}},{\"id\":\"settings-site-plans\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site Plans\",\"col\":3}}]",
  "creation": "2026-04-14 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -41,17 +41,17 @@
    "type": "DocType"
   },
   {
-   "color": "Blue",
+   "color": "Orange",
    "doc_view": "List",
-   "label": "TLS Certificates",
-   "link_to": "TLS Certificate",
-   "stats_filter": "[]",
+   "label": "Server Plans",
+   "link_to": "Server Plan",
+   "stats_filter": "[[\"Server Plan\",\"enabled\",\"=\",1,false]]",
    "type": "DocType"
   },
   {
-   "color": "Orange",
+   "color": "Blue",
    "doc_view": "List",
-   "label": "Plans",
+   "label": "Site Plans",
    "link_to": "Site Plan",
    "stats_filter": "[[\"Site Plan\",\"enabled\",\"=\",1,false]]",
    "type": "DocType"

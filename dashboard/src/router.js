@@ -179,6 +179,12 @@ let router = createRouter({
 			component: () => import('./pages/RegisterManagedServer.vue'),
 		},
 		{
+			name: 'Managed Server Onboarding',
+			path: '/servers/onboarding/:name',
+			component: () => import('./pages/ManagedServerOnboarding.vue'),
+			props: true,
+		},
+		{
 			name: 'PartnerNewPayout',
 			path: '/payment-payout/New',
 			component: deferredPartnerPage,

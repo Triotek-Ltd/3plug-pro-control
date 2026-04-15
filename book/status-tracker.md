@@ -58,8 +58,10 @@ What is true:
 
 What still remains:
 
-- make server onboarding the stronger first-run entry path
-- add clearer empty states and first-run guidance
+- live end-to-end validation on the real server
+- confirm automatic public-IP resolution works from the primary domain
+- confirm private-IP discovery works during verification
+- confirm worker-backed onboarding stages complete successfully
 
 ## Core Runtime Modules
 
@@ -74,8 +76,8 @@ What is true:
 
 What still remains:
 
-- deeper production checks
-- live UX validation
+- live validation of health checks and recovery actions
+- confirmation that real runtime checks and restart actions work against the production server
 
 ### Benches
 
@@ -244,10 +246,10 @@ The current focus should be:
 
 ## Immediate Next Action
 
-The next implementation action should be:
+The next required action should be:
 
-- make server onboarding the clear first task in the product
+- run the live validation checklist for the current server-first slice
 
-After that:
+Only after that:
 
-- build the real `Create Site` lifecycle flow
+- continue with the next product slice
